@@ -34,13 +34,17 @@ done
 
 function bvs_help {
 cat << EOF
-usage: $0 [command [arg]]
-  clean         run make clean and remove all CMake generated content
-  debug         runs system in gdb session
-  help          displays this text
-  new-module    creates new module blank with given name
-  run (default) runs the system
-  setup         this adds libbvs and bvsd
+usage: $0 [command [\$arg]]
+
+maintenance:
+  clean             run make clean and remove all CMake generated content
+  help              displays this text
+  new-module \$arg  creates new module blank/frame with given name
+  setup             this adds libbvs and bvsd
+
+targets:
+  run (default)         runs the system
+  debug                 runs bvsd in gdb session
 EOF
 }
 
@@ -68,9 +72,10 @@ echo "Created $MOD, uncomment add_subdirectory($MOD) in modules/CMakeLists.txt t
 
 function bvs_setup {
 mkdir bin
-#git remote rm origin
-git submodule add $BASE/libbvs.git
-git submodule add $BASE/bvsd.git
+git submodule init
+git submodule pull
+#git submodule add $BASE/libbvs.git
+#git submodule add $BASE/bvsd.git
 cmake .
 }
 
@@ -86,7 +91,7 @@ function bvs_run {
 case $1 in
     clean) bvs_clean;;
     debug) GDB="gdb --args "; bvs_run;;
-    help) bvs_help;;
+    help|--help|-h|-?) bvs_help;;
     new-module) bvs_new_module $2;;
     setup) bvs_setup;;
     "") bvs_run;;
