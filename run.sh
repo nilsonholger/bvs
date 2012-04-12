@@ -1,6 +1,11 @@
 #! /bin/sh
 # dk@hyve.org
 
+# settings
+BASE="ssh://git.hyve.org:119"
+
+
+
 function bvs_clean {
 echo ">>> make clean"
 make clean
@@ -25,6 +30,8 @@ do
 done
 }
 
+
+
 function bvs_help {
 cat << EOF
 usage: $0 [command [arg]]
@@ -36,6 +43,8 @@ usage: $0 [command [arg]]
   setup         this adds libbvs and bvsd
 EOF
 }
+
+
 
 function bvs_new_module {
 [ -z $1 ] && echo "No module name given!" && exit 1
@@ -55,19 +64,23 @@ echo "#add_subdirectory($MOD)" >> modules/CMakeLists.txt
 echo "Created $MOD, uncomment add_subdirectory($MOD) in modules/CMakeLists.txt to add it to compilation!"
 }
 
+
+
 function bvs_setup {
 mkdir bin
-git remote rm origin
-BASE="ssh://git.hyve.org:119"
+#git remote rm origin
 git submodule add $BASE/libbvs.git
 git submodule add $BASE/bvsd.git
 cmake .
 }
 
+
+
 function bvs_run {
 [ ! -r bin/bvsd ] && echo "bvsd executable not found, run make first..." && exit
 (cd bin && $GDB ./bvsd --bvs.config=BVSConfig.txt --bvs.options=foo=123,bar=foobar)
 }
+
 
 
 case $1 in
