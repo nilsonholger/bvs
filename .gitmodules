@@ -1,0 +1,6 @@
+[submodule "libbvs"]
+	path = libbvs
+	url = ssh://git.hyve.org:119/libbvs.git
+[submodule "bvsd"]
+	path = bvsd
+	url = ssh://git.hyve.org:119/bvsd.git
