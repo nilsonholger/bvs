@@ -81,7 +81,7 @@ git submodule foreach git checkout master
 
 function bvs_run {
 [ ! -r bin/bvsd ] && echo "bvsd executable not found, run make first..." && exit
-(cd bin && $GDB ./bvsd --bvs.config=BVSConfig.txt --bvs.options=foo=123,bar=foobar)
+[ $# != 0 ] && (cd bin && $GDB ./bvsd "$@") || (cd bin && $GDB ./bvsd --bvs.config=BVSConfig.txt)
 }
 
 
@@ -92,5 +92,5 @@ case $1 in
     help|--help|-h|-?) bvs_help;;
     new-module) bvs_new_module $2;;
     setup) bvs_setup;;
-    "") bvs_run;;
+    ""|*) bvs_run "$@";;
 esac
