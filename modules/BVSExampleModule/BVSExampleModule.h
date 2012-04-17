@@ -3,10 +3,11 @@
 
 #include "BVSModule.h"
 
+// TODO add comments to explain usage and give examples !!!IMPORTANT
 class BVSExampleModule : public BVSModule
 {
     public:
-        BVSExampleModule();
+        BVSExampleModule(BVSConfig& config);
         ~BVSExampleModule();
         void onLoad();
         void preExecute();
@@ -17,8 +18,8 @@ class BVSExampleModule : public BVSModule
 
     private:
         std::string identifier;
-        BVSConfig config;
         BVSLogger logger;
+        BVSConfig& config;
         BVSExampleModule(const BVSExampleModule&) = delete; /**< -Weffc++ */
         BVSExampleModule& operator=(const BVSExampleModule&) = delete; /**< -Weffc++ */
 };

@@ -2,11 +2,11 @@
 
 
 
-BVSExampleModule::BVSExampleModule()
+BVSExampleModule::BVSExampleModule(BVSConfig& config)
     : BVSModule()
     , identifier("BVSExampleModule")
-    , config(identifier)
     , logger(identifier)
+    , config(config)
 {
 
 }
@@ -23,6 +23,7 @@ BVSExampleModule::~BVSExampleModule()
 void BVSExampleModule::onLoad()
 {
     LOG(2, "loaded BVSExampleModule!");
+    LOG(2, "using config from: " << config.getName());
 }
 
 
@@ -64,9 +65,9 @@ void BVSExampleModule::onClose()
 
 extern "C" {
     // register with framework
-    int bvsAddModule()
+    int bvsAddModule(BVSConfig& config)
     {
-        bvsModules["BVSExampleModule"] = new BVSExampleModule;
+        bvsModules["BVSExampleModule"] = new BVSExampleModule(config);
         return 0;
     }
 }
