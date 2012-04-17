@@ -11,6 +11,7 @@
  */
 class BVSModule
 {
+    // TODO comment functions
     public:
         BVSModule() = default; /**< Constructor of Module Base. */
         virtual ~BVSModule(); /**< Destructor of Module Base. */
@@ -27,6 +28,7 @@ class BVSModule
 
 };
 
+/** List of registered system modules. Implemented by BVS. */
 extern std::map<std::string, BVSModule*, std::less<std::string>> bvsModules;
 
 #endif //BVSMODULE_H

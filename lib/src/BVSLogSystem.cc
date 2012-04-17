@@ -15,7 +15,7 @@ std::shared_ptr<BVSLogSystem> BVSLogSystem::connectToLogSystem()
     // check if system exists, if not create first
     if (instance == nullptr)
     {
-        instance = std::shared_ptr<BVSLogSystem> (new BVSLogSystem());
+        instance = std::shared_ptr<BVSLogSystem>(new BVSLogSystem());
     }
     return instance;
 }
@@ -24,7 +24,7 @@ std::shared_ptr<BVSLogSystem> BVSLogSystem::connectToLogSystem()
 
 BVSLogSystem::BVSLogSystem()
     : namePadding(0)
-    , systemVerbosity(1)
+    , systemVerbosity(3)
     , outCLI(std::cout.rdbuf())
     , outFile()
     , outBoth(outCLI, outFile)

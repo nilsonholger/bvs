@@ -72,6 +72,7 @@ class BVSLogger
          * mess with the name padding in the logging system.
          * */
         std::string name;
+
         std::shared_ptr<BVSLogSystem> logSystem; /**< Pointer to the logging backend. */
 
         BVSLogger(const BVSLogger&) = delete; /**< -Weffc++ */

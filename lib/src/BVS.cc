@@ -1,6 +1,4 @@
 #include "BVS.h"
-#include "BVSConfig.h"
-#include "BVSLogger.h"
 #include "BVSLogSystem.h"
 #include "BVSModuleLoader.h"
 
@@ -14,9 +12,9 @@ BVS::BVS(int argc, char** argv)
     : logSystem(BVSLogSystem::connectToLogSystem())
     , logger("BVS")
     , config("BVS")
-    , loader(new BVSModuleLoader())
+    , loader(new BVSModuleLoader(config))
 {
-    config.addCommandLine(argc, argv);
+    config.loadCommandLine(argc, argv);
 }
 
 
@@ -84,5 +82,13 @@ BVS& BVS::disableLogConsole()
         logSystem->disableLogConsole();
     }
 
+    return *this;
+}
+
+
+
+BVS& BVS::loadConfigFile(std::string configFile)
+{
+    config.loadConfigFile(configFile);
     return *this;
 }

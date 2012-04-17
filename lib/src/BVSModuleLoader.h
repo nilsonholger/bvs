@@ -9,6 +9,7 @@
 #include<vector>
 #include<dlfcn.h>
 
+#include "BVSConfig.h"
 #include "BVSLogger.h"
 #include "BVSModule.h"
 
@@ -18,8 +19,9 @@
 class BVSModuleLoader
 {
     public:
+        // TODO update comments
         /** Constructor for module loader. */
-        BVSModuleLoader();
+        BVSModuleLoader(BVSConfig& config);
 
         /** Load the given module, executes addBVSModule function in module to register it.
          * @param path Path to module.
@@ -28,13 +30,14 @@ class BVSModuleLoader
 
     private:
         BVSLogger logger; /**< Logger metadata. */
+        BVSConfig& config; /**< Config reference. */
         BVSModuleLoader(const BVSModuleLoader&) = delete; /**< -Weffc++ */
         BVSModuleLoader& operator=(const BVSModuleLoader&) = delete; /**< -Weffc++ */
 };
 
 
 
-/** List of registered system modules. */
+/** List of registered system modules. Implemented by BVS. */
 extern std::map<std::string, BVSModule*, std::less<std::string>> bvsModules;
 
 

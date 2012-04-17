@@ -6,27 +6,26 @@
 #include<map>
 #include<string>
 
-#include "BVSLogger.h"
 #include "BVSConfig.h"
+#include "BVSLogger.h"
 
 
 
 /** Forward Declarations for BVS internals. */
+class BVSConfig;
 class BVSModuleLoader;
 
 
 
 class BVS
 {
+    // TODO reorder functions to increase usability
     public:
         /** Create BVS System.
          * @param[in] argc Main's argc.
          * @param[in] argv Main's argv.
          */
         BVS(int argc, char** argv);
-        // provide API call to config: load config file and from command line
-        // provide API call to get option from config
-        // provide API calls to logger: on/off, output file, system verbosity
 
         /** Set the log system verbosity.
          * This sets the logging system's overall verbosity.
@@ -51,7 +50,7 @@ class BVS
         BVS& disableLogFile();
 
         /** Enable log console/command line interface.
-         * @param out Stream to log to (default = std::cout).
+         * @param[out] Stream to log to (default = std::cout).
          * @return Reference to object.
          */
         BVS& enableLogConsole(std::ostream& out = std::cout);
@@ -61,7 +60,17 @@ class BVS
          */
         BVS& disableLogConsole();
 
+        /** Tell config to load given file.
+         * @param[in]  Path to config file.
+         * @return Reference to object.
+         */
+        BVS& loadConfigFile(std::string configFile);
+
+        // TODO NEXT load all modules from config file ModuleList
+        // TODO add and use options to configure BVS
         void loadModules();
+
+        // TODO create BVSControler
         //void start();
         //void step();
         //void pause();
@@ -69,10 +78,17 @@ class BVS
         //void close();
         //~BVS();
 
+
     private:
+        // TODO comment
         std::shared_ptr<BVSLogSystem> logSystem;
         BVSLogger logger; /**< BVS' logging instance. */
-        BVSConfig config;
+
+    public:
+        // TODO provide API call to get option from config
+        BVSConfig config; /**< BVS' config system. */
+
+    private:
         BVSModuleLoader* loader; /**< BVS' module loader. */
 
         BVS(const BVS&) = delete; /**< -Weffc++ */
