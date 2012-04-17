@@ -72,8 +72,7 @@ echo "Created $MOD, uncomment add_subdirectory($MOD) in modules/CMakeLists.txt t
 
 function bvs_setup {
 mkdir bin
-git submodule init
-git submodule update
+git submodule update --init --recursive
 git submodule foreach git checkout master
 }
 
