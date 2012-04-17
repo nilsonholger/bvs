@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.6)
-include(libbvs/toolbox.cmake)
+include(libbvs/cmake/compiler.cmake)
+include(libbvs/cmake/macros.cmake)
 set(CMAKE_BUILD_TYPE "DEBUG")
 
 if(NOT CMAKE_CXX_FLAGS)
@@ -9,7 +10,7 @@ endif(NOT CMAKE_CXX_FLAGS)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 if(APPLE)
-    set(CMAKE_CXX_COMPILER "/usr/local/bin/c++-4.6")
+    set(CMAKE_CXX_COMPILER "/usr/local/bin/c++-4.7")
 endif(APPLE)
 
 if(GPROF)
