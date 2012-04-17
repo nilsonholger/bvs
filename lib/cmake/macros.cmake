@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.8.6)
+
 macro(add_subdir DIR SRC_LIST_NAME)
     set(SRC_LIST ${ARGV})
     list(REMOVE_AT SRC_LIST 0 1)
@@ -21,10 +23,10 @@ macro(add_subdir_lib DIR LIB_NAME LIB_TYPE)
     add_library(${LIB_NAME} ${LIB_TYPE} ${SRC_FILES})
 endmacro(add_subdir_lib)
 
-macro(add_bvs_module MODULE_NAME)
+macro(add_module MODULE_NAME)
     set(SRC_LIST ${ARGV})
     list(REMOVE_AT SRC_LIST 0)
     add_subdir(${MODULE_NAME} SRC_FILES ${SRC_LIST})
     add_library(${MODULE_NAME} MODULE ${SRC_FILES})
     include_directories(${MODULE_NAME})
-endmacro(add_bvs_module)
+endmacro(add_module)

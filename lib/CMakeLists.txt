@@ -1,4 +1,4 @@
-include(toolbox.cmake)
+include(cmake/macros.cmake)
 project(LIBBVS)
 
 include_directories(include)
