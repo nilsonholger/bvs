@@ -25,6 +25,13 @@ BVS& BVS::loadModules()
     std::vector<std::string> moduleList;
     config.getValue("BVS.modules", moduleList);
 
+    // check length
+    if (moduleList.size()==0)
+    {
+        LOG(1, "no modules specified, nothing to load!");
+        return *this;
+    }
+
     // load all selected modules
     for (auto it : moduleList)
     {

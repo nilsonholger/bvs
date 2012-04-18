@@ -229,7 +229,15 @@ BVSConfig& BVSConfig::getValue(std::string sectionOption, std::string& value)
 
 BVSConfig& BVSConfig::getValue(std::string sectionOption, std::vector<std::string>& value)
 {
+    // get list from optionStore and if empty, abort
     std::string tmp = searchOption(sectionOption);
+    if (tmp.length()==0)
+    {
+        return *this;
+    }
+
+
+    // separate list into substrings on occurence of ',', push to vector
     size_t separatorPos = 0;
     while (separatorPos != std::string::npos)
     {
@@ -237,6 +245,7 @@ BVSConfig& BVSConfig::getValue(std::string sectionOption, std::vector<std::strin
         value.push_back(tmp.substr(0, separatorPos));
         tmp.erase(0, separatorPos+1);
     }
+
     return *this;
 }
 
@@ -244,7 +253,7 @@ BVSConfig& BVSConfig::getValue(std::string sectionOption, std::vector<std::strin
 
 std::string BVSConfig::searchOption(const std::string& option)
 {
-
+    // search for option in store
     if(optionStore.find(option)!=optionStore.end())
     {
         LOG(3, "found: " << option << " --> " << optionStore[option]);
@@ -253,7 +262,8 @@ std::string BVSConfig::searchOption(const std::string& option)
     else
     {
         LOG(1, "not found: " << option);
-        return "";
+        std::string empty;
+        return empty;
     }
 }
 
