@@ -19,11 +19,11 @@
 
 
 
-class BVSLogSystem; /**< Forward declaration needed for BVSLogger. */
+class BVSLogSystem;
 
 
 
-/** The BVS Logging mechanism.
+/** Provides access to the BVSLogSystem.
  * To use this system, just create a BVSLogger object with your desired
  * settings. The BVSLogSystem backend will be initialized automatically.
  * Please call your BVSLogger instance "logger", that way the above defined

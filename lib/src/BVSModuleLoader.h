@@ -19,8 +19,9 @@
 class BVSModuleLoader
 {
     public:
-        // TODO update comments
-        /** Constructor for module loader. */
+        /** Constructor for module loader.
+         * @param[in] config Reference to config system.
+         */
         BVSModuleLoader(BVSConfig& config);
 
         /** Load the given module, executes addBVSModule function in module to register it.
