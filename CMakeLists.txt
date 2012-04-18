@@ -8,10 +8,6 @@ endif(NOT CMAKE_CXX_FLAGS)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
-if(APPLE)
-    set(CMAKE_CXX_COMPILER "/usr/local/bin/c++-4.7")
-endif(APPLE)
-
 if(GPROF)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
 endif(GPROF)
