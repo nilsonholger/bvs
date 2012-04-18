@@ -13,7 +13,6 @@ int main(int argc, char** argv)
     BVSLogger logger("BVSDaemon");
     LOG(2, "starting!");
 
-    // TODO make it load all modules
     bvs.loadModules();
 
 
@@ -71,6 +70,13 @@ int main(int argc, char** argv)
     test3 = bvs.config.getValue<bool>("core.test");
     LOG(0, "test2: " << test2);
     LOG(0, "test3: " << test3);
+
+    std::vector<std::string> list;
+    bvs.config.getValue("core.list", list);
+    for (auto it : list)
+    {
+        LOG(0, it);
+    }
 
     return 0;
 }
