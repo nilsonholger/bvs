@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 2.8.6)
-include(libbvs/cmake/compiler.cmake)
-include(libbvs/cmake/macros.cmake)
+include(libbvs/cmake/toolbox.cmake)
 set(CMAKE_BUILD_TYPE "DEBUG")
 
 if(NOT CMAKE_CXX_FLAGS)
@@ -21,8 +20,6 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 
 project(BVSBASE)
-
-add_custom_target(run ${CMAKE_SOURCE_DIR}/run.sh)
 
 include_directories(libbvs/include)
 add_subdirectory(libbvs)
