@@ -19,10 +19,22 @@ BVS::BVS(int argc, char** argv)
 
 
 
-void BVS::loadModules()
+BVS& BVS::loadModules()
 {
-    loader->load("BVSExampleModule");
-    bvsModules["BVSExampleModule"]->onLoad();
+    // get module list from config
+    std::vector<std::string> moduleList;
+    config.getValue("BVS.modules", moduleList);
+
+    // load all selected modules
+    for (auto it : moduleList)
+    {
+        loader->load(it);
+
+        // TODO remove (use control mechanism)
+        bvsModules[it]->onLoad();
+    }
+
+    return *this;
 }
 
 
@@ -82,13 +94,5 @@ BVS& BVS::disableLogConsole()
         logSystem->disableLogConsole();
     }
 
-    return *this;
-}
-
-
-
-BVS& BVS::loadConfigFile(std::string configFile)
-{
-    config.loadConfigFile(configFile);
     return *this;
 }

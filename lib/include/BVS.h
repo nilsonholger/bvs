@@ -11,21 +11,35 @@
 
 
 
-/** Forward Declarations for BVS internals. */
 class BVSConfig;
 class BVSModuleLoader;
 
 
 
+/** The BVS framework base.
+ * This is the BVS base, use this to interact with the framework.
+ */
 class BVS
 {
-    // TODO reorder functions to increase usability
     public:
         /** Create BVS System.
          * @param[in] argc Main's argc.
          * @param[in] argv Main's argv.
          */
         BVS(int argc, char** argv);
+
+        /** Load modules selected by config variable modules.
+         */
+        BVS& loadModules();
+
+        // TODO create BVSControler
+        // TODO add and use options to configure BVS
+        //void start();
+        //void step();
+        //void pause();
+        //void stop();
+        //void close();
+        //~BVS();
 
         /** Set the log system verbosity.
          * This sets the logging system's overall verbosity.
@@ -50,7 +64,7 @@ class BVS
         BVS& disableLogFile();
 
         /** Enable log console/command line interface.
-         * @param[out] Stream to log to (default = std::cout).
+         * @param[out] out Stream to log to (default = std::cout).
          * @return Reference to object.
          */
         BVS& enableLogConsole(std::ostream& out = std::cout);
@@ -60,32 +74,11 @@ class BVS
          */
         BVS& disableLogConsole();
 
-        /** Tell config to load given file.
-         * @param[in]  Path to config file.
-         * @return Reference to object.
-         */
-        BVS& loadConfigFile(std::string configFile);
-
-        // TODO NEXT load all modules from config file ModuleList
-        // TODO add and use options to configure BVS
-        void loadModules();
-
-        // TODO create BVSControler
-        //void start();
-        //void step();
-        //void pause();
-        //void stop();
-        //void close();
-        //~BVS();
-
-
     private:
-        // TODO comment
-        std::shared_ptr<BVSLogSystem> logSystem;
+        std::shared_ptr<BVSLogSystem> logSystem; /**< Internal log system backend. */
         BVSLogger logger; /**< BVS' logging instance. */
 
     public:
-        // TODO provide API call to get option from config
         BVSConfig config; /**< BVS' config system. */
 
     private:
