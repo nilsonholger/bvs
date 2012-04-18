@@ -105,6 +105,7 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
     std::string section;
     bool insideQuotes;
     size_t pos;
+    size_t posComment;
 
     // check if file can be read from
     if (!file.is_open())
@@ -188,8 +189,10 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
         // only add when not already in store, thus command-line options can override config file options and first occurence is used
         if (optionStore.find(option)==optionStore.end())
         {
-            optionStore[option] = line.substr(pos+1, line.length());
-            LOG(3, "adding: " << option << " -> " << line.substr(pos+1, line.length()));
+            // get position of inline comment (if any)
+            posComment = line.find_first_of('#');
+            optionStore[option] = line.substr(pos+1, posComment-pos-1);
+            LOG(3, "adding: " << option << " -> " << line.substr(pos+1, posComment-pos-1));
         }
     }
     return *this;
@@ -201,7 +204,6 @@ BVSConfig& BVSConfig::getValue(std::string sectionOption, bool& value)
 {
     // get stored value
     std::string tmp = searchOption(sectionOption);
-    LOG(0, tmp);
 
     // check for possible matches to various versions meaning true
     if (tmp=="1" || tmp=="true" || tmp=="True" || tmp=="TRUE" || tmp=="on" || tmp=="On" || tmp=="ON" || tmp=="yes" || tmp=="Yes" || tmp=="YES")
@@ -220,6 +222,21 @@ BVSConfig& BVSConfig::getValue(std::string sectionOption, bool& value)
 BVSConfig& BVSConfig::getValue(std::string sectionOption, std::string& value)
 {
     value = searchOption(sectionOption);
+    return *this;
+}
+
+
+
+BVSConfig& BVSConfig::getValue(std::string sectionOption, std::vector<std::string>& value)
+{
+    std::string tmp = searchOption(sectionOption);
+    size_t separatorPos = 0;
+    while (separatorPos != std::string::npos)
+    {
+        separatorPos = tmp.find_first_of(',');
+        value.push_back(tmp.substr(0, separatorPos));
+        tmp.erase(0, separatorPos+1);
+    }
     return *this;
 }
 
