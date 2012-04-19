@@ -8,7 +8,8 @@ BASE="ssh://git.hyve.org:119"
 
 function bvs_clean {
 echo ">>> make clean"
-make clean
+[ -r Makefile ] && make clean
+
 DIRS="./"
 [ -r bvsd ] && DIRS+=" bvsd/"
 [ -r libbvs ] && DIRS+=" libbvs/"
@@ -18,15 +19,20 @@ do
     [ $i != "modules/CMakeFiles/" ] && DIRS+=" $i"
 done
 
-#DIRS=${DIRS/ modules\/BVSExampleModule\/}
-
 echo ">>> cmake cleanup: $DIRS"
-rm CMakeCache.txt
+[ -r CMakeCache.txt ] && rm CMakeCache.txt
 for i in $DIRS
 do
-    rm $i/Makefile
-    rm $i/cmake_install.cmake
-    rm -r $i/CMakeFiles
+    [ -r $i/Makefile ] && rm $i/Makefile
+    [ -r $i/cmake_install.cmake ] && rm $i/cmake_install.cmake
+    [ -r $i/CMakeFiles ] && rm -r $i/CMakeFiles
+done
+
+[ ! -r libbvs ] && return
+echo ">>> documentation cleanup"
+for i in $DIRS
+do
+    [ -r $i/doc ] && rm -r $i/doc
 done
 }
 
