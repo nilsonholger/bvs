@@ -1,15 +1,18 @@
 #include "BVSConfig.h"
 
+#include<iostream>
 #include<fstream>
 
 
 
-BVSConfig::BVSConfig(std::string name)
+BVSConfig::BVSConfig(std::string name, int argc, char** argv)
     : name(name)
-    , logger("BVS::Config")
     , optionStore()
 {
-
+    if (argc!=0 && argv!=nullptr)
+    {
+        loadCommandLine(argc, argv);
+    }
 }
 
 
@@ -50,13 +53,13 @@ BVSConfig& BVSConfig::loadCommandLine(int argc, char** argv)
             // check for missing argument
             if (option.empty())
             {
-                LOG(0, "no argument after --bvs.config=");
+                std::cerr << "[ERROR|BVSConfig] no argument after --bvs.config=" << std::endl;
                 exit(1);
             }
 
             // save config file for later use
             configFile = option;
-            LOG(2, "--bvs.config: " << configFile);
+            //std::cout << "[BVSConfig] --bvs.config: " << configFile << std::endl;
         }
 
         // check for additional options
@@ -67,11 +70,10 @@ BVSConfig& BVSConfig::loadCommandLine(int argc, char** argv)
             // check for missing argument
             if (option.empty())
             {
-                LOG(0, "no argument after --bvs.options=");
+                std::cerr<< "[ERROR|BVSConfig] no argument after --bvs.options=" << std::endl;
                 exit(1);
             }
-
-            LOG(2, "--bvs.options: " << option);
+            //std::cout << "[BVSConfig] --bvs.options: " << option << std::endl;
 
             // separate option string and add to optionStore
             std::string bvsOption;
@@ -83,7 +85,7 @@ BVSConfig& BVSConfig::loadCommandLine(int argc, char** argv)
                 bvsOption = option.substr(0, separatorPos);
                 equalPos = bvsOption.find_first_of("=");
                 optionStore[bvsOption.substr(0, equalPos)] = bvsOption.substr(equalPos+1, bvsOption.size());
-                LOG(3, "adding: " << bvsOption.substr(0, equalPos) << " -> " << bvsOption.substr(equalPos+1, bvsOption.size()));
+                //std::cout << "[BVSConfig] adding: " << bvsOption.substr(0, equalPos) << " -> " << bvsOption.substr(equalPos+1, bvsOption.size()) << std::endl;
                 option.erase(0, separatorPos+1);
             }
         }
@@ -110,7 +112,7 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
     // check if file can be read from
     if (!file.is_open())
     {
-        LOG(0, "file not found: " << configFile);
+        std::cerr << "[ERROR|BVSConfig] file not found: " << configFile << std::endl;
         exit(1);
     }
 
@@ -171,7 +173,7 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
         // ignore option if section empty
         if (section.empty())
         {
-            LOG(1, "found option belonging to no section, ignoring it!");
+            std::cerr << "[ERROR|BVSConfig] found option belonging to no section, ignoring it: " << line << std::endl;
             continue;
         }
 
@@ -182,7 +184,7 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
         // check for empty option name
         if (option.length()==section.length()+1 )
         {
-            LOG(1, "found line starting with '=', ignoring it!");
+            std::cerr << "[ERROR|BVSConfig] found line starting with '=', ignoring it: " << line << std::endl;
             continue;
         }
 
@@ -192,9 +194,22 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
             // get position of inline comment (if any)
             posComment = line.find_first_of('#');
             optionStore[option] = line.substr(pos+1, posComment-pos-1);
-            LOG(3, "adding: " << option << " -> " << line.substr(pos+1, posComment-pos-1));
+            //std::cout << "[BVSConfig] adding: " << option << " -> " << line.substr(pos+1, posComment-pos-1) << std::endl;
         }
     }
+    return *this;
+}
+
+
+
+BVSConfig& BVSConfig::showOptionStore()
+{
+    std::cout << "[BVSConfig] OPTION = VALUE" << std::endl;
+    for ( auto it : optionStore)
+    {
+        std::cout << "[BVSConfig] " << it.first << " = " << it.second << std::endl;
+    }
+
     return *this;
 }
 
@@ -256,14 +271,13 @@ std::string BVSConfig::searchOption(const std::string& option)
     // search for option in store
     if(optionStore.find(option)!=optionStore.end())
     {
-        LOG(3, "found: " << option << " --> " << optionStore[option]);
+        //std::cout << "found: " << option << " --> " << optionStore[option] << std::endl;
         return optionStore[option];
     }
     else
     {
-        LOG(1, "not found: " << option);
-        std::string empty;
-        return empty;
+        std::cerr << "[ERROR|BVSConfig] option not found: " << option << std::endl;
+        exit(-1);
     }
 }
 

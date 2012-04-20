@@ -9,12 +9,12 @@ std::map <std::string, BVSModule*, std::less<std::string>> BVS::bvsModuleMap;
 
 
 BVS::BVS(int argc, char** argv)
-    : logSystem(BVSLogSystem::connectToLogSystem())
+    : config("BVS", argc, argv)
+    , logSystem(BVSLogSystem::connectToLogSystem())
     , logger("BVS")
-    , config("BVS")
     , master(new BVSMaster(bvsModuleMap, config))
 {
-    config.loadCommandLine(argc, argv);
+    // set logger levels
 }
 
 
