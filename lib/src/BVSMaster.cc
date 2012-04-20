@@ -5,7 +5,7 @@
 BVSMaster::BVSMaster(std::map<std::string, BVSModule*, std::less<std::string>>& bvsModuleMap, BVSConfig& config)
     : bvsModuleMap(bvsModuleMap)
     , handleMap()
-    , logger("BVS::Loader")
+    , logger("BVS::Master")
     , config(config)
 {
 

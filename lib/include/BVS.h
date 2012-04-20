@@ -11,6 +11,7 @@
 
 
 
+// Forward declarations
 class BVSModule;
 class BVSMaster;
 
@@ -28,13 +29,12 @@ class BVS
          */
         BVS(int argc, char** argv);
 
-        /** Load modules selected by config variable modules.
+        /** Load modules selected by config variable [BVS]modules.
          */
         BVS& loadModules();
 
-        // TODO create BVSControler
         // TODO add and use options to configure BVS
-        //void start();
+        //BVS& run();
         //void step();
         //void pause();
         //void stop();
@@ -82,17 +82,14 @@ class BVS
          */
         static void registerModule(std::string identifier, BVSModule* module);
 
-    private:
-        std::shared_ptr<BVSLogSystem> logSystem; /**< Internal log system backend. */
-        BVSLogger logger; /**< BVS' logging instance. */
-
-    public:
         BVSConfig config; /**< BVS' config system. */
 
     private:
+        std::shared_ptr<BVSLogSystem> logSystem; /**< Internal log system backend. */
+        BVSLogger logger; /**< BVS' logging instance. */
         BVSMaster* master; /**< BVS' module loader. */
 
-        /** Map op modules known by the BVS framework. */
+        /** Map of modules known by the BVS framework. */
         static std::map<std::string, BVSModule*, std::less<std::string>> bvsModuleMap;
 
         BVS(const BVS&) = delete; /**< -Weffc++ */
