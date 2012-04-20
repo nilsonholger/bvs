@@ -11,9 +11,8 @@
 
 
 
-class BVSConfig;
 class BVSModule;
-class BVSModuleLoader;
+class BVSMaster;
 
 
 
@@ -91,7 +90,7 @@ class BVS
         BVSConfig config; /**< BVS' config system. */
 
     private:
-        BVSModuleLoader* loader; /**< BVS' module loader. */
+        BVSMaster* master; /**< BVS' module loader. */
 
         /** Map op modules known by the BVS framework. */
         static std::map<std::string, BVSModule*, std::less<std::string>> bvsModuleMap;

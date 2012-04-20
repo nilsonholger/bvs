@@ -1,6 +1,6 @@
 #include "BVS.h"
 #include "BVSLogSystem.h"
-#include "BVSModuleLoader.h"
+#include "BVSMaster.h"
 
 
 
@@ -12,7 +12,7 @@ BVS::BVS(int argc, char** argv)
     : logSystem(BVSLogSystem::connectToLogSystem())
     , logger("BVS")
     , config("BVS")
-    , loader(new BVSModuleLoader(bvsModuleMap, config))
+    , master(new BVSMaster(bvsModuleMap, config))
 {
     config.loadCommandLine(argc, argv);
 }
@@ -35,7 +35,7 @@ BVS& BVS::loadModules()
     // load all selected modules
     for (auto it : moduleList)
     {
-        loader->load(it);
+        master->load(it);
 
         // call the modules setup function
         bvsModuleMap[it]->onLoad();

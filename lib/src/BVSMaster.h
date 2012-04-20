@@ -1,5 +1,5 @@
-#ifndef BVSMODULELOADER_H
-#define BVSMODULELOADER_H
+#ifndef BVSMASTER_H
+#define BVSMASTER_H
 
 #include<cstdlib>
 #include<iostream>
@@ -16,24 +16,24 @@
 
 
 /** The module loader. */
-class BVSModuleLoader
+class BVSMaster
 {
     public:
         /** Constructor for module loader.
          * @param[in] config Reference to config system.
          */
-        BVSModuleLoader(std::map<std::string, BVSModule*, std::less<std::string>>& bvsModuleMap, BVSConfig& config);
+        BVSMaster(std::map<std::string, BVSModule*, std::less<std::string>>& bvsModuleMap, BVSConfig& config);
 
         /** Load the given module, executes bvsRegisterModule function in module
          * to register it with the system.
          * @param[in] moduleName THe name of the module.
          */
-        BVSModuleLoader& load(std::string moduleName);
+        BVSMaster& load(std::string moduleName);
 
         /** Unload the given module.
          * @param[in] moduleName The name of the module.
          */
-        BVSModuleLoader& unload(std::string moduleName);
+        BVSMaster& unload(std::string moduleName);
 
     private:
         /** Map of registered Modules */
@@ -45,11 +45,11 @@ class BVSModuleLoader
         BVSLogger logger; /**< Logger metadata. */
         BVSConfig& config; /**< Config reference. */
 
-        BVSModuleLoader(const BVSModuleLoader&) = delete; /**< -Weffc++ */
-        BVSModuleLoader& operator=(const BVSModuleLoader&) = delete; /**< -Weffc++ */
+        BVSMaster(const BVSMaster&) = delete; /**< -Weffc++ */
+        BVSMaster& operator=(const BVSMaster&) = delete; /**< -Weffc++ */
 };
 
 
 
-#endif //BVSMODULELOADER_H
+#endif //BVSMASTER_H
 

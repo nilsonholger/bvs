@@ -1,8 +1,8 @@
-#include "BVSModuleLoader.h"
+#include "BVSMaster.h"
 
 
 
-BVSModuleLoader::BVSModuleLoader(std::map<std::string, BVSModule*, std::less<std::string>>& bvsModuleMap, BVSConfig& config)
+BVSMaster::BVSMaster(std::map<std::string, BVSModule*, std::less<std::string>>& bvsModuleMap, BVSConfig& config)
     : bvsModuleMap(bvsModuleMap)
     , handleMap()
     , logger("BVS::Loader")
@@ -13,7 +13,7 @@ BVSModuleLoader::BVSModuleLoader(std::map<std::string, BVSModule*, std::less<std
 
 
 
-BVSModuleLoader& BVSModuleLoader::load(std::string moduleName)
+BVSMaster& BVSMaster::load(std::string moduleName)
 {
     // prepare path and load the lib
     std::string modulePath = "./lib" + moduleName + ".so";
@@ -50,7 +50,7 @@ BVSModuleLoader& BVSModuleLoader::load(std::string moduleName)
 
 
 
-BVSModuleLoader& BVSModuleLoader::unload(std::string moduleName)
+BVSMaster& BVSMaster::unload(std::string moduleName)
 {
     // close lib and check for errors
     std::string modulePath = "./lib" + moduleName + ".so";
