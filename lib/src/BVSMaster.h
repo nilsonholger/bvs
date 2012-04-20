@@ -15,7 +15,7 @@
 
 
 
-/** The module loader. */
+/** The system master, loads, unloads and controls modules. */
 class BVSMaster
 {
     public:
