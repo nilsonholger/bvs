@@ -23,7 +23,8 @@ std::shared_ptr<BVSLogSystem> BVSLogSystem::connectToLogSystem()
 
 
 BVSLogSystem::BVSLogSystem()
-    : namePadding(0)
+    : loggerLevels()
+    , namePadding(0)
     , systemVerbosity(3)
     , outCLI(std::cout.rdbuf())
     , outFile()
@@ -39,9 +40,15 @@ BVSLogSystem::BVSLogSystem()
 
 std::ostream& BVSLogSystem::out(const BVSLogger& logger, int level)
 {
-    // check verbosity
+    // check verbosity of logger and system
     if (level > systemVerbosity) return nullStream;
     if (level > logger.verbosity) return nullStream;
+
+    // check if verbosity was set in config
+    if (loggerLevels.find(logger.getName())!=loggerLevels.end())
+    {
+        if (level > loggerLevels[logger.getName()]) return nullStream;
+    }
 
     // select (enabled/open) output stream according to selected target
     std::ostream* out;
@@ -134,6 +141,22 @@ BVSLogSystem& BVSLogSystem::disableLogConsole()
 {
     // set internals to log to nirvana
     outCLI.rdbuf(nullStream.rdbuf());
+
+    return *this;
+}
+
+
+
+BVSLogSystem& BVSLogSystem::updateLoggerLevels(BVSConfig& config)
+{
+    // check for LOGLEVEL.* variables and update logger levels
+    for (auto it : config.optionStore)
+    {
+        if (it.first.substr(0, 7)=="BVSLOG.")
+        {
+            loggerLevels[it.first.substr(7, std::string::npos)] = config.getValue<int>(it.first);
+        }
+    }
 
     return *this;
 }

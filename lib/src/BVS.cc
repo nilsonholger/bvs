@@ -14,7 +14,7 @@ BVS::BVS(int argc, char** argv)
     , logger("BVS")
     , master(new BVSMaster(bvsModuleMap, config))
 {
-    // set logger levels
+    logSystem->updateLoggerLevels(config);
 }
 
 
@@ -40,6 +40,16 @@ BVS& BVS::loadModules()
         // call the modules setup function
         bvsModuleMap[it]->onLoad();
     }
+
+    return *this;
+}
+
+
+
+BVS& BVS::loadConfigFile(std::string configFile)
+{
+    config.loadConfigFile(configFile);
+    logSystem->updateLoggerLevels(config);
 
     return *this;
 }

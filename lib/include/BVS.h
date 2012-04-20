@@ -41,6 +41,12 @@ class BVS
         //void close();
         //~BVS();
 
+        /** Loads a config File and updates the system.
+         * @param[in] configFile Name of or path to config file.
+         * @return Refenrence to object.
+         */
+        BVS& loadConfigFile(std::string configFile);
+
         /** Set the log system verbosity.
          * This sets the logging system's overall verbosity.
          * Only messages with logging level lower or equal with be displayed.

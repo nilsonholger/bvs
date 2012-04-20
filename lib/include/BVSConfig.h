@@ -69,13 +69,6 @@ class BVSConfig
          */
         std::string getName();
 
-        /** Loads the given config file (if it exists).
-         * This checks the supplied path for a config file and if found parses
-         * its contents.
-         * @param[in] configFile Name of or path to config file.
-         */
-        BVSConfig& loadConfigFile(const std::string& configFile);
-
         /** Prints all variables known by config system to std::cout;
          */
         BVSConfig& showOptionStore();
@@ -116,6 +109,8 @@ class BVSConfig
          */
         BVSConfig& getValue(std::string sectionOption, std::vector<std::string>& value);
 
+        friend class BVS;
+        friend class BVSLogSystem;
 
     private:
         std::string name; /**< Instance's name. */
@@ -131,6 +126,13 @@ class BVSConfig
          * @return Reference to object.
          */
         BVSConfig& loadCommandLine(int argc, char** argv);
+
+        /** Loads the given config file (if it exists).
+         * This checks the supplied path for a config file and if found parses
+         * its contents.
+         * @param[in] configFile Name of or path to config file.
+         */
+        BVSConfig& loadConfigFile(const std::string& configFile);
 
         /** Searches optionStore for the given option name.
          * @param[in] option Desired config option.

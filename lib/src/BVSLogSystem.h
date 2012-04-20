@@ -4,6 +4,7 @@
 #include<iomanip>
 #include<memory>
 
+#include "BVSConfig.h"
 #include "BVSStreams.h"
 #include "BVSLogger.h"
 
@@ -72,11 +73,25 @@ class BVSLogSystem
          */
         BVSLogSystem& announce(const BVSLogger& logger);
 
+        /** Check config for client levels.
+         * Checks the given config object for occurences of LOGLEVEL.*.
+         * This way one can specify verbosity levels in a config file:
+         * @code
+         * [LOGLEVEL]
+         * LoggerOne = 0
+         * LoggerTwo = 1
+         * @endcode
+         * @param[in] config Config object.
+         * @return Reference to object.
+         */
+        BVSLogSystem& updateLoggerLevels(BVSConfig& config);
+
     private:
         /** Construct log system.
          */
         BVSLogSystem();
 
+        std::map<std::string, int, std::less<std::string>> loggerLevels; /**< Logger clients' levels from config(s). */
         unsigned int namePadding; /**< Name padding size for fancy output, updated in announce function. */
         unsigned short systemVerbosity; /**< The overall system verbosity level. */
         static std::shared_ptr<BVSLogSystem> instance; /**< Logging system instance. */
