@@ -22,16 +22,29 @@ class BVSModuleLoader
         /** Constructor for module loader.
          * @param[in] config Reference to config system.
          */
-        BVSModuleLoader(BVSConfig& config);
+        BVSModuleLoader(std::map<std::string, BVSModule*, std::less<std::string>>& bvsModuleMap, BVSConfig& config);
 
-        /** Load the given module, executes addBVSModule function in module to register it.
-         * @param path Path to module.
+        /** Load the given module, executes bvsRegisterModule function in module
+         * to register it with the system.
+         * @param[in] moduleName THe name of the module.
          */
-        void load(std::string path);
+        BVSModuleLoader& load(std::string moduleName);
+
+        /** Unload the given module.
+         * @param[in] moduleName The name of the module.
+         */
+        BVSModuleLoader& unload(std::string moduleName);
 
     private:
+        /** Map of registered Modules */
+        std::map<std::string, BVSModule*, std::less<std::string>>& bvsModuleMap;
+
+        /** Map of known/used/active library handles. */
+        std::map<std::string, void*, std::less<std::string>> handleMap;
+
         BVSLogger logger; /**< Logger metadata. */
         BVSConfig& config; /**< Config reference. */
+
         BVSModuleLoader(const BVSModuleLoader&) = delete; /**< -Weffc++ */
         BVSModuleLoader& operator=(const BVSModuleLoader&) = delete; /**< -Weffc++ */
 };

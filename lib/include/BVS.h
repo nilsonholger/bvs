@@ -93,10 +93,11 @@ class BVS
     private:
         BVSModuleLoader* loader; /**< BVS' module loader. */
 
-        BVS(const BVS&) = delete; /**< -Weffc++ */
-        BVS& operator=(const BVS&) = delete; /**< -Weffc++ */
         /** Map op modules known by the BVS framework. */
         static std::map<std::string, BVSModule*, std::less<std::string>> bvsModuleMap;
+
+        BVS(const BVS&) = delete; /**< -Weffc++ */
+        BVS& operator=(const BVS&) = delete; /**< -Weffc++ */
 };
 
 

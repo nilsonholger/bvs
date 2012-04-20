@@ -12,7 +12,7 @@ BVS::BVS(int argc, char** argv)
     : logSystem(BVSLogSystem::connectToLogSystem())
     , logger("BVS")
     , config("BVS")
-    , loader(new BVSModuleLoader(config))
+    , loader(new BVSModuleLoader(bvsModuleMap, config))
 {
     config.loadCommandLine(argc, argv);
 }
@@ -37,7 +37,7 @@ BVS& BVS::loadModules()
     {
         loader->load(it);
 
-        // TODO remove (use control mechanism)
+        // call the modules setup function
         bvsModuleMap[it]->onLoad();
     }
 
