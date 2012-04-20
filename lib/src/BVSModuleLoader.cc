@@ -25,16 +25,15 @@ void BVSModuleLoader::load(std::string moduleName)
     }
 
     // look for bvsAddModule in loaded lib, check for errors and execute register function
-    typedef void (*addModule_t)(BVSConfig& config);
-    addModule_t addModule;
-    *reinterpret_cast<void**>(&addModule)=dlsym(dlib, "bvsAddModule");
+    typedef void (*registerModule_t)(BVSConfig& config);
+    registerModule_t registerModule;
+    *reinterpret_cast<void**>(&registerModule)=dlsym(dlib, "bvsRegisterModule");
     char* dlerr = dlerror();
     if (dlerr)
     {
-        LOG(0, "Loading function bvsAddModule() in " << modulePath << " resulted in: " << dlerr);
+        LOG(0, "Loading function bvsRegisterModule() in " << modulePath << " resulted in: " << dlerr);
         exit(-1);
     }
-    addModule(config);
+    registerModule(config);
     LOG(2, modulePath << " loaded and registered!");
 }
-

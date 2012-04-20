@@ -12,6 +12,7 @@
 
 
 class BVSConfig;
+class BVSModule;
 class BVSModuleLoader;
 
 
@@ -74,6 +75,14 @@ class BVS
          */
         BVS& disableLogConsole();
 
+        /** Register a Module with the BVS framework.
+         * This registers a module and should be used as a callback by the module
+         * itself passing its name and a pointer to itself.
+         * @param[in] identifier The Module's name.
+         * @param[in] module A pointer to the module.
+         */
+        static void registerModule(std::string identifier, BVSModule* module);
+
     private:
         std::shared_ptr<BVSLogSystem> logSystem; /**< Internal log system backend. */
         BVSLogger logger; /**< BVS' logging instance. */
@@ -86,6 +95,8 @@ class BVS
 
         BVS(const BVS&) = delete; /**< -Weffc++ */
         BVS& operator=(const BVS&) = delete; /**< -Weffc++ */
+        /** Map op modules known by the BVS framework. */
+        static std::map<std::string, BVSModule*, std::less<std::string>> bvsModuleMap;
 };
 
 

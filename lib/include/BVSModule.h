@@ -28,8 +28,5 @@ class BVSModule
 
 };
 
-/** List of registered system modules. Implemented by BVS. */
-extern std::map<std::string, BVSModule*, std::less<std::string>> bvsModules;
-
 #endif //BVSMODULE_H
 

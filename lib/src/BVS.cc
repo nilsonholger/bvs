@@ -4,7 +4,7 @@
 
 
 
-std::map <std::string, BVSModule*, std::less<std::string>> bvsModules;
+std::map <std::string, BVSModule*, std::less<std::string>> BVS::bvsModuleMap;
 
 
 
@@ -38,7 +38,7 @@ BVS& BVS::loadModules()
         loader->load(it);
 
         // TODO remove (use control mechanism)
-        bvsModules[it]->onLoad();
+        bvsModuleMap[it]->onLoad();
     }
 
     return *this;
@@ -102,4 +102,11 @@ BVS& BVS::disableLogConsole()
     }
 
     return *this;
+}
+
+
+
+void BVS::registerModule(std::string identifier, BVSModule* module)
+{
+    bvsModuleMap[identifier] = module;
 }
