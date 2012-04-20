@@ -65,9 +65,9 @@ void BVSExampleModule::onClose()
 
 extern "C" {
     // register with framework
-    int bvsAddModule(BVSConfig& config)
+    int bvsRegisterModule(BVSConfig& config)
     {
-        bvsModules["BVSExampleModule"] = new BVSExampleModule(config);
+        BVS::registerModule("BVSExampleModule", new BVSExampleModule(config));
         return 0;
     }
 }
