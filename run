@@ -62,7 +62,7 @@ ORIG=BVSExampleModule
 ORIGC=`echo $ORIG | tr "[:lower:]" "[:upper:]"`
 MOD=$1
 MODC=`echo $MOD | tr "[:lower:]" "[:upper:]"`
-cp -r modules/$ORIG modules/$MOD
+cp -r libbvs/module modules/$MOD
 cd modules/$MOD
 mv $ORIG.h $MOD.h
 mv $ORIG.cc $MOD.cc
