@@ -1,0 +1,16 @@
+# settings for BVS library
+[BVS]
+modules = 
+
+[BVSLOG]
+ALL = 3
+#BVS = 0
+#BVSDaemon = 0
+#BVSMaster = 0
+
+
+
+[core]
+foo = 123
+bar = "fooo bar"
+test = true
