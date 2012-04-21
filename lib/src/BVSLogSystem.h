@@ -91,9 +91,25 @@ class BVSLogSystem
          */
         BVSLogSystem();
 
-        std::map<std::string, int, std::less<std::string>> loggerLevels; /**< Logger clients' levels from config(s). */
-        unsigned int namePadding; /**< Name padding size for fancy output, updated in announce function. */
-        unsigned short systemVerbosity; /**< The overall system verbosity level. */
+        /** Logger clients' levels from config(s).
+         * TODO
+         */
+        std::map<std::string, int, std::less<std::string>> loggerLevels;
+
+        /** Name padding size for fancy output, updated in announce function. */
+        unsigned int namePadding;
+
+        /** The overall system verbosity level.
+         * The overall system verbosity level will be initialized to 3, only
+         * messages with a level below or equal this value will be logged.
+         * This value can be changed by using:
+         * @code
+         * [BVSLOG]
+         * ALL = 0 # your desired level
+         * @endcode
+         * */
+        unsigned short systemVerbosity;
+
         static std::shared_ptr<BVSLogSystem> instance; /**< Logging system instance. */
         static BVSNullStream nullStream; /**< Stream pointing to nirvana */
         std::ostream outCLI; /**< Stream pointing to Command Line Interface. */

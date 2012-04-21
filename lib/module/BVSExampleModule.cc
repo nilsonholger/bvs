@@ -23,7 +23,6 @@ BVSExampleModule::~BVSExampleModule()
 void BVSExampleModule::onLoad()
 {
     LOG(2, "loaded BVSExampleModule!");
-    LOG(2, "using config from: " << config.getName());
 }
 
 

@@ -40,15 +40,10 @@ BVSLogSystem::BVSLogSystem()
 
 std::ostream& BVSLogSystem::out(const BVSLogger& logger, int level)
 {
-    // check verbosity of logger and system
+    // check verbosity of system and logger
     if (level > systemVerbosity) return nullStream;
     if (level > logger.verbosity) return nullStream;
-
-    // check if verbosity was set in config
-    if (loggerLevels.find(logger.getName())!=loggerLevels.end())
-    {
-        if (level > loggerLevels[logger.getName()]) return nullStream;
-    }
+    if (level > loggerLevels[logger.getName()]) return nullStream;
 
     // select (enabled/open) output stream according to selected target
     std::ostream* out;
@@ -97,6 +92,11 @@ BVSLogSystem& BVSLogSystem::announce(const BVSLogger& logger)
     if (logger.getName().length() > namePadding)
     {
         namePadding = logger.getName().length();
+    }
+
+    if (loggerLevels.find(logger.getName())==loggerLevels.end())
+    {
+        loggerLevels[logger.getName()] = logger.verbosity;
     }
 
     return *this;
@@ -154,7 +154,15 @@ BVSLogSystem& BVSLogSystem::updateLoggerLevels(BVSConfig& config)
     {
         if (it.first.substr(0, 7)=="BVSLOG.")
         {
-            loggerLevels[it.first.substr(7, std::string::npos)] = config.getValue<int>(it.first);
+            // check for overall system setting
+            if (it.first.substr(7, std::string::npos)=="ALL")
+            {
+                systemVerbosity = config.getValue<unsigned short>(it.first);
+                continue;
+            }
+
+            // set level override from config
+            loggerLevels[it.first.substr(7, std::string::npos)] = config.getValue<unsigned short>(it.first);
         }
     }
 

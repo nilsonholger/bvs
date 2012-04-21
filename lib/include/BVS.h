@@ -50,6 +50,7 @@ class BVS
         /** Set the log system verbosity.
          * This sets the logging system's overall verbosity.
          * Only messages with logging level lower or equal with be displayed.
+         * Attention: This overrides the BVSLog.ALL setting from config file.
          * @param[in] verbosity Desired verbosity level.
          * @return Reference to object.
          */
