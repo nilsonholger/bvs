@@ -49,7 +49,7 @@ class BVS
          * @param[in] configFile Name of or path to config file.
          * @return Refenrence to object.
          */
-        BVS& loadConfigFile(std::string configFile);
+        BVS& loadConfigFile(const std::string& configFile);
 
         /** Set the log system verbosity.
          * This sets the logging system's overall verbosity.
@@ -58,7 +58,7 @@ class BVS
          * @param[in] verbosity Desired verbosity level.
          * @return Reference to object.
          */
-        BVS& setLogSystemVerbosity(unsigned short verbosity);
+        BVS& setLogSystemVerbosity(const unsigned short verbosity);
 
         /** Open and enable log file.
          * Open and enable log file at given file location.
@@ -67,7 +67,7 @@ class BVS
          * @param[in] append Select, whether to append or overwrite.
          * @return Reference to object.
          */
-        BVS& enableLogFile(std::string file, bool append = false);
+        BVS& enableLogFile(const std::string& file, bool append = false);
 
         /** Close and disable log file.
          * @return Reference to object.
@@ -78,7 +78,7 @@ class BVS
          * @param[out] out Stream to log to (default = std::cout).
          * @return Reference to object.
          */
-        BVS& enableLogConsole(std::ostream& out = std::cout);
+        BVS& enableLogConsole(const std::ostream& out = std::cout);
 
         /** Disable log console/command line interface.
          * @return Reference to object.
@@ -91,7 +91,7 @@ class BVS
          * @param[in] identifier The Module's name.
          * @param[in] module A pointer to the module.
          */
-        static void registerModule(std::string identifier, BVSModule* module);
+        static void registerModule(const std::string& identifier, BVSModule* module);
 
         BVSConfig config; /**< BVS' config system. */
 

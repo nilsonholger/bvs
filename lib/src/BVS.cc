@@ -46,7 +46,7 @@ BVS& BVS::loadModules()
 
 
 
-BVS& BVS::loadConfigFile(std::string configFile)
+BVS& BVS::loadConfigFile(const std::string& configFile)
 {
     config.loadConfigFile(configFile);
     logSystem->updateLoggerLevels(config);
@@ -56,7 +56,7 @@ BVS& BVS::loadConfigFile(std::string configFile)
 
 
 
-BVS& BVS::setLogSystemVerbosity(unsigned short verbosity)
+BVS& BVS::setLogSystemVerbosity(const unsigned short verbosity)
 {
     if (logSystem)
     {
@@ -68,7 +68,7 @@ BVS& BVS::setLogSystemVerbosity(unsigned short verbosity)
 
 
 
-BVS& BVS::enableLogFile(std::string file, bool append)
+BVS& BVS::enableLogFile(const std::string& file, bool append)
 {
     if (logSystem)
     {
@@ -92,7 +92,7 @@ BVS& BVS::disableLogFile()
 
 
 
-BVS& BVS::enableLogConsole(std::ostream& out)
+BVS& BVS::enableLogConsole(const std::ostream& out)
 {
     if (logSystem)
     {
@@ -116,7 +116,7 @@ BVS& BVS::disableLogConsole()
 
 
 
-void BVS::registerModule(std::string identifier, BVSModule* module)
+void BVS::registerModule(const std::string& identifier, BVSModule* module)
 {
     bvsModuleMap[identifier] = module;
 }
