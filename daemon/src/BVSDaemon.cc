@@ -19,13 +19,5 @@ int main(int argc, char** argv)
     LOG(2, "run!");
     //bvs.run();
 
-    //std::string s = "core.list";
-    //std::vector<int> foo;
-    //bvs.config.getValue(s, foo);
-    //for (auto it : foo)
-    //{
-        //std::cout << foo[it] << std::endl;
-    //}
-
     return 0;
 }
