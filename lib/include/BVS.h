@@ -33,6 +33,10 @@ class BVS
          */
         BVS& loadModules();
 
+        // TODO create 2 test modules, build run function in master and call modules
+        // TODO add threading, use to test concurrency issues throughout the system
+        // TODO build data exchange between modules
+        // TODO above options should be set in config
         // TODO add and use options to configure BVS
         //BVS& run();
         //void step();

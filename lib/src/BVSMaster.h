@@ -20,6 +20,7 @@ class BVSMaster
 {
     public:
         /** Constructor for module loader.
+         * @param[in] bvsModuleMap Map of registered modules.
          * @param[in] config Reference to config system.
          */
         BVSMaster(std::map<std::string, BVSModule*, std::less<std::string>>& bvsModuleMap, BVSConfig& config);
