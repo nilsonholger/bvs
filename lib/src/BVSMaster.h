@@ -29,12 +29,12 @@ class BVSMaster
          * to register it with the system.
          * @param[in] moduleName THe name of the module.
          */
-        BVSMaster& load(std::string moduleName);
+        BVSMaster& load(const std::string& moduleName);
 
         /** Unload the given module.
          * @param[in] moduleName The name of the module.
          */
-        BVSMaster& unload(std::string moduleName);
+        BVSMaster& unload(const std::string& moduleName);
 
     private:
         /** Map of registered Modules */

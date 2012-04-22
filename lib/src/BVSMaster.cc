@@ -13,7 +13,7 @@ BVSMaster::BVSMaster(std::map<std::string, BVSModule*, std::less<std::string>>& 
 
 
 
-BVSMaster& BVSMaster::load(std::string moduleName)
+BVSMaster& BVSMaster::load(const std::string& moduleName)
 {
     // prepare path and load the lib
     std::string modulePath = "./lib" + moduleName + ".so";
@@ -50,7 +50,7 @@ BVSMaster& BVSMaster::load(std::string moduleName)
 
 
 
-BVSMaster& BVSMaster::unload(std::string moduleName)
+BVSMaster& BVSMaster::unload(const std::string& moduleName)
 {
     // close lib and check for errors
     std::string modulePath = "./lib" + moduleName + ".so";
