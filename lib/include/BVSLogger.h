@@ -54,7 +54,7 @@ class BVSLogger
          * @param[in] level The messages' desired verbosity level.
          * @return A stream reference your output will be send to.
          */
-        std::ostream& out(int level);
+        std::ostream& out(const int level);
 
         /** Get this logger's name.
          * @return This logger's name.

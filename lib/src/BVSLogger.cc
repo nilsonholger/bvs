@@ -15,7 +15,7 @@ BVSLogger::BVSLogger(std::string name, unsigned short verbosity, BVSLogTarget ta
 
 
 
-std::ostream& BVSLogger::out(int level)
+std::ostream& BVSLogger::out(const int level)
 {
     // forward the request to the logging system
     return logSystem->out(*this, level);
