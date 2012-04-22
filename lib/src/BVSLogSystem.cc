@@ -104,7 +104,7 @@ BVSLogSystem& BVSLogSystem::announce(const BVSLogger& logger)
 
 
 
-BVSLogSystem& BVSLogSystem::enableLogFile(std::string file, bool append)
+BVSLogSystem& BVSLogSystem::enableLogFile(const std::string& file, bool append)
 {
     // check outFile was performing actions on another file so far and react accordingly
     if (outFile.is_open()) outFile.close();
@@ -127,7 +127,7 @@ BVSLogSystem& BVSLogSystem::disableLogFile()
 
 
 
-BVSLogSystem& BVSLogSystem::enableLogConsole(std::ostream& out)
+BVSLogSystem& BVSLogSystem::enableLogConsole(const std::ostream& out)
 {
     // set internals to use given stream's buffer
     outCLI.rdbuf(out.rdbuf());

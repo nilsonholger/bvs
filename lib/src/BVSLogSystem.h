@@ -50,7 +50,7 @@ class BVSLogSystem
          * @param[in] append Select, whether to append or overwrite.
          * @return Reference to object.
          */
-        BVSLogSystem& enableLogFile(std::string file, bool append = false);
+        BVSLogSystem& enableLogFile(const std::string& file, bool append = false);
 
         /** Close and disable log file.
          * @return Reference to object.
@@ -61,7 +61,7 @@ class BVSLogSystem
          * @param out Stream to log to (default = std::cout).
          * @return Reference to object.
          */
-        BVSLogSystem& enableLogConsole(std::ostream& out = std::cout);
+        BVSLogSystem& enableLogConsole(const std::ostream& out = std::cout);
 
         /** Disable log console/command line interface.
          * @return Reference to object.
@@ -91,9 +91,7 @@ class BVSLogSystem
          */
         BVSLogSystem();
 
-        /** Logger clients' levels from config(s).
-         * TODO
-         */
+        /** Logger clients' levels from config(s). */
         std::map<std::string, int, std::less<std::string>> loggerLevels;
 
         /** Name padding size for fancy output, updated in announce function. */
