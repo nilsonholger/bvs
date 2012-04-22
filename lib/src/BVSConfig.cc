@@ -17,9 +17,32 @@ BVSConfig::BVSConfig(std::string name, int argc, char** argv)
 
 
 
-std::string BVSConfig::getName()
+BVSConfig& BVSConfig::getName(std::string& name)
 {
-    return name;
+    name = name;
+    return *this;
+}
+
+
+
+BVSConfig& BVSConfig::showOptionStore()
+{
+    std::cout << "[BVSConfig] OPTION = VALUE" << std::endl;
+    for ( auto it : optionStore)
+    {
+        std::cout << "[BVSConfig] " << it.first << " = " << it.second << std::endl;
+    }
+
+    return *this;
+}
+
+
+
+std::map<std::string, std::string> BVSConfig::dumpOptionStore()
+{
+    std::map<std::string, std::string> dump = optionStore;
+
+    return dump;
 }
 
 
@@ -106,8 +129,10 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
     std::string option;
     std::string section;
     bool insideQuotes;
+    bool append;
     size_t pos;
     size_t posComment;
+    int lineNumber = 0;
 
     // check if file can be read from
     if (!file.is_open())
@@ -126,7 +151,10 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
      *      IGNORE comments and empty lines
      *      CHECK for section [...]
      *      CHECK section status
+     *      CHECK for +option (appending)
      *      FIND delimiter
+     *      APPEND option if set
+     *          CHECK if option exists
      *      ADD option if not already in store
      *  DONE
      */
@@ -136,6 +164,8 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
     {
         tmp.clear();
         insideQuotes = false;
+        append = false;
+        lineNumber++;
 
         //remove all whitespace/tabs except inside of '' or "" (useful for whitespace in for example status messages or other output)
         for (unsigned int i=0; i<line.length(); i++)
@@ -157,110 +187,68 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
             // add only if not whitespace/tabs
             if (line[i]!=' ' && line[i]!='\t') tmp += line[i];
         }
-        line = tmp;
 
         // ignore comments and empty lines
-        if (line[0]=='#' || line.length()==0) continue;
+        if (tmp[0]=='#' || tmp.length()==0) continue;
 
         // check for section
-        if (line[0]=='[')
+        if (tmp[0]=='[')
         {
-            pos = line.find_first_of(']');
-            section = line.substr(1, pos-1);
+            pos = tmp.find_first_of(']');
+            section = tmp.substr(1, pos-1);
             continue;
         }
 
         // ignore option if section empty
         if (section.empty())
         {
-            std::cerr << "[ERROR|BVSConfig] found option belonging to no section, ignoring it: " << line << std::endl;
-            continue;
+            std::cerr << "[ERROR|BVSConfig] found option belonging to no section in " << configFile << ":" << lineNumber << ": " << line << std::endl;
+            exit(1);
+        }
+
+        // check for +option (appending)
+        if (tmp[0]=='+')
+        {
+            append = true;
+            tmp.erase(0, 1);
         }
 
         // find '=' delimiter and prepend section name
-        pos = line.find_first_of('=');
-        option = section + '.' + line.substr(0, pos);
+        pos = tmp.find_first_of('=');
+        option = section + '.' + tmp.substr(0, pos);
 
         // check for empty option name
         if (option.length()==section.length()+1 )
         {
-            std::cerr << "[ERROR|BVSConfig] found line starting with '=', ignoring it: " << line << std::endl;
+            std::cerr << "[ERROR|BVSConfig] found line starting with '=' in " << configFile << ":" << lineNumber << ": " << line << std::endl;
+            exit(1);
+        }
+
+        // strip inline comment
+        posComment = tmp.find_first_of('#');
+        tmp = tmp.substr(pos+1, posComment-pos-1);
+
+        // append option if set
+        if (append)
+        {
+            // check if option exists
+            if (optionStore.find(option)==optionStore.end())
+            {
+                std::cerr << "[ERROR|BVSConfig] cannot append to non existing option in " << configFile << ":" << lineNumber << ": " << line << std::endl;
+                exit(1);
+            }
+
+            optionStore[option] = optionStore[option] + "," + tmp;
             continue;
         }
 
         // only add when not already in store, thus command-line options can override config file options and first occurence is used
         if (optionStore.find(option)==optionStore.end())
         {
-            // get position of inline comment (if any)
-            posComment = line.find_first_of('#');
-            optionStore[option] = line.substr(pos+1, posComment-pos-1);
-            //std::cout << "[BVSConfig] adding: " << option << " -> " << line.substr(pos+1, posComment-pos-1) << std::endl;
+            optionStore[option] = tmp;
+            //std::cout << "[BVSConfig] adding: " << option << " -> " << tmp.substr(pos+1, posComment-pos-1) << std::endl;
         }
     }
-    return *this;
-}
-
-
-
-BVSConfig& BVSConfig::showOptionStore()
-{
-    std::cout << "[BVSConfig] OPTION = VALUE" << std::endl;
-    for ( auto it : optionStore)
-    {
-        std::cout << "[BVSConfig] " << it.first << " = " << it.second << std::endl;
-    }
-
-    return *this;
-}
-
-
-
-BVSConfig& BVSConfig::getValue(std::string sectionOption, bool& value)
-{
-    // get stored value
-    std::string tmp = searchOption(sectionOption);
-
-    // check for possible matches to various versions meaning true
-    if (tmp=="1" || tmp=="true" || tmp=="True" || tmp=="TRUE" || tmp=="on" || tmp=="On" || tmp=="ON" || tmp=="yes" || tmp=="Yes" || tmp=="YES")
-    {
-        value = true;
-    }
-    else
-    {
-        value = false;
-    }
-    return *this;
-}
-
-
-
-BVSConfig& BVSConfig::getValue(std::string sectionOption, std::string& value)
-{
-    value = searchOption(sectionOption);
-    return *this;
-}
-
-
-
-BVSConfig& BVSConfig::getValue(std::string sectionOption, std::vector<std::string>& value)
-{
-    // get list from optionStore and if empty, abort
-    std::string tmp = searchOption(sectionOption);
-    if (tmp.length()==0)
-    {
-        return *this;
-    }
-
-
-    // separate list into substrings on occurence of ',', push to vector
-    size_t separatorPos = 0;
-    while (separatorPos != std::string::npos)
-    {
-        separatorPos = tmp.find_first_of(',');
-        value.push_back(tmp.substr(0, separatorPos));
-        tmp.erase(0, separatorPos+1);
-    }
-
     return *this;
 }
 
@@ -279,5 +267,30 @@ std::string BVSConfig::searchOption(const std::string& option)
         std::cerr << "[ERROR|BVSConfig] option not found: " << option << std::endl;
         exit(-1);
     }
+}
+
+
+
+template<> BVSConfig& BVSConfig::convertStringTo<std::string>(const std::string& input, std::string& output)
+{
+    output = input;
+    return *this;
+}
+
+
+
+template<> BVSConfig& BVSConfig::convertStringTo<bool>(const std::string& input, bool& b)
+{
+    // check for possible matches to various versions meaning true
+    if (input=="1" || input=="true" || input=="True" || input=="TRUE" || input=="on" || input=="On" || input=="ON" || input=="yes" || input=="Yes" || input=="YES")
+    {
+        b = true;
+    }
+    else
+    {
+        b = false;
+    }
+
+    return *this;
 }
 

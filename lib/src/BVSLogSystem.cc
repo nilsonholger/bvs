@@ -150,7 +150,7 @@ BVSLogSystem& BVSLogSystem::disableLogConsole()
 BVSLogSystem& BVSLogSystem::updateLoggerLevels(BVSConfig& config)
 {
     // check for LOGLEVEL.* variables and update logger levels
-    for (auto it : config.optionStore)
+    for (auto it : config.dumpOptionStore())
     {
         if (it.first.substr(0, 7)=="BVSLOG.")
         {
