@@ -1,6 +1,6 @@
 # settings for BVS library
 [BVS]
-modules = 
+modules =
 
 [BVSLOG]
 ALL = 3
@@ -14,3 +14,7 @@ ALL = 3
 foo = 123
 bar = "fooo bar"
 test = true
+list = 1
++list = True
++list = yes
++list = FalsE
