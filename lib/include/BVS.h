@@ -19,6 +19,7 @@ class BVSMaster;
 
 /** The BVS framework base.
  * This is the BVS base, use this to interact with the framework.
+ * TODO add comments for BVS settings... and maybe usage
  */
 class BVS
 {
@@ -82,6 +83,7 @@ class BVS
         static void registerModule(const std::string& identifier, BVSModule* module);
 
         // TODO add threading, use to test concurrency issues throughout the system
+        // TODO mark in BVSConfig as threaded by using '+' pre/postfix
         // TODO build data exchange between modules
         // TODO above options should be set in config (logTarget, file...)
         BVS& run();

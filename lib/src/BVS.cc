@@ -1,6 +1,7 @@
 #include "BVS.h"
 #include "BVSLogSystem.h"
 #include "BVSMaster.h"
+#include<thread>
 
 
 
@@ -32,6 +33,7 @@ BVS& BVS::loadModules()
         return *this;
     }
 
+    std::vector<std::thread> foo;
     // load all selected modules
     for (auto it : moduleList)
     {
@@ -39,6 +41,16 @@ BVS& BVS::loadModules()
 
         // call the modules setup function
         bvsModuleMap[it]->onLoad();
+
+        foo.push_back(std::thread(&BVSMaster::call_from_thread, master, bvsModuleMap[it]));
+    }
+
+    LOG(0, "me main");
+
+    for (auto &it : foo)
+    {
+        it.join();
+        LOG(0, "me joined");
     }
 
     return *this;
@@ -125,10 +137,10 @@ void BVS::registerModule(const std::string& identifier, BVSModule* module)
 
 BVS& BVS::run()
 {
-    while (true)
+    //while (true)
     {
-        for (auto it: bvsModuleMap)
-            it.second->execute();
+        //for (auto it: bvsModuleMap)
+            //it.second->execute();
     }
 
     return *this;

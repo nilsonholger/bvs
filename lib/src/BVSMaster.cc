@@ -45,6 +45,11 @@ BVSMaster& BVSMaster::load(const std::string& moduleName)
     // save handle for later use
     handleMap[moduleName] = dlib;
 
+    //std::thread t1(&BVSMaster::call_from_thread, this, bvsModuleMap[moduleName]);
+    //std::cout << "me main" << std::endl;
+    //t1.join();
+    //std::cout << "me joined" << std::endl;
+
     return *this;
 }
 
@@ -83,4 +88,12 @@ BVSMaster& BVSMaster::unload(const std::string& moduleName)
     handleMap.erase(moduleName);
 
     return *this;
+}
+
+void BVSMaster::call_from_thread(BVSModule* module)
+{
+    LOG(0, "me thread");
+    module->execute();
+    for (int i=1; i<100000; i++)
+    LOG(0, "abcdefghiklmnopqrstuvwxyz");
 }

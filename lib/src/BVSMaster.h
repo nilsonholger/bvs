@@ -6,6 +6,7 @@
 #include<list>
 #include<map>
 #include<string>
+#include<thread>
 #include<vector>
 #include<dlfcn.h>
 
@@ -19,7 +20,7 @@
 class BVSMaster
 {
     public:
-        /** Constructor for module loader.
+        /** Constructor for master.
          * @param[in] bvsModuleMap Map of registered modules.
          * @param[in] config Reference to config system.
          */
@@ -35,6 +36,9 @@ class BVSMaster
          * @param[in] moduleName The name of the module.
          */
         BVSMaster& unload(const std::string& moduleName);
+
+        void call_from_thread(BVSModule* module);
+        void callme() {  }
 
     private:
         /** Map of registered Modules */
