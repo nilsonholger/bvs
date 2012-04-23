@@ -3,7 +3,6 @@
 
 #include "BVSModule.h"
 
-// TODO add comments to explain usage and give examples !!!IMPORTANT
 class BVSExampleModule : public BVSModule
 {
     public:

@@ -120,3 +120,16 @@ void BVS::registerModule(const std::string& identifier, BVSModule* module)
 {
     bvsModuleMap[identifier] = module;
 }
+
+
+
+BVS& BVS::run()
+{
+    while (true)
+    {
+        for (auto it: bvsModuleMap)
+            it.second->execute();
+    }
+
+    return *this;
+}

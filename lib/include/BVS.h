@@ -33,18 +33,6 @@ class BVS
          */
         BVS& loadModules();
 
-        // TODO create 2 test modules, build run function in master and call modules
-        // TODO add threading, use to test concurrency issues throughout the system
-        // TODO build data exchange between modules
-        // TODO above options should be set in config
-        // TODO add and use options to configure BVS
-        //BVS& run();
-        //void step();
-        //void pause();
-        //void stop();
-        //void close();
-        //~BVS();
-
         /** Loads a config File and updates the system.
          * @param[in] configFile Name of or path to config file.
          * @return Refenrence to object.
@@ -92,6 +80,16 @@ class BVS
          * @param[in] module A pointer to the module.
          */
         static void registerModule(const std::string& identifier, BVSModule* module);
+
+        // TODO add threading, use to test concurrency issues throughout the system
+        // TODO build data exchange between modules
+        // TODO above options should be set in config (logTarget, file...)
+        BVS& run();
+        //void step();
+        //void pause();
+        //void stop();
+        //void close();
+        //~BVS();
 
         BVSConfig config; /**< BVS' config system. */
 

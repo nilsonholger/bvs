@@ -11,7 +11,7 @@
  */
 class BVSModule
 {
-    // TODO comment functions
+    // TODO add comments to explain usage and give examples !!!IMPORTANT
     public:
         BVSModule() = default; /**< Constructor of Module Base. */
         virtual ~BVSModule(); /**< Destructor of Module Base. */
