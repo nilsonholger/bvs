@@ -1,6 +1,7 @@
 # settings for BVS library
 [BVS]
-modules =
+modules = INPUT
++modules = OUTPUT
 
 [BVSLOG]
 ALL = 3
