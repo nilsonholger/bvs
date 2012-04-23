@@ -17,7 +17,7 @@ int main(int argc, char** argv)
     bvs.loadModules();
 
     LOG(2, "run!");
-    //bvs.run();
+    bvs.run();
 
     return 0;
 }
