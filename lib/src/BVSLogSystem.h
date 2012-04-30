@@ -3,6 +3,7 @@
 
 #include<iomanip>
 #include<memory>
+#include<mutex>
 
 #include "BVSConfig.h"
 #include "BVSStreams.h"
@@ -36,6 +37,9 @@ class BVSLogSystem
          * @return Outstream to log to.
          */
         std::ostream& out(const BVSLogger& logger, int level);
+
+        /** TODO comment */
+        void endl();
 
         /** Set the system verbosity level.
          * @param[in] verbosity The desired verbosity level.
@@ -109,6 +113,8 @@ class BVSLogSystem
         unsigned short systemVerbosity;
 
         static std::shared_ptr<BVSLogSystem> instance; /**< Logging system instance. */
+        std::mutex outMutex;
+
         static BVSNullStream nullStream; /**< Stream pointing to nirvana */
         std::ostream outCLI; /**< Stream pointing to Command Line Interface. */
         std::ofstream outFile; /**< Stream pointing to file. */

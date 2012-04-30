@@ -3,6 +3,7 @@
 
 #include<map>
 #include<memory>
+#include<mutex>
 #include<sstream>
 #include<string>
 #include<vector>
@@ -86,6 +87,13 @@ class BVSConfig
          */
         BVSConfig& getName(std::string& name);
 
+        /** Loads the given config file (if it exists).
+         * This checks the supplied path for a config file and if found parses
+         * its contents.
+         * @param[in] configFile Name of or path to config file.
+         */
+        BVSConfig& loadConfigFile(const std::string& configFile);
+
         /** Prints all variables known by config system to std::cout;
          * @return Reference to object.
          */
@@ -121,6 +129,7 @@ class BVSConfig
 
     private:
         std::string name; /**< Instance's name. */
+        std::mutex mutex; /**< Mutex for thread safety. */
 
         /** A map of all stored options. */
         std::map<std::string, std::string, std::less<std::string>> optionStore;
@@ -133,13 +142,6 @@ class BVSConfig
          * @return Reference to object.
          */
         BVSConfig& loadCommandLine(int argc, char** argv);
-
-        /** Loads the given config file (if it exists).
-         * This checks the supplied path for a config file and if found parses
-         * its contents.
-         * @param[in] configFile Name of or path to config file.
-         */
-        BVSConfig& loadConfigFile(const std::string& configFile);
 
         /** Searches optionStore for the given option name.
          * @param[in] option Desired config option.

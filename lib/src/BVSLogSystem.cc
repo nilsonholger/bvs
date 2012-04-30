@@ -26,6 +26,7 @@ BVSLogSystem::BVSLogSystem()
     : loggerLevels()
     , namePadding(0)
     , systemVerbosity(3)
+    , outMutex()
     , outCLI(std::cout.rdbuf())
     , outFile()
     , outBoth(outCLI, outFile)
@@ -40,6 +41,9 @@ BVSLogSystem::BVSLogSystem()
 
 std::ostream& BVSLogSystem::out(const BVSLogger& logger, int level)
 {
+    // get mutex
+    outMutex.lock();
+
     // check verbosity of system and logger
     if (level > systemVerbosity) return nullStream;
     if (level > logger.verbosity) return nullStream;
@@ -73,6 +77,13 @@ std::ostream& BVSLogSystem::out(const BVSLogger& logger, int level)
 
     // return stream selected by caller given the systems constraints
     return *out;
+}
+
+
+
+void BVSLogSystem::endl()
+{
+    outMutex.unlock();
 }
 
 

@@ -94,6 +94,25 @@ void BVSMaster::call_from_thread(BVSModule* module)
 {
     LOG(0, "me thread");
     module->execute();
-    for (int i=1; i<100000; i++)
-    LOG(0, "abcdefghiklmnopqrstuvwxyz");
+    for (int i=0; i<1000; i++)
+    {
+        config.loadConfigFile("BVSConfig.txt");
+        //LOG(0, config.getValue<std::string>("BVS.module"));
+        //LOG(0, config.getValue<std::string>("BVS.module").size());
+        LOG(0, (config.getValue<std::string>("BVS.module").size())/2);
+        config.loadConfigFile("BVSConfig.txt");
+        LOG(0, (config.getValue<std::string>("BVS.module").size())/2);
+        LOG(0, "abcdefghiklmnopqrstuvwxyz");
+    }
+    //LOG(0, "abcdefghiklmnopqrstuvwxyz");
 }
+
+// TODO master/thread control
+//
+// condition variable
+// BVSModuleStatus array
+// number of threads waiting
+//
+// master: run through all modules not in own thread in specified order
+//
+// threads: execute, wait on condition variable

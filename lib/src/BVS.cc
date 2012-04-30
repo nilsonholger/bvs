@@ -52,6 +52,7 @@ BVS& BVS::loadModules()
         it.join();
         LOG(0, "me joined");
     }
+    LOG(0, "all joined");
 
     return *this;
 }

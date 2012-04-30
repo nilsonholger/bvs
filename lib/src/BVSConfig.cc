@@ -7,6 +7,7 @@
 
 BVSConfig::BVSConfig(std::string name, int argc, char** argv)
     : name(name)
+    , mutex()
     , optionStore()
 {
     if (argc!=0 && argv!=nullptr)
@@ -27,11 +28,14 @@ BVSConfig& BVSConfig::getName(std::string& name)
 
 BVSConfig& BVSConfig::showOptionStore()
 {
+    // TODO lock guard
+    mutex.lock();
     std::cout << "[BVSConfig] OPTION = VALUE" << std::endl;
     for ( auto it : optionStore)
     {
         std::cout << "[BVSConfig] " << it.first << " = " << it.second << std::endl;
     }
+    mutex.unlock();
 
     return *this;
 }
@@ -40,7 +44,10 @@ BVSConfig& BVSConfig::showOptionStore()
 
 std::map<std::string, std::string> BVSConfig::dumpOptionStore()
 {
+    // TODO lock guard
+    mutex.lock();
     std::map<std::string, std::string> dump = optionStore;
+    mutex.unlock();
 
     return dump;
 }
@@ -102,6 +109,7 @@ BVSConfig& BVSConfig::loadCommandLine(int argc, char** argv)
             std::string bvsOption;
             size_t separatorPos = 0;
             size_t equalPos;
+            mutex.lock();
             while (separatorPos != std::string::npos)
             {
                 separatorPos = option.find_first_of(':');
@@ -111,6 +119,7 @@ BVSConfig& BVSConfig::loadCommandLine(int argc, char** argv)
                 //std::cout << "[BVSConfig] adding: " << bvsOption.substr(0, equalPos) << " -> " << bvsOption.substr(equalPos+1, bvsOption.size()) << std::endl;
                 option.erase(0, separatorPos+1);
             }
+            mutex.unlock();
         }
     }
 
@@ -160,6 +169,8 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
      */
 
     // parse file
+    // TODO lock guard
+    mutex.lock();
     while(getline(file, line))
     {
         tmp.clear();
@@ -249,6 +260,7 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
             //std::cout << "[BVSConfig] adding: " << option << " -> " << tmp.substr(pos+1, posComment-pos-1) << std::endl;
         }
     }
+    mutex.unlock();
     return *this;
 }
 
@@ -256,11 +268,15 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
 
 std::string BVSConfig::searchOption(const std::string& option)
 {
+    // TODO lock guard
+    mutex.lock();
     // search for option in store
     if(optionStore.find(option)!=optionStore.end())
     {
         //std::cout << "found: " << option << " --> " << optionStore[option] << std::endl;
-        return optionStore[option];
+        std::string tmp = optionStore[option];
+        mutex.unlock();
+        return tmp;
     }
     else
     {

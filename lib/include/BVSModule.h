@@ -11,6 +11,7 @@
  */
 class BVSModule
 {
+    // TODO void -> BVSModuleStatus (enum: OK, WAITING, FAIL, ABORT...)
     // TODO add comments to explain usage and give examples !!!IMPORTANT
     public:
         BVSModule() = default; /**< Constructor of Module Base. */

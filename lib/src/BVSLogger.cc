@@ -7,6 +7,7 @@ BVSLogger::BVSLogger(std::string name, unsigned short verbosity, BVSLogTarget ta
     : verbosity(verbosity)
     , target(target)
     , name(name)
+    , tempOut(std::cout.rdbuf())
     , logSystem(BVSLogSystem::connectToLogSystem())
 {
     // announce logging instance to system, this updates the name padding
@@ -19,6 +20,20 @@ std::ostream& BVSLogger::out(const int level)
 {
     // forward the request to the logging system
     return logSystem->out(*this, level);
+}
+
+
+
+std::ostream& BVSLogger::out()
+{
+    return tempOut;
+}
+
+
+
+void BVSLogger::endl()
+{
+    logSystem->endl();
 }
 
 

@@ -12,7 +12,7 @@
 
 /** Macro to use with BVSLogger. */
 #ifndef BVS_LOG_DISABLED
-#define LOG(level, args) logger.out(level) << args << std::endl
+#define LOG(level, args) { logger.out(level) << args << std::endl; logger.endl(); }
 #else
 #define LOG(level, args)
 #endif
@@ -55,6 +55,12 @@ class BVSLogger
          * @return A stream reference your output will be send to.
          */
         std::ostream& out(const int level);
+        // TODO remove
+        std::ostream& out();
+
+        /* TODO no good */
+        void endl();
+        // TODO create temporary ostream (and buffer), out only fill buffer, call to logger.submit() sends content to logSystem...
 
         /** Get this logger's name.
          * @return This logger's name.
@@ -72,6 +78,9 @@ class BVSLogger
          * mess with the name padding in the logging system.
          * */
         std::string name;
+
+        // TODO
+        std::ostream tempOut;
 
         std::shared_ptr<BVSLogSystem> logSystem; /**< Pointer to the logging backend. */
 
