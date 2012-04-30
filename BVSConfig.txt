@@ -2,6 +2,16 @@
 [BVS]
 modules = INPUT
 +modules = OUTPUT
++modules = OUTPUT
++modules = OUTPUT
++modules = OUTPUT
++modules = OUTPUT
++modules = OUTPUT
++modules = OUTPUT
++modules = OUTPUT
++modules = OUTPUT
+module = 1
++module=1
 
 [BVSLOG]
 ALL = 3
