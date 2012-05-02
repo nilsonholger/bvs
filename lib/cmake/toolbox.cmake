@@ -3,6 +3,6 @@ if(NOT TOOLBOX_INCLUDED)
     include(compiler)
     include(macros)
     include(targets)
-endif(NOT TOOLBOX_INCLUDED)
+endif()
 
 set(TOOLBOX_INCLUDED ON)
