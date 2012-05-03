@@ -196,6 +196,7 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
             }
 
             // add only if not whitespace/tabs
+            // TODO use isspace() instead (from <cctype>)
             if (line[i]!=' ' && line[i]!='\t') tmp += line[i];
         }
 
