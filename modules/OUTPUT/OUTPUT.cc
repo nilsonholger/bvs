@@ -20,44 +20,49 @@ OUTPUT::~OUTPUT()
 
 
 
-void OUTPUT::onLoad()
+BVSStatus OUTPUT::onLoad()
 {
     LOG(2, "loaded OUTPUT!");
+
+    return BVSStatus::OK;
 }
 
 
 
-void OUTPUT::preExecute()
+BVSStatus OUTPUT::preExecute()
 {
 
+    return BVSStatus::OK;
 }
 
 
 
-void OUTPUT::execute()
+BVSStatus OUTPUT::execute()
 {
     LOG(0, "OUTPUT listening!");
+
+    return BVSStatus::OK;
 }
 
 
 
-void OUTPUT::postExecute()
+BVSStatus OUTPUT::postExecute()
 {
-
+    return BVSStatus::OK;
 }
 
 
 
-void OUTPUT::debugDisplay()
+BVSStatus OUTPUT::debugDisplay()
 {
-
+    return BVSStatus::OK;
 }
 
 
 
-void OUTPUT::onClose()
+BVSStatus OUTPUT::onClose()
 {
-
+    return BVSStatus::OK;
 }
 
 

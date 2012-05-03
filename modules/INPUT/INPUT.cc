@@ -20,44 +20,48 @@ INPUT::~INPUT()
 
 
 
-void INPUT::onLoad()
+BVSStatus INPUT::onLoad()
 {
     LOG(2, "loaded INPUT!");
+
+    return BVSStatus::OK;
 }
 
 
 
-void INPUT::preExecute()
+BVSStatus INPUT::preExecute()
 {
-
+    return BVSStatus::OK;
 }
 
 
 
-void INPUT::execute()
+BVSStatus INPUT::execute()
 {
     LOG(0, "INPUT calling!");
+
+    return BVSStatus::OK;
 }
 
 
 
-void INPUT::postExecute()
+BVSStatus INPUT::postExecute()
 {
-
+    return BVSStatus::OK;
 }
 
 
 
-void INPUT::debugDisplay()
+BVSStatus INPUT::debugDisplay()
 {
-
+    return BVSStatus::OK;
 }
 
 
 
-void INPUT::onClose()
+BVSStatus INPUT::onClose()
 {
-
+    return BVSStatus::OK;
 }
 
 

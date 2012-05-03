@@ -1,26 +1,40 @@
 # settings for BVS library
 [BVS]
+logSystem = true
+logConsole = true
+logFile = BVSLog.txt
+
+moduleThreads = ON
+forceModuleThreads = false
+
+# list of modules, a '+' as pre/postfix to the name starts module in own thread, if permitted
 modules = INPUT
 +modules = OUTPUT
 +modules = OUTPUT
-+modules = OUTPUT
-+modules = OUTPUT
-+modules = OUTPUT
-+modules = OUTPUT
-+modules = OUTPUT
-+modules = OUTPUT
-+modules = OUTPUT
++modules = OUTPUT+
++modules = +OUTPUT
++modules = +OUTPUT
++modules = +OUTPUT
++modules = +OUTPUT
++modules = +OUTPUT
++modules = +OUTPUT
+
+# TODO remove tests
 module = 1
 +module=1
 
-[BVSLOG]
-ALL = 3
+
+
+# Logger level settings
+[BVSLogger]
+All = 3
 #BVS = 0
 #BVSDaemon = 0
 #BVSMaster = 0
 
 
 
+# test stuff TODO remove
 [core]
 foo = 123
 bar = "fooo bar"

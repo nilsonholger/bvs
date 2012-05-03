@@ -8,12 +8,12 @@ class OUTPUT : public BVSModule
     public:
         OUTPUT(BVSConfig& config);
         ~OUTPUT();
-        void onLoad();
-        void preExecute();
-        void execute();
-        void postExecute();
-        void debugDisplay();
-        void onClose();
+        BVSStatus onLoad();
+        BVSStatus preExecute();
+        BVSStatus execute();
+        BVSStatus postExecute();
+        BVSStatus debugDisplay();
+        BVSStatus onClose();
 
     private:
         std::string identifier;
