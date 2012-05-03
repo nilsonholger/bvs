@@ -21,6 +21,7 @@ done
 
 echo ">>> cmake cleanup: $DIRS"
 [ -r CMakeCache.txt ] && rm CMakeCache.txt
+eval "DIRS=($DIRS)"
 for i in $DIRS
 do
     [ -r $i/Makefile ] && rm $i/Makefile
