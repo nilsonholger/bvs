@@ -26,7 +26,7 @@ class BVS
     public:
         /** Create BVS System.
          * @param[in] argc Main's argc.
-         * @param[in] argv Main's argv.
+         * @param[in] argv Main's argv, used to pass config options to BVS, see BVSConfig.
          */
         BVS(int argc, char** argv);
 

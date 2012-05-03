@@ -1,7 +1,8 @@
+#include<thread>
+
 #include "BVS.h"
 #include "BVSLogSystem.h"
 #include "BVSMaster.h"
-#include<thread>
 
 
 
@@ -33,6 +34,8 @@ BVS& BVS::loadModules()
         return *this;
     }
 
+    // TODO move thread stuff into master
+    // TODO determine module in thread (+/-) and use load argument to tell master
     std::vector<std::thread> foo;
     // load all selected modules
     for (auto it : moduleList)
