@@ -1,5 +1,6 @@
 #include "BVSConfig.h"
 
+#include<algorithm>
 #include<iostream>
 #include<fstream>
 
@@ -28,14 +29,13 @@ BVSConfig& BVSConfig::getName(std::string& name)
 
 BVSConfig& BVSConfig::showOptionStore()
 {
-    // TODO lock guard
-    mutex.lock();
-    std::cout << "[BVSConfig] OPTION = VALUE" << std::endl;
+    std::lock_guard<std::mutex> lock(mutex);
+
+    std::cerr << "[BVSConfig] OPTION = VALUE" << std::endl;
     for ( auto it : optionStore)
     {
-        std::cout << "[BVSConfig] " << it.first << " = " << it.second << std::endl;
+        std::cerr << "[BVSConfig] " << it.first << " = " << it.second << std::endl;
     }
-    mutex.unlock();
 
     return *this;
 }
@@ -44,10 +44,9 @@ BVSConfig& BVSConfig::showOptionStore()
 
 std::map<std::string, std::string> BVSConfig::dumpOptionStore()
 {
-    // TODO lock guard
-    mutex.lock();
+    std::lock_guard<std::mutex> lock(mutex);
+
     std::map<std::string, std::string> dump = optionStore;
-    mutex.unlock();
 
     return dump;
 }
@@ -109,21 +108,29 @@ BVSConfig& BVSConfig::loadCommandLine(int argc, char** argv)
             std::string bvsOption;
             size_t separatorPos = 0;
             size_t equalPos;
-            mutex.lock();
+            std::lock_guard<std::mutex> lock(mutex);
             while (separatorPos != std::string::npos)
             {
+                // search for ':' and '='
                 separatorPos = option.find_first_of(':');
                 bvsOption = option.substr(0, separatorPos);
                 equalPos = bvsOption.find_first_of("=");
+
+                // optionName to lowercase
+                std::transform(bvsOption.begin(), bvsOption.begin()+equalPos, bvsOption.begin(), ::tolower);
+
+                // add
                 optionStore[bvsOption.substr(0, equalPos)] = bvsOption.substr(equalPos+1, bvsOption.size());
                 //std::cout << "[BVSConfig] adding: " << bvsOption.substr(0, equalPos) << " -> " << bvsOption.substr(equalPos+1, bvsOption.size()) << std::endl;
                 option.erase(0, separatorPos+1);
             }
-            mutex.unlock();
         }
     }
 
-    if (!configFile.empty()) loadConfigFile(configFile);
+    if (!configFile.empty())
+    {
+        loadConfigFile(configFile);
+    }
 
     return *this;
 }
@@ -132,24 +139,6 @@ BVSConfig& BVSConfig::loadCommandLine(int argc, char** argv)
 
 BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
 {
-    std::ifstream file(configFile.c_str(), std::ifstream::in);
-    std::string line;
-    std::string tmp;
-    std::string option;
-    std::string section;
-    bool insideQuotes;
-    bool append;
-    size_t pos;
-    size_t posComment;
-    int lineNumber = 0;
-
-    // check if file can be read from
-    if (!file.is_open())
-    {
-        std::cerr << "[ERROR|BVSConfig] file not found: " << configFile << std::endl;
-        exit(1);
-    }
-
     /* algorithm:
      * FOR EACH line in config file
      * DO
@@ -168,9 +157,27 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
      *  DONE
      */
 
+    std::ifstream file(configFile.c_str(), std::ifstream::in);
+    // check if file can be read from
+    if (!file.is_open())
+    {
+        std::cerr << "[ERROR|BVSConfig] file not found: " << configFile << std::endl;
+        exit(1);
+    }
+
+    std::string line;
+    std::string tmp;
+    std::string option;
+    std::string section;
+    bool insideQuotes;
+    bool append;
+    size_t pos;
+    size_t posComment;
+    int lineNumber = 0;
+
+    std::lock_guard<std::mutex> lock(mutex);
+
     // parse file
-    // TODO lock guard
-    mutex.lock();
     while(getline(file, line))
     {
         tmp.clear();
@@ -196,8 +203,7 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
             }
 
             // add only if not whitespace/tabs
-            // TODO use isspace() instead (from <cctype>)
-            if (line[i]!=' ' && line[i]!='\t') tmp += line[i];
+            if (!isspace(line[i])) tmp += line[i];
         }
 
         // ignore comments and empty lines
@@ -228,6 +234,9 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
         // find '=' delimiter and prepend section name
         pos = tmp.find_first_of('=');
         option = section + '.' + tmp.substr(0, pos);
+
+        // to lowercase
+        std::transform(option.begin(), option.end(), option.begin(), ::tolower);
 
         // check for empty option name
         if (option.length()==section.length()+1 )
@@ -261,28 +270,28 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
             //std::cout << "[BVSConfig] adding: " << option << " -> " << tmp.substr(pos+1, posComment-pos-1) << std::endl;
         }
     }
-    mutex.unlock();
     return *this;
 }
 
 
 
-std::string BVSConfig::searchOption(const std::string& option)
+std::string BVSConfig::searchOption(std::string option)
 {
-    // TODO lock guard
-    mutex.lock();
+    std::transform(option.begin(), option.end(), option.begin(), ::tolower);
+
+    std::lock_guard<std::mutex> lock(mutex);
+
     // search for option in store
     if(optionStore.find(option)!=optionStore.end())
     {
         //std::cout << "found: " << option << " --> " << optionStore[option] << std::endl;
         std::string tmp = optionStore[option];
-        mutex.unlock();
         return tmp;
     }
     else
     {
         std::cerr << "[ERROR|BVSConfig] option not found: " << option << std::endl;
-        exit(-1);
+        return std::string();
     }
 }
 

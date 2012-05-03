@@ -32,6 +32,7 @@ class BVSLogSystem;
  */
 class BVSLogger
 {
+    // better than using mutex and unlocking in separate function
     public:
         /** Available logging targets. */
         enum BVSLogTarget { OFF, TO_CLI, TO_FILE, TO_CLI_AND_FILE};
@@ -55,12 +56,10 @@ class BVSLogger
          * @return A stream reference your output will be send to.
          */
         std::ostream& out(const int level);
-        // TODO remove
-        std::ostream& out();
 
-        /* TODO no good */
+        /* Ends a log line and releases the logSystem mutex, must be called after using out.
+         */
         void endl();
-        // TODO create temporary ostream (and buffer), out only fill buffer, call to logger.submit() sends content to logSystem...
 
         /** Get this logger's name.
          * @return This logger's name.
@@ -78,9 +77,6 @@ class BVSLogger
          * mess with the name padding in the logging system.
          * */
         std::string name;
-
-        // TODO
-        std::ostream tempOut;
 
         std::shared_ptr<BVSLogSystem> logSystem; /**< Pointer to the logging backend. */
 

@@ -28,9 +28,10 @@ class BVSMaster
 
         /** Load the given module, executes bvsRegisterModule function in module
          * to register it with the system.
-         * @param[in] moduleName THe name of the module.
+         * @param[in] moduleName The name of the module.
+         * @param[in] asThread Whether to load the module inside a thread or not.
          */
-        BVSMaster& load(const std::string& moduleName);
+        BVSMaster& load(const std::string& moduleName, bool asThread);
 
         /** Unload the given module.
          * @param[in] moduleName The name of the module.
@@ -38,7 +39,9 @@ class BVSMaster
         BVSMaster& unload(const std::string& moduleName);
 
         void call_from_thread(BVSModule* module);
-        void callme() {  }
+
+        // TODO NEXT add control functions for master and threads
+        //void threadController
 
     private:
         /** Map of registered Modules */
@@ -46,6 +49,12 @@ class BVSMaster
 
         /** Map of known/used/active library handles. */
         std::map<std::string, void*, std::less<std::string>> handleMap;
+
+        /** Vector of modules controlled directly by master. */
+        std::vector<BVSModule*> masterModules;
+
+        /** Vector of modules running inside own thread. */
+        std::vector<std::thread> threadedModules;
 
         BVSLogger logger; /**< Logger metadata. */
         BVSConfig& config; /**< Config reference. */

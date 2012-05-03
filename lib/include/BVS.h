@@ -19,7 +19,7 @@ class BVSMaster;
 
 /** The BVS framework base.
  * This is the BVS base, use this to interact with the framework.
- * TODO add comments for BVS settings... and maybe usage
+ * TODO COMMENTS for BVS settings... and maybe usage
  */
 class BVS
 {
@@ -31,19 +31,27 @@ class BVS
         BVS(int argc, char** argv);
 
         /** Load modules selected by config variable [BVS]modules.
+         * @return Reference to object.
          */
         BVS& loadModules();
 
+        /** Load selected module given by name.
+         * @param[in] name The name of the module.
+         * @param[in] asThread Select, if the module should run in it's own thread.
+         * @return Reference to object.
+         */
+        BVS& loadModule(const std::string& name, bool asThread = false);
+
         /** Loads a config File and updates the system.
          * @param[in] configFile Name of or path to config file.
-         * @return Refenrence to object.
+         * @return Reference to object.
          */
         BVS& loadConfigFile(const std::string& configFile);
 
         /** Set the log system verbosity.
          * This sets the logging system's overall verbosity.
          * Only messages with logging level lower or equal with be displayed.
-         * Attention: This overrides the BVSLog.ALL setting from config file.
+         * Attention: This overrides the BVSLOGGER.ALL setting from config file.
          * @param[in] verbosity Desired verbosity level.
          * @return Reference to object.
          */
@@ -52,6 +60,7 @@ class BVS
         /** Open and enable log file.
          * Open and enable log file at given file location.
          * Furthermore you can decide to overwrite (default) or append to the file.
+         * Attention: TODO COMMENTS
          * @param[in] file Path to file to log to.
          * @param[in] append Select, whether to append or overwrite.
          * @return Reference to object.
@@ -82,10 +91,8 @@ class BVS
          */
         static void registerModule(const std::string& identifier, BVSModule* module);
 
-        // TODO add threading, use to test concurrency issues throughout the system
-        // TODO mark in BVSConfig as threaded by using '+' pre/postfix
+        // TODO logger: create temporary ostream (and buffer), out only fill buffer, call to logger.submit() sends content to logSystem...
         // TODO build data exchange between modules
-        // TODO above options should be set in config (logTarget, file...)
         BVS& run();
         //void step();
         //void pause();

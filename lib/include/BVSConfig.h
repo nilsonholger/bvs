@@ -12,7 +12,9 @@
 
 /** The BVS configuration mechanism.
  * This is the BVS configuration system. Option-value pairs are taken from the
- * command line and loaded from config files.
+ * command line and loaded from config files. Option names are handled case
+ * insensitive, so 'option' and 'Option' are treated as the same option.
+ * The same goes for section names ('[section]').
  *
  * Command Line provided options always override those found in config files,
  * whereas options found in config files are added/updated on a first come,
@@ -28,9 +30,10 @@
  *
  * option = ignored # options MUST belong to a section
  *
- * [section]
+ * [section] # same as [SeCtIoN]
  * option1 = value1 # comment
  * option2 = "value2 with spaces" # single quotes are also possible
+ * # options are treated as case insensitive, so option and Option are the same
  *
  * # spaces are stripped if not inside quotes, so these are all valid
  * option3=value
@@ -94,12 +97,16 @@ class BVSConfig
          */
         BVSConfig& loadConfigFile(const std::string& configFile);
 
-        /** Prints all variables known by config system to std::cout;
+        /** Prints all variables known by config system to std::cerr.
+         * The option names will all be lower case, as this is the way
+         * they are represented internally.
          * @return Reference to object.
          */
         BVSConfig& showOptionStore();
 
         /** Dump the optionStore to a local copy.
+         * The option names will all be lower case, as this is the way
+         * they are represented internally.
          * @return Dump of optionStore.
          */
         std::map<std::string, std::string> dumpOptionStore();
@@ -147,7 +154,7 @@ class BVSConfig
          * @param[in] option Desired config option.
          * @return The option's value if found.
          */
-        std::string searchOption(const std::string& option);
+        std::string searchOption(std::string option);
 
         /** Convert std::string to desired type.
          * @param[in] input Input string.

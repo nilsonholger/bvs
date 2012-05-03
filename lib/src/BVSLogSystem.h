@@ -31,14 +31,15 @@ class BVSLogSystem
          */
         static std::shared_ptr<BVSLogSystem> connectToLogSystem();
 
-        /** Log to output.
+        /** Log to output. End this by calling endl() to release the log mutex.
          * @param[in] logger Logger metadata from caller.
          * @param[in] level The desired output verbosity of this message.
          * @return Outstream to log to.
          */
         std::ostream& out(const BVSLogger& logger, int level);
 
-        /** TODO comment */
+        /** Ends output log by appending std::endl and releasing the log mutex.
+         */
         void endl();
 
         /** Set the system verbosity level.
@@ -77,11 +78,25 @@ class BVSLogSystem
          */
         BVSLogSystem& announce(const BVSLogger& logger);
 
+        /** Check config for settings.
+         * Checks the given config object for occurences of:
+         * @code
+         * [BVS]
+         * logSystem = true/false
+         * logConsole = true/false
+         * logFile = $logFile # a '+' in front of the file name will append to the file
+         * @endcode
+         * @param[in] config Config object.
+         * @return Reference to object.
+         */
+        BVSLogSystem& updateSettings(BVSConfig& config);
+
         /** Check config for client levels.
-         * Checks the given config object for occurences of LOGLEVEL.*.
+         * Checks the given config object for occurences of BVSLogger.*.
          * This way one can specify verbosity levels in a config file:
          * @code
-         * [LOGLEVEL]
+         * [BVSLogger]
+         * ALL = 3 # set override for all loggers
          * LoggerOne = 0
          * LoggerTwo = 1
          * @endcode
@@ -106,14 +121,14 @@ class BVSLogSystem
          * messages with a level below or equal this value will be logged.
          * This value can be changed by using:
          * @code
-         * [BVSLOG]
-         * ALL = 0 # your desired level
+         * [BVSLogger]
+         * All = 0 # your desired level
          * @endcode
          * */
         unsigned short systemVerbosity;
 
         static std::shared_ptr<BVSLogSystem> instance; /**< Logging system instance. */
-        std::mutex outMutex;
+        std::mutex outMutex; /**< Output mutex, needed for threaded scenarios. */
 
         static BVSNullStream nullStream; /**< Stream pointing to nirvana */
         std::ostream outCLI; /**< Stream pointing to Command Line Interface. */

@@ -5,6 +5,8 @@
 BVSMaster::BVSMaster(std::map<std::string, BVSModule*, std::less<std::string>>& bvsModuleMap, BVSConfig& config)
     : bvsModuleMap(bvsModuleMap)
     , handleMap()
+    , masterModules()
+    , threadedModules()
     , logger("BVSMaster")
     , config(config)
 {
@@ -13,7 +15,7 @@ BVSMaster::BVSMaster(std::map<std::string, BVSModule*, std::less<std::string>>& 
 
 
 
-BVSMaster& BVSMaster::load(const std::string& moduleName)
+BVSMaster& BVSMaster::load(const std::string& moduleName, bool asThread)
 {
     // prepare path and load the lib
     std::string modulePath = "./lib" + moduleName + ".so";
@@ -28,9 +30,9 @@ BVSMaster& BVSMaster::load(const std::string& moduleName)
     }
 
     // look for bvsRegisterModule in loaded lib, check for errors and execute register function
-    typedef void (*registerModule_t)(BVSConfig& config);
-    registerModule_t registerModule;
-    *reinterpret_cast<void**>(&registerModule)=dlsym(dlib, "bvsRegisterModule");
+    typedef void (*bvsRegisterModule_t)(BVSConfig& config);
+    bvsRegisterModule_t bvsRegisterModule;
+    *reinterpret_cast<void**>(&bvsRegisterModule)=dlsym(dlib, "bvsRegisterModule");
 
     // check for errors
     char* dlerr = dlerror();
@@ -39,7 +41,7 @@ BVSMaster& BVSMaster::load(const std::string& moduleName)
         LOG(0, "Loading function bvsRegisterModule() in " << modulePath << " resulted in: " << dlerr);
         exit(-1);
     }
-    registerModule(config);
+    bvsRegisterModule(config);
     LOG(2, moduleName << " loaded and registered!");
 
     // save handle for later use
@@ -49,6 +51,32 @@ BVSMaster& BVSMaster::load(const std::string& moduleName)
     //std::cout << "me main" << std::endl;
     //t1.join();
     //std::cout << "me joined" << std::endl;
+
+
+    // check thread status
+    if (asThread==true)
+    {
+        LOG(2, moduleName << " now running in own thread!");
+        //threadedModules.push_back(std::thread(&BVSMaster::call_from_thread, master, bvsModuleMap[it]));
+    }
+    else
+    {
+        LOG(2, moduleName << " controlled by BVSMaster!");
+        //masterModules.push_back(bvsModules[moduleName]);
+    }
+
+
+
+    /*
+    LOG(0, "me main");
+
+    for (auto &it : foo)
+    {
+        it.join();
+        LOG(0, "me joined");
+    }
+    LOG(0, "all joined");
+    */
 
     return *this;
 }
@@ -86,6 +114,8 @@ BVSMaster& BVSMaster::unload(const std::string& moduleName)
 
     // remove handle
     handleMap.erase(moduleName);
+
+    // TODO remove module from (master|threaded)Modules
 
     return *this;
 }

@@ -1,5 +1,3 @@
-#include<thread>
-
 #include "BVS.h"
 #include "BVSLogSystem.h"
 #include "BVSMaster.h"
@@ -16,6 +14,7 @@ BVS::BVS(int argc, char** argv)
     , logger("BVS")
     , master(new BVSMaster(bvsModuleMap, config))
 {
+    logSystem->updateSettings(config);
     logSystem->updateLoggerLevels(config);
 }
 
@@ -34,28 +33,47 @@ BVS& BVS::loadModules()
         return *this;
     }
 
-    // TODO move thread stuff into master
-    // TODO determine module in thread (+/-) and use load argument to tell master
-    std::vector<std::thread> foo;
-    // load all selected modules
+    // load all selected modules, check for thread selection ('+')
+    bool asThread;
+    bool moduleThreads = config.getValue<bool>("BVS.moduleThreads");
+    bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads");
     for (auto it : moduleList)
     {
-        master->load(it);
+        asThread = false;
 
-        // call the modules setup function
-        bvsModuleMap[it]->onLoad();
+        if (it[0]=='+')
+        {
+            it.erase(0, 1);
+            asThread = true;
+        }
 
-        foo.push_back(std::thread(&BVSMaster::call_from_thread, master, bvsModuleMap[it]));
+        if (it[it.length()-1]=='+')
+        {
+            it.erase(it.length()-1,it.length());
+            asThread = true;
+        }
+
+        if (forceModuleThreads==true)
+        {
+            asThread = true;
+        }
+
+        if (moduleThreads==false)
+        {
+            asThread = false;
+        }
+
+        loadModule(it, asThread);
     }
 
-    LOG(0, "me main");
+    return *this;
+}
 
-    for (auto &it : foo)
-    {
-        it.join();
-        LOG(0, "me joined");
-    }
-    LOG(0, "all joined");
+
+
+BVS& BVS::loadModule(const std::string& name, bool asThread)
+{
+    master->load(name, asThread);
 
     return *this;
 }

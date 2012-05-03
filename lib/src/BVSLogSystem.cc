@@ -41,7 +41,6 @@ BVSLogSystem::BVSLogSystem()
 
 std::ostream& BVSLogSystem::out(const BVSLogger& logger, int level)
 {
-    // get mutex
     outMutex.lock();
 
     // check verbosity of system and logger
@@ -117,12 +116,17 @@ BVSLogSystem& BVSLogSystem::announce(const BVSLogger& logger)
 
 BVSLogSystem& BVSLogSystem::enableLogFile(const std::string& file, bool append)
 {
-    // check outFile was performing actions on another file so far and react accordingly
     if (outFile.is_open()) outFile.close();
 
     // check append flag
-    if(append) outFile.open(file, std::ios_base::app);
-    else outFile.open(file);
+    if(append)
+    {
+        outFile.open(file, std::ios_base::app);
+    }
+    else
+    {
+        outFile.open(file);
+    }
 
     return *this;
 }
@@ -158,22 +162,55 @@ BVSLogSystem& BVSLogSystem::disableLogConsole()
 
 
 
+BVSLogSystem& BVSLogSystem::updateSettings(BVSConfig& config)
+{
+    if(config.getValue<bool>("BVS.logSystem")==false)
+    {
+        systemVerbosity = 0;
+        disableLogConsole();
+        disableLogFile();
+
+        return *this;
+    }
+
+    if(config.getValue<bool>("BVS.logConsole")==false)
+    {
+        disableLogConsole();
+    }
+
+    std::string configFile = config.getValue<std::string>("BVS.logFile");
+    bool append = false;
+    if(!configFile.empty())
+    {
+        if (configFile[0]=='+')
+        {
+            configFile.erase(0, 1);
+            append = true;
+        }
+        enableLogFile(configFile, append);
+    }
+
+    return *this;
+}
+
+
+
 BVSLogSystem& BVSLogSystem::updateLoggerLevels(BVSConfig& config)
 {
     // check for LOGLEVEL.* variables and update logger levels
     for (auto it : config.dumpOptionStore())
     {
-        if (it.first.substr(0, 7)=="BVSLOG.")
+        if (it.first.substr(0, 10)=="BVSLogger.")
         {
             // check for overall system setting
-            if (it.first.substr(7, std::string::npos)=="ALL")
+            if (it.first.substr(10, std::string::npos)=="All")
             {
                 systemVerbosity = config.getValue<unsigned short>(it.first);
                 continue;
             }
 
             // set level override from config
-            loggerLevels[it.first.substr(7, std::string::npos)] = config.getValue<unsigned short>(it.first);
+            loggerLevels[it.first.substr(10, std::string::npos)] = config.getValue<unsigned short>(it.first);
         }
     }
 
