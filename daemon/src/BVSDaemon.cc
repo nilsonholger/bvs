@@ -5,7 +5,8 @@ int main(int argc, char** argv)
 {
     // start BVS
     BVS bvs(argc, argv);
-    bvs.enableLogFile("BVSLog.txt");
+    //bvs.enableLogFile("BVSLog.txt");
+    //bvs.enableLogConsole();
 
     BVSLogger logger("BVSDaemon");
     LOG(2, "starting!");
