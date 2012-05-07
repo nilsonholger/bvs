@@ -20,5 +20,7 @@ int main(int argc, char** argv)
     LOG(2, "run!");
     bvs.run();
 
+    bvs.close();
+
     return 0;
 }
