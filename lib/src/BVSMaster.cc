@@ -7,6 +7,8 @@ BVSMaster::BVSMaster(std::map<std::string, BVSModule*, std::less<std::string>>& 
     , handleMap()
     , masterModules()
     , threadedModules()
+    , controller()
+    , threadMutex()
     , logger("BVSMaster")
     , config(config)
 {
@@ -57,12 +59,12 @@ BVSMaster& BVSMaster::load(const std::string& moduleName, bool asThread)
     if (asThread==true)
     {
         LOG(2, moduleName << " now running in own thread!");
-        //threadedModules.push_back(std::thread(&BVSMaster::call_from_thread, master, bvsModuleMap[it]));
+        threadedModules.push_back(std::thread(&BVSMaster::threadController, this, bvsModuleMap[moduleName]));
     }
     else
     {
         LOG(2, moduleName << " controlled by BVSMaster!");
-        //masterModules.push_back(bvsModules[moduleName]);
+        masterModules.push_back(bvsModuleMap[moduleName]);
     }
 
 
@@ -137,6 +139,51 @@ void BVSMaster::call_from_thread(BVSModule* module)
     //LOG(0, "abcdefghiklmnopqrstuvwxyz");
 }
 
+
+void BVSMaster::masterController()
+{
+    for (int i=0; i<10; i++)
+    {
+        controller.notify_all();
+        for (auto it: masterModules)
+        {
+            it->execute();
+        }
+    }
+
+}
+
+void BVSMaster::threadController(BVSModule* module)
+{
+    (void) module;
+    for (int i=0; i<10; i++)
+    {
+        for (auto &it: threadedModules)
+        {
+            (void) it;
+            std::unique_lock<std::mutex> lock(threadMutex);
+            std::thread::id id = it.get_id();
+            LOG(0, "ROUND: " << i << " from: " << id);
+            controller.wait(lock);
+            //it.execute();
+        }
+    }
+
+}
+
+
+
+void BVSMaster::threadJoinAll()
+{
+    LOG(0, "Main: waiting for threads to join!");
+
+    for (auto &it : threadedModules)
+    {
+        it.join();
+        LOG(0, "Thread joined!");
+    }
+    LOG(0, "Main: all joined");
+}
 // TODO master/thread control
 //
 // condition variable

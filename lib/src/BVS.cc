@@ -164,6 +164,16 @@ BVS& BVS::run()
         //for (auto it: bvsModuleMap)
             //it.second->execute();
     }
+    master->masterController();
+
+    return *this;
+}
+
+
+
+BVS& BVS::close()
+{
+    master->threadJoinAll();
 
     return *this;
 }

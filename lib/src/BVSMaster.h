@@ -41,7 +41,9 @@ class BVSMaster
         void call_from_thread(BVSModule* module);
 
         // TODO NEXT add control functions for master and threads
-        //void threadController
+        void masterController();
+        void threadController(BVSModule* module);
+        void threadJoinAll();
 
     private:
         /** Map of registered Modules */
@@ -55,6 +57,9 @@ class BVSMaster
 
         /** Vector of modules running inside own thread. */
         std::vector<std::thread> threadedModules;
+
+        std::condition_variable controller;
+        std::mutex threadMutex;
 
         BVSLogger logger; /**< Logger metadata. */
         BVSConfig& config; /**< Config reference. */

@@ -97,7 +97,8 @@ class BVS
         //void step();
         //void pause();
         //void stop();
-        //void close();
+        // TODO rename to quit
+        BVS& close();
         //~BVS();
 
         BVSConfig config; /**< BVS' config system. */
