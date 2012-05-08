@@ -2,6 +2,7 @@
 #define BVSMASTER_H
 
 #include<cstdlib>
+#include<condition_variable>
 #include<iostream>
 #include<list>
 #include<map>
