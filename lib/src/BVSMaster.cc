@@ -131,9 +131,9 @@ void BVSMaster::call_from_thread(BVSModule* module)
         config.loadConfigFile("BVSConfig.txt");
         //LOG(0, config.getValue<std::string>("BVS.module"));
         //LOG(0, config.getValue<std::string>("BVS.module").size());
-        LOG(0, (config.getValue<std::string>("BVS.module").size())/2);
+        LOG(0, (config.getValue<std::string>("BVS.module", std::string()).size())/2);
         config.loadConfigFile("BVSConfig.txt");
-        LOG(0, (config.getValue<std::string>("BVS.module").size())/2);
+        LOG(0, (config.getValue<std::string>("BVS.module", std::string()).size())/2);
         LOG(0, "abcdefghiklmnopqrstuvwxyz");
     }
     //LOG(0, "abcdefghiklmnopqrstuvwxyz");

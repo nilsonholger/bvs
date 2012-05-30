@@ -164,7 +164,7 @@ BVSLogSystem& BVSLogSystem::disableLogConsole()
 
 BVSLogSystem& BVSLogSystem::updateSettings(BVSConfig& config)
 {
-    if(config.getValue<bool>("BVS.logSystem")==false)
+    if(config.getValue<bool>("BVS.logSystem", false)==false)
     {
         systemVerbosity = 0;
         disableLogConsole();
@@ -173,12 +173,12 @@ BVSLogSystem& BVSLogSystem::updateSettings(BVSConfig& config)
         return *this;
     }
 
-    if(config.getValue<bool>("BVS.logConsole")==false)
+    if(config.getValue<bool>("BVS.logConsole", false)==false)
     {
         disableLogConsole();
     }
 
-    std::string configFile = config.getValue<std::string>("BVS.logFile");
+    std::string configFile = config.getValue<std::string>("BVS.logFile", std::string());
     bool append = false;
     if(!configFile.empty())
     {
@@ -205,12 +205,12 @@ BVSLogSystem& BVSLogSystem::updateLoggerLevels(BVSConfig& config)
             // check for overall system setting
             if (it.first.substr(10, std::string::npos)=="All")
             {
-                systemVerbosity = config.getValue<unsigned short>(it.first);
+                systemVerbosity = config.getValue<unsigned short>(it.first, 0);
                 continue;
             }
 
             // set level override from config
-            loggerLevels[it.first.substr(10, std::string::npos)] = config.getValue<unsigned short>(it.first);
+            loggerLevels[it.first.substr(10, std::string::npos)] = config.getValue<unsigned short>(it.first, 0);
         }
     }
 

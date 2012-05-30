@@ -290,7 +290,7 @@ std::string BVSConfig::searchOption(std::string option)
     }
     else
     {
-        std::cerr << "[ERROR|BVSConfig] option not found: " << option << std::endl;
+        //std::cerr << "[ERROR|BVSConfig] option not found: " << option << std::endl;
         return std::string();
     }
 }

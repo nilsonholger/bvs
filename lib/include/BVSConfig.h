@@ -112,19 +112,23 @@ class BVSConfig
         std::map<std::string, std::string> dumpOptionStore();
 
         /** Template to retrieve value from config by passing it to an argument.
+         * Sets default value, if desired option is not found in option store.
          * @param[in] sectionOption The desired option, should be in form "section.option".
          * @param[out] t This argument will be used to return the retrieved value.
+         * @param[in] defaultValue Default value to be returned if desired option is not found.
          * @tparam T Type argument.
          * @return Reference to object.
          */
-        template<typename T> BVSConfig& getValue(const std::string& sectionOption, T& t);
+        template<typename T> BVSConfig& getValue(const std::string& sectionOption, T& t, T defaultValue);
 
         /** Template to retrieve value from config by return value.
+         * Returns default value, if desired option is not found in option store.
          * @param[in] sectionOption The desired option, should be in form "section.option".
+         * @param[in] defaultValue Default value to be returned if desired option is not found.
          * @tparam T Type argument.
          * @return The desired option's value.
          */
-        template<typename T> T getValue(const std::string& sectionOption);
+        template<typename T> T getValue(const std::string& sectionOption, T defaultValue);
 
         /** Template to retrieve a value list from config as a std::vector of chosen type.
          * @tparam T Type used for value list.
@@ -174,17 +178,26 @@ class BVSConfig
 
 
 
-template<typename T> BVSConfig& BVSConfig::getValue(const std::string& sectionOption, T& t)
+template<typename T> BVSConfig& BVSConfig::getValue(const std::string& sectionOption, T& t, T defaultValue)
 {
-    convertStringTo(searchOption(sectionOption), t);
+    t = getValue(sectionOption, defaultValue);
     return *this;
 }
 
 
 
-template<typename T> T BVSConfig::getValue(const std::string& sectionOption)
+template<typename T> T BVSConfig::getValue(const std::string& sectionOption, T defaultValue)
 {
-    return convertStringTo<T>(searchOption(sectionOption));
+    (void) defaultValue;
+    std::string tmp = searchOption(sectionOption);
+    if (tmp.length()!=0)
+    {
+        return convertStringTo<T>(tmp);
+    }
+    else
+    {
+        return defaultValue;
+    }
 }
 
 

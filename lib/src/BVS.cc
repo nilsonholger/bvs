@@ -35,8 +35,8 @@ BVS& BVS::loadModules()
 
     // load all selected modules, check for thread selection ('+')
     bool asThread;
-    bool moduleThreads = config.getValue<bool>("BVS.moduleThreads");
-    bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads");
+    bool moduleThreads = config.getValue<bool>("BVS.moduleThreads", false);
+    bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads", false);
     for (auto it : moduleList)
     {
         asThread = false;
