@@ -19,10 +19,6 @@ modules = INPUT
 #+modules = +OUTPUT
 #+modules = +OUTPUT
 
-# TODO remove tests
-module = 1
-+module=1
-
 
 
 # Logger level settings
@@ -31,15 +27,3 @@ All = 3
 #BVS = 0
 #BVSDaemon = 0
 #BVSMaster = 0
-
-
-
-# test stuff TODO remove
-[core]
-foo = 123
-bar = "fooo bar"
-test = true
-list = 1
-+list = True
-+list = yes
-+list = FalsE
