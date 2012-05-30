@@ -42,7 +42,7 @@ class BVSLogger
          * Since this output will be aligned, please dont use too long names.
          * Example:
          * <code>
-         * [0|   YourLogger] message from you
+         * [0|YourLogger   ] message from you
          * [1|AnotherLogger] message
          * </code>
          * @param[in] name The name of your logging instance.
