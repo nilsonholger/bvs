@@ -18,15 +18,15 @@ int main(int argc, char** argv)
     setup(argc, argv);
 
     //testLogger();
-    testConfig();
+    //testConfig();
 
-    //LOG(2, "loading Modules!");
-    //bvs->loadModules();
+    LOG(2, "loading Modules!");
+    bvs->loadModules();
 
-    //LOG(2, "run!");
-    //bvs->run();
+    LOG(2, "run!");
+    bvs->run();
 
-    //bvs->close();
+    bvs->close();
 
     return 0;
 }
