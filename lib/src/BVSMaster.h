@@ -48,8 +48,7 @@ class BVSMaster
         BVSMaster& control(BVSModuleData* data = nullptr);
 
     private:
-        // TODO separate modules and library handles
-        // TODO handle accounting so library is only unloaded when no longer used/needed
+        // TODO handle modules that are loaded more than once (unique names, module id's...)
         /** Map of registered modules and their metadata. */
         std::map<std::string, BVSModuleData*, std::less<std::string>>& bvsModuleMap;
 
