@@ -164,6 +164,7 @@ BVSLogSystem& BVSLogSystem::disableLogConsole()
 
 BVSLogSystem& BVSLogSystem::updateSettings(BVSConfig& config)
 {
+    // disable log system
     if(config.getValue<bool>("BVS.logSystem", false)==false)
     {
         systemVerbosity = 0;
@@ -173,11 +174,13 @@ BVSLogSystem& BVSLogSystem::updateSettings(BVSConfig& config)
         return *this;
     }
 
+    // disable console log output
     if(config.getValue<bool>("BVS.logConsole", false)==false)
     {
         disableLogConsole();
     }
 
+    // enable log file, append if selected
     std::string configFile = config.getValue<std::string>("BVS.logFile", std::string());
     bool append = false;
     if(!configFile.empty())

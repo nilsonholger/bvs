@@ -6,7 +6,7 @@
 
 
 /** BVSStatus possibilities.
- * TODO Unused so far.
+ *
  */
 enum BVSStatus { NONE = 0, OK = 1, WAIT = 2, FAIL = 4, NOINPUT = 8 };
 

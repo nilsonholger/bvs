@@ -17,7 +17,12 @@
 
 
 
-/** The system master, loads, unloads and controls modules. */
+// Forward declaration.
+struct BVSModuleData;
+
+
+
+/** The system master: loads, unloads and controls modules. */
 class BVSMaster
 {
     public:
@@ -25,7 +30,7 @@ class BVSMaster
          * @param[in] bvsModuleMap Map of registered modules.
          * @param[in] config Reference to config system.
          */
-        BVSMaster(std::map<std::string, BVSModule*, std::less<std::string>>& bvsModuleMap, BVSConfig& config);
+        BVSMaster(std::map<std::string, BVSModuleData*, std::less<std::string>>& bvsModuleMap, BVSConfig& config);
 
         /** Load the given module, executes bvsRegisterModule function in module
          * to register it with the system.
@@ -39,34 +44,35 @@ class BVSMaster
          */
         BVSMaster& unload(const std::string& moduleName);
 
-        void call_from_thread(BVSModule* module);
-
-        // TODO NEXT add control functions for master and threads
-        void masterController();
-        void threadController(BVSModule* module);
-        void threadJoinAll();
+        // TODO add control functions for master and threads
+        BVSMaster& control(BVSModuleData* data = nullptr);
 
     private:
-        /** Map of registered Modules */
-        std::map<std::string, BVSModule*, std::less<std::string>>& bvsModuleMap;
+        // TODO separate modules and library handles
+        // TODO handle accounting so library is only unloaded when no longer used/needed
+        /** Map of registered modules and their metadata. */
+        std::map<std::string, BVSModuleData*, std::less<std::string>>& bvsModuleMap;
 
-        /** Map of known/used/active library handles. */
-        std::map<std::string, void*, std::less<std::string>> handleMap;
-
-        /** Vector of modules controlled directly by master. */
-        std::vector<BVSModule*> masterModules;
-
-        /** Vector of modules running inside own thread. */
-        std::vector<std::thread> threadedModules;
-
-        std::condition_variable controller;
-        std::mutex threadMutex;
+        //std::condition_variable controller;
+        //std::mutex threadMutex;
 
         BVSLogger logger; /**< Logger metadata. */
         BVSConfig& config; /**< Config reference. */
 
         BVSMaster(const BVSMaster&) = delete; /**< -Weffc++ */
         BVSMaster& operator=(const BVSMaster&) = delete; /**< -Weffc++ */
+};
+
+
+
+/** Module metadata. */
+struct BVSModuleData
+{
+    std::string name; /**< Name of this module. */
+    BVSModule* module; /**< Pointer to the module. */
+    void* dlib; /**< Dlib handle to module's lib. */
+    bool asThread; /**< Determines if module runs in its own thread. */
+    std::thread thread; /**< Thread handle of module. */
 };
 
 

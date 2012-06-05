@@ -4,7 +4,7 @@
 
 
 
-std::map <std::string, BVSModule*, std::less<std::string>> BVS::bvsModuleMap;
+std::map <std::string, BVSModuleData*, std::less<std::string>> BVS::bvsModuleMap;
 
 
 
@@ -152,28 +152,28 @@ BVS& BVS::disableLogConsole()
 
 void BVS::registerModule(const std::string& identifier, BVSModule* module)
 {
-    bvsModuleMap[identifier] = module;
+    bvsModuleMap[identifier] = new BVSModuleData{identifier, module, nullptr, false, std::thread()};
 }
 
 
 
 BVS& BVS::run()
 {
-    //while (true)
-    {
-        //for (auto it: bvsModuleMap)
-            //it.second->execute();
-    }
-    master->masterController();
+    master->control();
 
     return *this;
 }
 
 
 
-BVS& BVS::close()
+BVS& BVS::quit()
 {
-    master->threadJoinAll();
+    for (auto it: bvsModuleMap)
+    {
+        LOG(0, "left: " << bvsModuleMap.size());
+        LOG(0, "unload: " << it.second->name << " " << it.second->dlib);
+        master->unload(it.second->name);
+    }
 
     return *this;
 }

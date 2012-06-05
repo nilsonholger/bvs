@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.8.6)
-
 macro(add_subdir DIR SRC_LIST_NAME)
     set(SRC_LIST ${ARGV})
     list(REMOVE_AT SRC_LIST 0 1)

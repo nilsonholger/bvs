@@ -31,6 +31,7 @@ BVSConfig& BVSConfig::showOptionStore()
 {
     std::lock_guard<std::mutex> lock(mutex);
 
+    // output optionStore to std::cerr
     std::cerr << "[BVSConfig] OPTION = VALUE" << std::endl;
     for ( auto it : optionStore)
     {
@@ -127,6 +128,7 @@ BVSConfig& BVSConfig::loadCommandLine(int argc, char** argv)
         }
     }
 
+    // load config file if given on command line
     if (!configFile.empty())
     {
         loadConfigFile(configFile);
@@ -158,6 +160,7 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
      */
 
     std::ifstream file(configFile.c_str(), std::ifstream::in);
+
     // check if file can be read from
     if (!file.is_open())
     {

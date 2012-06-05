@@ -12,8 +12,9 @@
 
 
 // Forward declarations
-class BVSModule;
 class BVSMaster;
+class BVSModule;
+class BVSModuleData;
 
 
 
@@ -60,7 +61,6 @@ class BVS
         /** Open and enable log file.
          * Open and enable log file at given file location.
          * Furthermore you can decide to overwrite (default) or append to the file.
-         * Attention: TODO COMMENTS
          * @param[in] file Path to file to log to.
          * @param[in] append Select, whether to append or overwrite.
          * @return Reference to object.
@@ -91,14 +91,12 @@ class BVS
          */
         static void registerModule(const std::string& identifier, BVSModule* module);
 
-        // TODO logger: create temporary ostream (and buffer), out only fill buffer, call to logger.submit() sends content to logSystem...
         // TODO build data exchange between modules
         BVS& run();
         //void step();
         //void pause();
         //void stop();
-        // TODO rename to quit
-        BVS& close();
+        BVS& quit();
         //~BVS();
 
         BVSConfig config; /**< BVS' config system. */
@@ -109,7 +107,7 @@ class BVS
         BVSMaster* master; /**< BVS' module loader. */
 
         /** Map of modules known by the BVS framework. */
-        static std::map<std::string, BVSModule*, std::less<std::string>> bvsModuleMap;
+        static std::map<std::string, BVSModuleData*, std::less<std::string>> bvsModuleMap;
 
         BVS(const BVS&) = delete; /**< -Weffc++ */
         BVS& operator=(const BVS&) = delete; /**< -Weffc++ */

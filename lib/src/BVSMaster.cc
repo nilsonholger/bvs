@@ -2,13 +2,10 @@
 
 
 
-BVSMaster::BVSMaster(std::map<std::string, BVSModule*, std::less<std::string>>& bvsModuleMap, BVSConfig& config)
+BVSMaster::BVSMaster(std::map<std::string, BVSModuleData*, std::less<std::string>>& bvsModuleMap, BVSConfig& config)
     : bvsModuleMap(bvsModuleMap)
-    , handleMap()
-    , masterModules()
-    , threadedModules()
-    , controller()
-    , threadMutex()
+    //, controller()
+    //, threadMutex()
     , logger("BVSMaster")
     , config(config)
 {
@@ -46,39 +43,24 @@ BVSMaster& BVSMaster::load(const std::string& moduleName, bool asThread)
     bvsRegisterModule(config);
     LOG(2, moduleName << " loaded and registered!");
 
+    // execute module's onLoad function
+    bvsModuleMap[moduleName]->module->onLoad();
+
     // save handle for later use
-    handleMap[moduleName] = dlib;
+    bvsModuleMap[moduleName]->dlib = dlib;
 
-    //std::thread t1(&BVSMaster::call_from_thread, this, bvsModuleMap[moduleName]);
-    //std::cout << "me main" << std::endl;
-    //t1.join();
-    //std::cout << "me joined" << std::endl;
-
-
-    // check thread status
+    // set threading metadata if needed
     if (asThread==true)
     {
         LOG(2, moduleName << " now running in own thread!");
-        threadedModules.push_back(std::thread(&BVSMaster::threadController, this, bvsModuleMap[moduleName]));
+        bvsModuleMap[moduleName]->asThread = true;
+        bvsModuleMap[moduleName]->thread = std::thread(&BVSMaster::control, this, bvsModuleMap[moduleName]);
     }
     else
     {
         LOG(2, moduleName << " controlled by BVSMaster!");
-        masterModules.push_back(bvsModuleMap[moduleName]);
+        bvsModuleMap[moduleName]->asThread = false;
     }
-
-
-
-    /*
-    LOG(0, "me main");
-
-    for (auto &it : foo)
-    {
-        it.join();
-        LOG(0, "me joined");
-    }
-    LOG(0, "all joined");
-    */
 
     return *this;
 }
@@ -87,12 +69,20 @@ BVSMaster& BVSMaster::load(const std::string& moduleName, bool asThread)
 
 BVSMaster& BVSMaster::unload(const std::string& moduleName)
 {
+    // wait for thread to join
+    if (bvsModuleMap[moduleName]->asThread == true)
+    {
+        // TODO signal thread to quit
+        bvsModuleMap[moduleName]->thread.join();
+    }
+
     // close lib and check for errors
     std::string modulePath = "./lib" + moduleName + ".so";
     LOG(3, moduleName << " will be closed using " << modulePath);
 
     // get handle from internals
-    void* dlib = handleMap[moduleName];
+    void* dlib = bvsModuleMap[moduleName]->dlib;
+    LOG(0, dlib);
     if (dlib==nullptr)
     {
         LOG(0, "Requested module " << moduleName << " not found!");
@@ -114,50 +104,48 @@ BVSMaster& BVSMaster::unload(const std::string& moduleName)
     bvsModuleMap.erase(moduleName);
     LOG(2, moduleName << " unloaded and deregistered!");
 
-    // remove handle
-    handleMap.erase(moduleName);
-
-    // TODO remove module from (master|threaded)Modules
+    // remove module from map
+    bvsModuleMap.erase(moduleName);
 
     return *this;
 }
 
-void BVSMaster::call_from_thread(BVSModule* module)
+
+
+BVSMaster& BVSMaster::control(BVSModuleData* data)
 {
-    LOG(0, "me thread");
-    module->execute();
-    for (int i=0; i<1000; i++)
+    (void) data;
+    if (data != nullptr)
     {
-        config.loadConfigFile("BVSConfig.txt");
-        //LOG(0, config.getValue<std::string>("BVS.module"));
-        //LOG(0, config.getValue<std::string>("BVS.module").size());
-        LOG(0, (config.getValue<std::string>("BVS.module", std::string()).size())/2);
-        config.loadConfigFile("BVSConfig.txt");
-        LOG(0, (config.getValue<std::string>("BVS.module", std::string()).size())/2);
-        LOG(0, "abcdefghiklmnopqrstuvwxyz");
+        LOG(0, "Control of " << data->name << "!");
     }
-    //LOG(0, "abcdefghiklmnopqrstuvwxyz");
-}
-
-
-void BVSMaster::masterController()
-{
-    for (int i=0; i<10; i++)
+    else
     {
+        LOG(0, "Cantrolled by master!");
+    }
+
+
+// condition variable
+// BVSModuleStatus array
+// number of threads waiting
+// master: run through all modules not in own thread in specified order
+// threads: execute, wait on condition variable
+
+    //std::thread t1(&BVSMaster::call_from_thread, this, bvsModuleMap[moduleName]);
+    //std::cout << "me main" << std::endl;
+    //t1.join();
+    //std::cout << "me joined" << std::endl;
+    /*
+    LOG(0, "me main");
+
+    for (auto &it : foo)
+    {
+        it.join();
+        LOG(0, "me joined");
+    }
+    LOG(0, "all joined");
+
         controller.notify_all();
-        for (auto it: masterModules)
-        {
-            it->execute();
-        }
-    }
-
-}
-
-void BVSMaster::threadController(BVSModule* module)
-{
-    (void) module;
-    for (int i=0; i<10; i++)
-    {
         for (auto &it: threadedModules)
         {
             (void) it;
@@ -165,31 +153,8 @@ void BVSMaster::threadController(BVSModule* module)
             std::thread::id id = it.get_id();
             LOG(0, "ROUND: " << i << " from: " << id);
             controller.wait(lock);
-            //it.execute();
         }
-    }
-
+*/
+    return *this;
 }
 
-
-
-void BVSMaster::threadJoinAll()
-{
-    LOG(0, "Main: waiting for threads to join!");
-
-    for (auto &it : threadedModules)
-    {
-        it.join();
-        LOG(0, "Thread joined!");
-    }
-    LOG(0, "Main: all joined");
-}
-// TODO master/thread control
-//
-// condition variable
-// BVSModuleStatus array
-// number of threads waiting
-//
-// master: run through all modules not in own thread in specified order
-//
-// threads: execute, wait on condition variable
