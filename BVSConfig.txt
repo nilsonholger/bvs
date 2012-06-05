@@ -3,21 +3,17 @@
 logSystem = true
 logConsole = true
 logFile = BVSLog.txt
+# logFile = +BVSLog.txt # append to log file
 
 moduleThreads = ON
 forceModuleThreads = false
 
 # list of modules, a '+' as pre/postfix to the name starts module in own thread, if permitted
 modules = INPUT
-+modules = OUTPUT
-+modules = OUTPUT
-+modules = OUTPUT+
+#+modules = OUTPUT
+#+modules = OUTPUT
 +modules = +OUTPUT
-#+modules = +OUTPUT
-#+modules = +OUTPUT
-#+modules = +OUTPUT
-#+modules = +OUTPUT
-#+modules = +OUTPUT
++modules = OUTPUT+
 
 
 
