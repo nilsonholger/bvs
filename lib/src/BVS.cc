@@ -4,7 +4,11 @@
 
 
 
-std::map <std::string, BVSModuleData*, std::less<std::string>> BVS::bvsModuleMap;
+BVSModuleID BVS::moduleCount = 1;
+
+
+
+BVSModuleMap BVS::modules;
 
 
 
@@ -12,7 +16,7 @@ BVS::BVS(int argc, char** argv)
     : config("BVS", argc, argv)
     , logSystem(BVSLogSystem::connectToLogSystem())
     , logger("BVS")
-    , master(new BVSMaster(bvsModuleMap, config))
+    , master(new BVSMaster(modules, config))
 {
     logSystem->updateSettings(config);
     logSystem->updateLoggerLevels(config);
@@ -47,12 +51,6 @@ BVS& BVS::loadModules()
             asThread = true;
         }
 
-        if (it[it.length()-1]=='+')
-        {
-            it.erase(it.length()-1,it.length());
-            asThread = true;
-        }
-
         if (forceModuleThreads==true)
         {
             asThread = true;
@@ -74,6 +72,16 @@ BVS& BVS::loadModules()
 BVS& BVS::loadModule(const std::string& name, bool asThread)
 {
     master->load(name, asThread);
+
+    return *this;
+}
+
+
+
+BVS& BVS::unloadModule(const std::string& name)
+{
+    master->unload(name);
+    //modules.erase(master->getModuleID(name));
 
     return *this;
 }
@@ -152,14 +160,16 @@ BVS& BVS::disableLogConsole()
 
 void BVS::registerModule(const std::string& identifier, BVSModule* module)
 {
-    bvsModuleMap[identifier] = new BVSModuleData{identifier, module, nullptr, false, std::thread()};
+    modules[moduleCount] = std::shared_ptr<BVSModuleData>(new BVSModuleData{moduleCount, identifier, module, nullptr, false, std::thread()});
+    moduleCount++;
+    // TODO possibility: return BVSModuleID...
 }
 
 
 
 BVS& BVS::run()
 {
-    master->control();
+    master->control(std::shared_ptr<BVSModuleData>(new BVSModuleData{0, "BVSMaster", nullptr, nullptr, false, std::thread()}));
 
     return *this;
 }
@@ -168,12 +178,12 @@ BVS& BVS::run()
 
 BVS& BVS::quit()
 {
-    for (auto it: bvsModuleMap)
+    for (auto it: modules)
     {
-        LOG(0, "left: " << bvsModuleMap.size());
-        LOG(0, "unload: " << it.second->name << " " << it.second->dlib);
         master->unload(it.second->name);
+
     }
+    modules.clear();
 
     return *this;
 }

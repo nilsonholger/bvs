@@ -14,11 +14,7 @@
 #include "BVSConfig.h"
 #include "BVSLogger.h"
 #include "BVSModule.h"
-
-
-
-// Forward declaration.
-struct BVSModuleData;
+#include "BVSTraits.h"
 
 
 
@@ -30,7 +26,7 @@ class BVSMaster
          * @param[in] bvsModuleMap Map of registered modules.
          * @param[in] config Reference to config system.
          */
-        BVSMaster(std::map<std::string, BVSModuleData*, std::less<std::string>>& bvsModuleMap, BVSConfig& config);
+        BVSMaster(BVSModuleMap& modules, BVSConfig& config);
 
         /** Load the given module, executes bvsRegisterModule function in module
          * to register it with the system.
@@ -45,12 +41,15 @@ class BVSMaster
         BVSMaster& unload(const std::string& moduleName);
 
         // TODO add control functions for master and threads
-        BVSMaster& control(BVSModuleData* data = nullptr);
+        BVSMaster& control(std::shared_ptr<BVSModuleData> data);
+
+        /** Get ID of module. */
+        //TODO returns only first match, need to change model
+        BVSModuleID getModuleID(std::string identifier);
 
     private:
-        // TODO handle modules that are loaded more than once (unique names, module id's...)
         /** Map of registered modules and their metadata. */
-        std::map<std::string, BVSModuleData*, std::less<std::string>>& bvsModuleMap;
+        BVSModuleMap& modules;
 
         //std::condition_variable controller;
         //std::mutex threadMutex;
@@ -60,18 +59,6 @@ class BVSMaster
 
         BVSMaster(const BVSMaster&) = delete; /**< -Weffc++ */
         BVSMaster& operator=(const BVSMaster&) = delete; /**< -Weffc++ */
-};
-
-
-
-/** Module metadata. */
-struct BVSModuleData
-{
-    std::string name; /**< Name of this module. */
-    BVSModule* module; /**< Pointer to the module. */
-    void* dlib; /**< Dlib handle to module's lib. */
-    bool asThread; /**< Determines if module runs in its own thread. */
-    std::thread thread; /**< Thread handle of module. */
 };
 
 

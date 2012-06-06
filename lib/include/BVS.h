@@ -3,18 +3,17 @@
 
 #include<iomanip>
 #include<iostream>
-#include<map>
 #include<string>
 
 #include "BVSConfig.h"
 #include "BVSLogger.h"
+#include "BVSTraits.h"
 
 
 
 // Forward declarations
 class BVSMaster;
 class BVSModule;
-class BVSModuleData;
 
 
 
@@ -35,6 +34,7 @@ class BVS
          * @return Reference to object.
          */
         BVS& loadModules();
+        // TODO possibility: return list of loaded modules, name and ID pairs
 
         /** Load selected module given by name.
          * @param[in] name The name of the module.
@@ -42,6 +42,14 @@ class BVS
          * @return Reference to object.
          */
         BVS& loadModule(const std::string& name, bool asThread = false);
+        // TODO possibility: return ID
+
+        // TODO should be ID
+        /** Unload module given by name.
+         * @param[in] name The name of the module.
+         * @return Reference to object.
+         */
+        BVS& unloadModule(const std::string& name);
 
         /** Loads a config File and updates the system.
          * @param[in] configFile Name of or path to config file.
@@ -106,8 +114,10 @@ class BVS
         BVSLogger logger; /**< BVS' logging instance. */
         BVSMaster* master; /**< BVS' module loader. */
 
+        static BVSModuleID moduleCount;
+
         /** Map of modules known by the BVS framework. */
-        static std::map<std::string, BVSModuleData*, std::less<std::string>> bvsModuleMap;
+        static BVSModuleMap modules;
 
         BVS(const BVS&) = delete; /**< -Weffc++ */
         BVS& operator=(const BVS&) = delete; /**< -Weffc++ */

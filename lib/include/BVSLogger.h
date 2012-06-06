@@ -8,6 +8,8 @@
 #include<streambuf>
 #include<string>
 
+#include "BVSTraits.h"
+
 
 
 /** Macro to use with BVSLogger. */

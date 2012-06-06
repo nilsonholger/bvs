@@ -2,8 +2,8 @@
 
 
 
-BVSMaster::BVSMaster(std::map<std::string, BVSModuleData*, std::less<std::string>>& bvsModuleMap, BVSConfig& config)
-    : bvsModuleMap(bvsModuleMap)
+BVSMaster::BVSMaster(BVSModuleMap& modules, BVSConfig& config)
+    : modules(modules)
     //, controller()
     //, threadMutex()
     , logger("BVSMaster")
@@ -43,24 +43,36 @@ BVSMaster& BVSMaster::load(const std::string& moduleName, bool asThread)
     bvsRegisterModule(config);
     LOG(2, moduleName << " loaded and registered!");
 
-    // TODO search for module with name in vector, return pointer
+    // get module ID
+    // TODO get moduleId from bvsRegisterModule function
+    BVSModuleID id = getModuleID(moduleName);
+
+    // deal with an id of 0, there is no such module
+    if (id==0)
+    {
+        LOG(1, moduleName << "not found, cannot unload!");
+        return *this;
+    }
+
+
     // execute module's onLoad function
-    bvsModuleMap[moduleName]->module->onLoad();
+    modules[id]->module->onLoad();
 
     // save handle for later use
-    bvsModuleMap[moduleName]->dlib = dlib;
+    modules[id]->dlib = dlib;
 
     // set threading metadata if needed
     if (asThread==true)
     {
         LOG(2, moduleName << " now running in own thread!");
-        bvsModuleMap[moduleName]->asThread = true;
-        bvsModuleMap[moduleName]->thread = std::thread(&BVSMaster::control, this, bvsModuleMap[moduleName]);
+        modules[id]->asThread = true;
+        modules[id]->thread = std::thread(&BVSMaster::control, this, modules[id]);
+        //TODO duplicate names resolve to same ID, if 2 threads are loaded, it crashes hard, problem should exist everywhere...
     }
     else
     {
         LOG(2, moduleName << " controlled by BVSMaster!");
-        bvsModuleMap[moduleName]->asThread = false;
+        modules[id]->asThread = false;
     }
 
     return *this;
@@ -70,11 +82,22 @@ BVSMaster& BVSMaster::load(const std::string& moduleName, bool asThread)
 
 BVSMaster& BVSMaster::unload(const std::string& moduleName)
 {
+    // get module ID
+    BVSModuleID id = getModuleID(moduleName);
+
+    // deal with an id of 0, there is no such module
+    if (id==0)
+    {
+        LOG(1, moduleName << "not found, cannot unload!");
+        return *this;
+    }
+
     // wait for thread to join
-    if (bvsModuleMap[moduleName]->asThread == true)
+    if (modules[id]->asThread == true)
     {
         // TODO signal thread to quit
-        bvsModuleMap[moduleName]->thread.join();
+        if (modules[id]->thread.joinable())
+            modules[id]->thread.join();
     }
 
     // close lib and check for errors
@@ -82,8 +105,7 @@ BVSMaster& BVSMaster::unload(const std::string& moduleName)
     LOG(3, moduleName << " will be closed using " << modulePath);
 
     // get handle from internals
-    void* dlib = bvsModuleMap[moduleName]->dlib;
-    LOG(0, dlib);
+    void* dlib = modules[id]->dlib;
     if (dlib==nullptr)
     {
         LOG(0, "Requested module " << moduleName << " not found!");
@@ -100,30 +122,16 @@ BVSMaster& BVSMaster::unload(const std::string& moduleName)
         LOG(0, "While closing " << modulePath << " following error occured: " << dlerror());
         exit(-1);
     }
-
-    // deregister module from system
-    bvsModuleMap.erase(moduleName);
     LOG(2, moduleName << " unloaded and deregistered!");
-
-    // remove module from map
-    //bvsModuleMap.erase(moduleName);
 
     return *this;
 }
 
 
 
-BVSMaster& BVSMaster::control(BVSModuleData* data)
+BVSMaster& BVSMaster::control(std::shared_ptr<BVSModuleData> data)
 {
-    (void) data;
-    if (data != nullptr)
-    {
-        LOG(0, "Control of " << data->name << "!");
-    }
-    else
-    {
-        LOG(0, "Cantrolled by master!");
-    }
+    LOG(0, "Control of " << data->name << "!");
 
 
 // condition variable
@@ -159,3 +167,14 @@ BVSMaster& BVSMaster::control(BVSModuleData* data)
     return *this;
 }
 
+
+
+BVSModuleID BVSMaster::getModuleID(std::string identifier)
+{
+    for (auto it: modules)
+    {
+        if (it.second->name == identifier)
+            return it.second->id;
+    }
+    return 0;
+}
