@@ -27,6 +27,7 @@ int main(int argc, char** argv)
     bvs->run();
 
     bvs->quit();
+    LOG(0, "finishing");
 
     return 0;
 }
