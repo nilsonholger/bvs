@@ -23,104 +23,104 @@ class BVSModule;
  */
 class BVS
 {
-    public:
-        /** Create BVS System.
-         * @param[in] argc Main's argc.
-         * @param[in] argv Main's argv, used to pass config options to BVS, see BVSConfig.
-         */
-        BVS(int argc, char** argv);
+	public:
+		/** Create BVS System.
+		 * @param[in] argc Main's argc.
+		 * @param[in] argv Main's argv, used to pass config options to BVS, see BVSConfig.
+		 */
+		BVS(int argc, char** argv);
 
-        /** Load modules selected by config variable [BVS]modules.
-         * @return Reference to object.
-         */
-        BVS& loadModules();
-        // TODO possibility: return list of loaded modules, name and ID pairs
+		/** Load modules selected by config variable [BVS]modules.
+		 * @return Reference to object.
+		 */
+		BVS& loadModules();
+		// TODO possibility: return list of loaded modules, name and ID pairs
 
-        /** Load selected module given by name.
-         * @param[in] name The name of the module.
-         * @param[in] asThread Select, if the module should run in it's own thread.
-         * @return Reference to object.
-         */
-        BVS& loadModule(const std::string& name, bool asThread = false);
-        // TODO possibility: return ID
+		/** Load selected module given by name.
+		 * @param[in] name The name of the module.
+		 * @param[in] asThread Select, if the module should run in it's own thread.
+		 * @return Reference to object.
+		 */
+		BVS& loadModule(const std::string& name, bool asThread = false);
+		// TODO possibility: return ID
 
-        // TODO should be ID
-        /** Unload module given by name.
-         * @param[in] name The name of the module.
-         * @return Reference to object.
-         */
-        BVS& unloadModule(const std::string& name);
+		// TODO should be ID
+		/** Unload module given by name.
+		 * @param[in] name The name of the module.
+		 * @return Reference to object.
+		 */
+		BVS& unloadModule(const std::string& name);
 
-        /** Loads a config File and updates the system.
-         * @param[in] configFile Name of or path to config file.
-         * @return Reference to object.
-         */
-        BVS& loadConfigFile(const std::string& configFile);
+		/** Loads a config File and updates the system.
+		 * @param[in] configFile Name of or path to config file.
+		 * @return Reference to object.
+		 */
+		BVS& loadConfigFile(const std::string& configFile);
 
-        /** Set the log system verbosity.
-         * This sets the logging system's overall verbosity.
-         * Only messages with logging level lower or equal with be displayed.
-         * Attention: This overrides the BVSLOGGER.ALL setting from config file.
-         * @param[in] verbosity Desired verbosity level.
-         * @return Reference to object.
-         */
-        BVS& setLogSystemVerbosity(const unsigned short verbosity);
+		/** Set the log system verbosity.
+		 * This sets the logging system's overall verbosity.
+		 * Only messages with logging level lower or equal with be displayed.
+		 * Attention: This overrides the BVSLOGGER.ALL setting from config file.
+		 * @param[in] verbosity Desired verbosity level.
+		 * @return Reference to object.
+		 */
+		BVS& setLogSystemVerbosity(const unsigned short verbosity);
 
-        /** Open and enable log file.
-         * Open and enable log file at given file location.
-         * Furthermore you can decide to overwrite (default) or append to the file.
-         * @param[in] file Path to file to log to.
-         * @param[in] append Select, whether to append or overwrite.
-         * @return Reference to object.
-         */
-        BVS& enableLogFile(const std::string& file, bool append = false);
+		/** Open and enable log file.
+		 * Open and enable log file at given file location.
+		 * Furthermore you can decide to overwrite (default) or append to the file.
+		 * @param[in] file Path to file to log to.
+		 * @param[in] append Select, whether to append or overwrite.
+		 * @return Reference to object.
+		 */
+		BVS& enableLogFile(const std::string& file, bool append = false);
 
-        /** Close and disable log file.
-         * @return Reference to object.
-         */
-        BVS& disableLogFile();
+		/** Close and disable log file.
+		 * @return Reference to object.
+		 */
+		BVS& disableLogFile();
 
-        /** Enable log console/command line interface.
-         * @param[out] out Stream to log to (default = std::cout).
-         * @return Reference to object.
-         */
-        BVS& enableLogConsole(const std::ostream& out = std::cout);
+		/** Enable log console/command line interface.
+		 * @param[out] out Stream to log to (default = std::cout).
+		 * @return Reference to object.
+		 */
+		BVS& enableLogConsole(const std::ostream& out = std::cout);
 
-        /** Disable log console/command line interface.
-         * @return Reference to object.
-         */
-        BVS& disableLogConsole();
+		/** Disable log console/command line interface.
+		 * @return Reference to object.
+		 */
+		BVS& disableLogConsole();
 
-        /** Register a Module with the BVS framework.
-         * This registers a module and should be used as a callback by the module
-         * itself passing its name and a pointer to itself.
-         * @param[in] identifier The Module's name.
-         * @param[in] module A pointer to the module.
-         */
-        static void registerModule(const std::string& identifier, BVSModule* module);
+		/** Register a Module with the BVS framework.
+		 * This registers a module and should be used as a callback by the module
+		 * itself passing its name and a pointer to itself.
+		 * @param[in] identifier The Module's name.
+		 * @param[in] module A pointer to the module.
+		 */
+		static void registerModule(const std::string& identifier, BVSModule* module);
 
-        // TODO build data exchange between modules
-        BVS& run();
-        //void step();
-        //void pause();
-        //void stop();
-        BVS& quit();
-        //~BVS();
+		// TODO build data exchange between modules
+		BVS& run();
+		//void step();
+		//void pause();
+		//void stop();
+		BVS& quit();
+		//~BVS();
 
-        BVSConfig config; /**< BVS' config system. */
+		BVSConfig config; /**< BVS' config system. */
 
-    private:
-        std::shared_ptr<BVSLogSystem> logSystem; /**< Internal log system backend. */
-        BVSLogger logger; /**< BVS' logging instance. */
-        BVSMaster* master; /**< BVS' module loader. */
+	private:
+		std::shared_ptr<BVSLogSystem> logSystem; /**< Internal log system backend. */
+		BVSLogger logger; /**< BVS' logging instance. */
+		BVSMaster* master; /**< BVS' module loader. */
 
-        static BVSModuleID moduleCount;
+		static BVSModuleID moduleCount;
 
-        /** Map of modules known by the BVS framework. */
-        static BVSModuleMap modules;
+		/** Map of modules known by the BVS framework. */
+		static BVSModuleMap modules;
 
-        BVS(const BVS&) = delete; /**< -Weffc++ */
-        BVS& operator=(const BVS&) = delete; /**< -Weffc++ */
+		BVS(const BVS&) = delete; /**< -Weffc++ */
+		BVS& operator=(const BVS&) = delete; /**< -Weffc++ */
 };
 
 

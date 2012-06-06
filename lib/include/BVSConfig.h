@@ -76,170 +76,170 @@
  */
 class BVSConfig
 {
-    public:
-        /** Construct config system.
-         * @param[in] name A unique name for this config system.
-         * @param[in] argc Number of arguments.
-         * @param[in] argv Array of arguments.
-         */
-        BVSConfig(std::string name, int argc = 0, char** argv = nullptr);
+	public:
+		/** Construct config system.
+		 * @param[in] name A unique name for this config system.
+		 * @param[in] argc Number of arguments.
+		 * @param[in] argv Array of arguments.
+		 */
+		BVSConfig(std::string name, int argc = 0, char** argv = nullptr);
 
-        /** Gets the system name.
-         * @param[out] name Return object containing name.
-         * @return Reference to object.
-         */
-        BVSConfig& getName(std::string& name);
+		/** Gets the system name.
+		 * @param[out] name Return object containing name.
+		 * @return Reference to object.
+		 */
+		BVSConfig& getName(std::string& name);
 
-        /** Loads the given config file (if it exists).
-         * This checks the supplied path for a config file and if found parses
-         * its contents.
-         * @param[in] configFile Name of or path to config file.
-         */
-        BVSConfig& loadConfigFile(const std::string& configFile);
+		/** Loads the given config file (if it exists).
+		 * This checks the supplied path for a config file and if found parses
+		 * its contents.
+		 * @param[in] configFile Name of or path to config file.
+		 */
+		BVSConfig& loadConfigFile(const std::string& configFile);
 
-        /** Prints all variables known by config system to std::cerr.
-         * The option names will all be lower case, as this is the way
-         * they are represented internally.
-         * @return Reference to object.
-         */
-        BVSConfig& showOptionStore();
+		/** Prints all variables known by config system to std::cerr.
+		 * The option names will all be lower case, as this is the way
+		 * they are represented internally.
+		 * @return Reference to object.
+		 */
+		BVSConfig& showOptionStore();
 
-        /** Dump the optionStore to a local copy.
-         * The option names will all be lower case, as this is the way
-         * they are represented internally.
-         * @return Dump of optionStore.
-         */
-        std::map<std::string, std::string> dumpOptionStore();
+		/** Dump the optionStore to a local copy.
+		 * The option names will all be lower case, as this is the way
+		 * they are represented internally.
+		 * @return Dump of optionStore.
+		 */
+		std::map<std::string, std::string> dumpOptionStore();
 
-        /** Template to retrieve value from config by passing it to an argument.
-         * Sets default value, if desired option is not found in option store.
-         * @param[in] sectionOption The desired option, should be in form "section.option".
-         * @param[out] t This argument will be used to return the retrieved value.
-         * @param[in] defaultValue Default value to be returned if desired option is not found.
-         * @tparam T Type argument.
-         * @return Reference to object.
-         */
-        template<typename T> BVSConfig& getValue(const std::string& sectionOption, T& t, T defaultValue);
+		/** Template to retrieve value from config by passing it to an argument.
+		 * Sets default value, if desired option is not found in option store.
+		 * @param[in] sectionOption The desired option, should be in form "section.option".
+		 * @param[out] t This argument will be used to return the retrieved value.
+		 * @param[in] defaultValue Default value to be returned if desired option is not found.
+		 * @tparam T Type argument.
+		 * @return Reference to object.
+		 */
+		template<typename T> BVSConfig& getValue(const std::string& sectionOption, T& t, T defaultValue);
 
-        /** Template to retrieve value from config by return value.
-         * Returns default value, if desired option is not found in option store.
-         * @param[in] sectionOption The desired option, should be in form "section.option".
-         * @param[in] defaultValue Default value to be returned if desired option is not found.
-         * @tparam T Type argument.
-         * @return The desired option's value.
-         */
-        template<typename T> T getValue(const std::string& sectionOption, T defaultValue);
+		/** Template to retrieve value from config by return value.
+		 * Returns default value, if desired option is not found in option store.
+		 * @param[in] sectionOption The desired option, should be in form "section.option".
+		 * @param[in] defaultValue Default value to be returned if desired option is not found.
+		 * @tparam T Type argument.
+		 * @return The desired option's value.
+		 */
+		template<typename T> T getValue(const std::string& sectionOption, T defaultValue);
 
-        /** Template to retrieve a value list from config as a std::vector of chosen type.
-         * @tparam T Type used for value list.
-         * @param[in] sectionOption The desired option, should be in form "section.option".
-         * @param[out] t This vectore will be used to return the retrieved value list.
-         * @return Reference to object.
-         */
-        template<typename T> BVSConfig& getValue(const std::string& sectionOption, std::vector<T>& t);
+		/** Template to retrieve a value list from config as a std::vector of chosen type.
+		 * @tparam T Type used for value list.
+		 * @param[in] sectionOption The desired option, should be in form "section.option".
+		 * @param[out] t This vectore will be used to return the retrieved value list.
+		 * @return Reference to object.
+		 */
+		template<typename T> BVSConfig& getValue(const std::string& sectionOption, std::vector<T>& t);
 
-    private:
-        std::string name; /**< Instance's name. */
-        std::mutex mutex; /**< Mutex for thread safety. */
+	private:
+		std::string name; /**< Instance's name. */
+		std::mutex mutex; /**< Mutex for thread safety. */
 
-        /** A map of all stored options. */
-        std::map<std::string, std::string, std::less<std::string>> optionStore;
+		/** A map of all stored options. */
+		std::map<std::string, std::string, std::less<std::string>> optionStore;
 
-        /** Loads the given arguments into the system.
-         * This checks argv for occurences of --bvs.config and --bvs.options.
-         * If found, they are added to the internal option-value storage.
-         * \param[in] argc Size of argv.
-         * @param[in] argv Array of arguments.
-         * @return Reference to object.
-         */
-        BVSConfig& loadCommandLine(int argc, char** argv);
+		/** Loads the given arguments into the system.
+		 * This checks argv for occurences of --bvs.config and --bvs.options.
+		 * If found, they are added to the internal option-value storage.
+		 * \param[in] argc Size of argv.
+		 * @param[in] argv Array of arguments.
+		 * @return Reference to object.
+		 */
+		BVSConfig& loadCommandLine(int argc, char** argv);
 
-        /** Searches optionStore for the given option name.
-         * @param[in] option Desired config option.
-         * @return The option's value if found.
-         */
-        std::string searchOption(std::string option);
+		/** Searches optionStore for the given option name.
+		 * @param[in] option Desired config option.
+		 * @return The option's value if found.
+		 */
+		std::string searchOption(std::string option);
 
-        /** Convert std::string to desired type.
-         * @param[in] input Input string.
-         * @param[out] t Converted argument of desired type.
-         * @return Reference to Object.
-         */
-        template<typename T> BVSConfig& convertStringTo(const std::string& input, T& t);
+		/** Convert std::string to desired type.
+		 * @param[in] input Input string.
+		 * @param[out] t Converted argument of desired type.
+		 * @return Reference to Object.
+		 */
+		template<typename T> BVSConfig& convertStringTo(const std::string& input, T& t);
 
-        /** Convert std::string to desired type.
-         * @param[in] input Input string.
-         * @return Converted argument of desired type.
-         */
-        template<typename T> T convertStringTo(const std::string& input);
+		/** Convert std::string to desired type.
+		 * @param[in] input Input string.
+		 * @return Converted argument of desired type.
+		 */
+		template<typename T> T convertStringTo(const std::string& input);
 
-        friend class BVS;
+		friend class BVS;
 };
 
 
 
 template<typename T> BVSConfig& BVSConfig::getValue(const std::string& sectionOption, T& t, T defaultValue)
 {
-    t = getValue(sectionOption, defaultValue);
-    return *this;
+	t = getValue(sectionOption, defaultValue);
+	return *this;
 }
 
 
 
 template<typename T> T BVSConfig::getValue(const std::string& sectionOption, T defaultValue)
 {
-    (void) defaultValue;
-    std::string tmp = searchOption(sectionOption);
-    if (tmp.length()!=0)
-    {
-        return convertStringTo<T>(tmp);
-    }
-    else
-    {
-        return defaultValue;
-    }
+	(void) defaultValue;
+	std::string tmp = searchOption(sectionOption);
+	if (tmp.length()!=0)
+	{
+		return convertStringTo<T>(tmp);
+	}
+	else
+	{
+		return defaultValue;
+	}
 }
 
 
 
 template<typename T> BVSConfig& BVSConfig::getValue(const std::string& sectionOption, std::vector<T>& t)
 {
-    // get list from optionStore and if empty, abort
-    std::string tmp = searchOption(sectionOption);
-    if (tmp.length()==0)
-    {
-        return *this;
-    }
+	// get list from optionStore and if empty, abort
+	std::string tmp = searchOption(sectionOption);
+	if (tmp.length()==0)
+	{
+		return *this;
+	}
 
-    // separate list into substrings on occurence of ',', push to vector
-    size_t separatorPos = 0;
-    while (separatorPos != std::string::npos)
-    {
-        separatorPos = tmp.find_first_of(',');
-        t = t;
-        t.push_back(convertStringTo<T>(tmp.substr(0, separatorPos)));
-        tmp.erase(0, separatorPos+1);
-    }
+	// separate list into substrings on occurence of ',', push to vector
+	size_t separatorPos = 0;
+	while (separatorPos != std::string::npos)
+	{
+		separatorPos = tmp.find_first_of(',');
+		t = t;
+		t.push_back(convertStringTo<T>(tmp.substr(0, separatorPos)));
+		tmp.erase(0, separatorPos+1);
+	}
 
-    return *this;
+	return *this;
 }
 
 
 
 template<typename T> BVSConfig& BVSConfig::convertStringTo(const std::string& input, T& t)
 {
-    std::istringstream stream(input);
-    stream >> t;
-    return *this;
+	std::istringstream stream(input);
+	stream >> t;
+	return *this;
 }
 
 
 
 template<typename T> T BVSConfig::convertStringTo(const std::string& input)
 {
-    T t;
-    convertStringTo(input, t);
-    return t;
+	T t;
+	convertStringTo(input, t);
+	return t;
 }
 
 

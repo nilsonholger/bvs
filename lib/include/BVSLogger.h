@@ -34,56 +34,56 @@ class BVSLogSystem;
  */
 class BVSLogger
 {
-    // better than using mutex and unlocking in separate function
-    public:
-        /** Available logging targets. */
-        enum BVSLogTarget { OFF, TO_CLI, TO_FILE, TO_CLI_AND_FILE};
+	// better than using mutex and unlocking in separate function
+	public:
+		/** Available logging targets. */
+		enum BVSLogTarget { OFF, TO_CLI, TO_FILE, TO_CLI_AND_FILE};
 
-        /** Construct logger metadata.
-         * Your logging instances' name will be prepended to your output.
-         * Since this output will be aligned, please dont use too long names.
-         * Example:
-         * <code>
-         * [0|YourLogger   ] message from you
-         * [1|AnotherLogger] message
-         * </code>
-         * @param[in] name The name of your logging instance.
-         * @param[in] verbosity Your selected logging verbosity level (default: 3).
-         * @param[in] target Selects this loggers output target (default: TO_CLI_AND_FILE)
-         */
-        BVSLogger(std::string name, unsigned short verbosity = 3, BVSLogTarget target = TO_CLI_AND_FILE);
+		/** Construct logger metadata.
+		 * Your logging instances' name will be prepended to your output.
+		 * Since this output will be aligned, please dont use too long names.
+		 * Example:
+		 * <code>
+		 * [0|YourLogger   ] message from you
+		 * [1|AnotherLogger] message
+		 * </code>
+		 * @param[in] name The name of your logging instance.
+		 * @param[in] verbosity Your selected logging verbosity level (default: 3).
+		 * @param[in] target Selects this loggers output target (default: TO_CLI_AND_FILE)
+		 */
+		BVSLogger(std::string name, unsigned short verbosity = 3, BVSLogTarget target = TO_CLI_AND_FILE);
 
-        /** Log to logging system.
-         * @param[in] level The messages' desired verbosity level.
-         * @return A stream reference your output will be send to.
-         */
-        std::ostream& out(const int level);
+		/** Log to logging system.
+		 * @param[in] level The messages' desired verbosity level.
+		 * @return A stream reference your output will be send to.
+		 */
+		std::ostream& out(const int level);
 
-        /* Ends a log line and releases the logSystem mutex, must be called after using out.
-         */
-        void endl();
+		/* Ends a log line and releases the logSystem mutex, must be called after using out.
+		*/
+		void endl();
 
-        /** Get this logger's name.
-         * @return This logger's name.
-         */
-        std::string getName() const;
+		/** Get this logger's name.
+		 * @return This logger's name.
+		 */
+		std::string getName() const;
 
-        ~BVSLogger(); /**< Deconstructor cleaning up. */
+		~BVSLogger(); /**< Deconstructor cleaning up. */
 
-        unsigned short verbosity; /**< This logger's verbosity level. */
-        BVSLogTarget target; /**< This logger's output target. */
+		unsigned short verbosity; /**< This logger's verbosity level. */
+		BVSLogTarget target; /**< This logger's output target. */
 
-    private:
-        /** This logger instance's name.
-         * Private to prevent changes later on, which would
-         * mess with the name padding in the logging system.
-         * */
-        std::string name;
+	private:
+		/** This logger instance's name.
+		 * Private to prevent changes later on, which would
+		 * mess with the name padding in the logging system.
+		 * */
+		std::string name;
 
-        std::shared_ptr<BVSLogSystem> logSystem; /**< Pointer to the logging backend. */
+		std::shared_ptr<BVSLogSystem> logSystem; /**< Pointer to the logging backend. */
 
-        BVSLogger(const BVSLogger&) = delete; /**< -Weffc++ */
-        BVSLogger& operator=(const BVSLogger&) = delete; /**< -Weffc++ */
+		BVSLogger(const BVSLogger&) = delete; /**< -Weffc++ */
+		BVSLogger& operator=(const BVSLogger&) = delete; /**< -Weffc++ */
 };
 
 #endif //BVSLOGGER_H

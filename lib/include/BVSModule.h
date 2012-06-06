@@ -11,24 +11,24 @@
  */
 class BVSModule
 {
-    // TODO COMMENTS to explain usage and give examples
-    public:
-        BVSModule(BVSConfig& config); /**< Constructor of Module Base. */
-        virtual ~BVSModule(); /**< Destructor of Module Base. */
-        virtual BVSStatus onLoad() = 0;
-        virtual BVSStatus preExecute() = 0;
-        virtual BVSStatus execute() = 0;
-        virtual BVSStatus postExecute() = 0;
-        virtual BVSStatus debugDisplay() = 0;
-        virtual BVSStatus onClose() = 0;
+	// TODO COMMENTS to explain usage and give examples
+	public:
+		BVSModule(BVSConfig& config); /**< Constructor of Module Base. */
+		virtual ~BVSModule(); /**< Destructor of Module Base. */
+		virtual BVSStatus onLoad() = 0;
+		virtual BVSStatus preExecute() = 0;
+		virtual BVSStatus execute() = 0;
+		virtual BVSStatus postExecute() = 0;
+		virtual BVSStatus debugDisplay() = 0;
+		virtual BVSStatus onClose() = 0;
 
-    protected:
-        // TODO finish moving from module to base class
-        BVSConfig& config;
+	protected:
+		// TODO finish moving from module to base class
+		BVSConfig& config;
 
-    private:
-        BVSModule(const BVSModule&) = delete; /**< -Weffc++ */
-        BVSModule& operator=(const BVSModule&) = delete; /**< -Weffc++ */
+	private:
+		BVSModule(const BVSModule&) = delete; /**< -Weffc++ */
+		BVSModule& operator=(const BVSModule&) = delete; /**< -Weffc++ */
 
 };
 

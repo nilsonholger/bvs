@@ -3,7 +3,7 @@
 
 
 BVSModule::BVSModule(BVSConfig& config)
-    : config(config)
+	: config(config)
 {
 
 }

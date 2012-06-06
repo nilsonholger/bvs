@@ -21,44 +21,44 @@
 /** The system master: loads, unloads and controls modules. */
 class BVSMaster
 {
-    public:
-        /** Constructor for master.
-         * @param[in] bvsModuleMap Map of registered modules.
-         * @param[in] config Reference to config system.
-         */
-        BVSMaster(BVSModuleMap& modules, BVSConfig& config);
+	public:
+		/** Constructor for master.
+		 * @param[in] bvsModuleMap Map of registered modules.
+		 * @param[in] config Reference to config system.
+		 */
+		BVSMaster(BVSModuleMap& modules, BVSConfig& config);
 
-        /** Load the given module, executes bvsRegisterModule function in module
-         * to register it with the system.
-         * @param[in] moduleName The name of the module.
-         * @param[in] asThread Whether to load the module inside a thread or not.
-         */
-        BVSMaster& load(const std::string& moduleName, bool asThread);
+		/** Load the given module, executes bvsRegisterModule function in module
+		 * to register it with the system.
+		 * @param[in] moduleName The name of the module.
+		 * @param[in] asThread Whether to load the module inside a thread or not.
+		 */
+		BVSMaster& load(const std::string& moduleName, bool asThread);
 
-        /** Unload the given module.
-         * @param[in] moduleName The name of the module.
-         */
-        BVSMaster& unload(const std::string& moduleName);
+		/** Unload the given module.
+		 * @param[in] moduleName The name of the module.
+		 */
+		BVSMaster& unload(const std::string& moduleName);
 
-        // TODO add control functions for master and threads
-        BVSMaster& control(std::shared_ptr<BVSModuleData> data);
+		// TODO add control functions for master and threads
+		BVSMaster& control(std::shared_ptr<BVSModuleData> data);
 
-        /** Get ID of module. */
-        //TODO returns only first match, need to change model
-        BVSModuleID getModuleID(std::string identifier);
+		/** Get ID of module. */
+		//TODO returns only first match, need to change model
+		BVSModuleID getModuleID(std::string identifier);
 
-    private:
-        /** Map of registered modules and their metadata. */
-        BVSModuleMap& modules;
+	private:
+		/** Map of registered modules and their metadata. */
+		BVSModuleMap& modules;
 
-        //std::condition_variable controller;
-        //std::mutex threadMutex;
+		//std::condition_variable controller;
+		//std::mutex threadMutex;
 
-        BVSLogger logger; /**< Logger metadata. */
-        BVSConfig& config; /**< Config reference. */
+		BVSLogger logger; /**< Logger metadata. */
+		BVSConfig& config; /**< Config reference. */
 
-        BVSMaster(const BVSMaster&) = delete; /**< -Weffc++ */
-        BVSMaster& operator=(const BVSMaster&) = delete; /**< -Weffc++ */
+		BVSMaster(const BVSMaster&) = delete; /**< -Weffc++ */
+		BVSMaster& operator=(const BVSMaster&) = delete; /**< -Weffc++ */
 };
 
 

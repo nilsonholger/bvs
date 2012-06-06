@@ -2,11 +2,11 @@
 
 
 
-BVSExampleModule::BVSExampleModule(BVSConfig& config)
-    : BVSModule()
-    , identifier("BVSExampleModule")
-    , logger(identifier)
-    , config(config)
+	BVSExampleModule::BVSExampleModule(BVSConfig& config)
+: BVSModule()
+	, identifier("BVSExampleModule")
+	, logger(identifier)
+	 , config(config)
 {
 
 }
@@ -22,7 +22,7 @@ BVSExampleModule::~BVSExampleModule()
 
 void BVSExampleModule::onLoad()
 {
-    LOG(2, "loaded BVSExampleModule!");
+	LOG(2, "loaded BVSExampleModule!");
 }
 
 
@@ -63,10 +63,10 @@ void BVSExampleModule::onClose()
 
 
 extern "C" {
-    // register with framework
-    int bvsRegisterModule(BVSConfig& config)
-    {
-        BVS::registerModule("BVSExampleModule", new BVSExampleModule(config));
-        return 0;
-    }
+	// register with framework
+	int bvsRegisterModule(BVSConfig& config)
+	{
+		BVS::registerModule("BVSExampleModule", new BVSExampleModule(config));
+		return 0;
+	}
 }
