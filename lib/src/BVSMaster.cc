@@ -43,6 +43,7 @@ BVSMaster& BVSMaster::load(const std::string& moduleName, bool asThread)
     bvsRegisterModule(config);
     LOG(2, moduleName << " loaded and registered!");
 
+    // TODO search for module with name in vector, return pointer
     // execute module's onLoad function
     bvsModuleMap[moduleName]->module->onLoad();
 
@@ -105,7 +106,7 @@ BVSMaster& BVSMaster::unload(const std::string& moduleName)
     LOG(2, moduleName << " unloaded and deregistered!");
 
     // remove module from map
-    bvsModuleMap.erase(moduleName);
+    //bvsModuleMap.erase(moduleName);
 
     return *this;
 }
