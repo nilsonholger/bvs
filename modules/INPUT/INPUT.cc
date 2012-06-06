@@ -3,10 +3,10 @@
 
 
 INPUT::INPUT(BVSConfig& config)
-    : BVSModule()
+    : BVSModule(config)
     , identifier("INPUT")
     , logger(identifier)
-    , config(config)
+    //, config(config)
 {
 
 }
@@ -23,6 +23,7 @@ INPUT::~INPUT()
 BVSStatus INPUT::onLoad()
 {
     LOG(2, "loaded INPUT!");
+    LOG(2, config.getValue<int>("BVSLogger.All", 0));
 
     return BVSStatus::OK;
 }

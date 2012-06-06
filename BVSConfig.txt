@@ -8,12 +8,11 @@ logFile = BVSLog.txt
 moduleThreads = ON
 forceModuleThreads = false
 
-# list of modules, a '+' as pre/postfix to the name starts module in own thread, if permitted
+# list of modules, a '+' as prefix to the name starts module in own thread, if permitted
 modules = INPUT
-#+modules = OUTPUT
-#+modules = OUTPUT
++modules = OUTPUT
 +modules = +OUTPUT
-+modules = OUTPUT+
++modules = +OUTPUT
 
 
 

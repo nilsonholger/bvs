@@ -3,7 +3,7 @@
 
 
 OUTPUT::OUTPUT(BVSConfig& config)
-    : BVSModule()
+    : BVSModule(config)
     , identifier("OUTPUT")
     , logger(identifier)
     , config(config)

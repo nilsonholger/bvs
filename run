@@ -88,15 +88,16 @@ git submodule foreach git checkout master
 
 
 function bvs_run {
+[ -n $GDB -a -r /usr/local/bin/gdb ] && GDB="/usr/local/bin/gdb"
 [ ! -r bin/bvsd ] && echo "bvsd executable not found, run make first..." && exit
-[ $# != 0 ] && (cd bin && $GDB ./bvsd "$@") || (cd bin && $GDB ./bvsd --bvs.config=BVSConfig.txt)
+[ $# != 0 ] && (cd bin && $GDB $GDBOPTS ./bvsd "$@") || (cd bin && $GDB $GDBOPTS ./bvsd --bvs.config=BVSConfig.txt)
 }
 
 
 
 case $1 in
     clean) bvs_clean;;
-    debug) GDB="gdb --args "; bvs_run;;
+    debug) GDB="gdb"; GDBOPTS="--args"; bvs_run;;
     help|--help|-h|-?) bvs_help;;
     new-module) bvs_new_module $2;;
     setup) bvs_setup;;

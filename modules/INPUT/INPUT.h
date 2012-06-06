@@ -18,7 +18,8 @@ class INPUT : public BVSModule
     private:
         std::string identifier;
         BVSLogger logger;
-        BVSConfig& config;
+		// TODO remove from here
+        //BVSConfig& config;
         INPUT(const INPUT&) = delete; /**< -Weffc++ */
         INPUT& operator=(const INPUT&) = delete; /**< -Weffc++ */
 };
