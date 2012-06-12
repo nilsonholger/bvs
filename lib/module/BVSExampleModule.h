@@ -6,19 +6,19 @@
 class BVSExampleModule : public BVSModule
 {
 	public:
-		BVSExampleModule(BVSConfig& config);
+		BVSExampleModule(const BVSConfig& config);
 		~BVSExampleModule();
-		void onLoad();
-		void preExecute();
-		void execute();
-		void postExecute();
-		void debugDisplay();
-		void onClose();
+		BVSStatus onLoad();
+		BVSStatus preExecute();
+		BVSStatus execute();
+		BVSStatus postExecute();
+		BVSStatus debugDisplay();
+		BVSStatus onClose();
 
 	private:
-		std::string identifier;
+		const std::string identifier;
 		BVSLogger logger;
-		BVSConfig& config;
+		const BVSConfig& config;
 		BVSExampleModule(const BVSExampleModule&) = delete; /**< -Weffc++ */
 		BVSExampleModule& operator=(const BVSExampleModule&) = delete; /**< -Weffc++ */
 };

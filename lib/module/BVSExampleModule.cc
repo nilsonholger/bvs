@@ -2,11 +2,11 @@
 
 
 
-	BVSExampleModule::BVSExampleModule(BVSConfig& config)
-: BVSModule()
+BVSExampleModule::BVSExampleModule(const BVSConfig& config)
+	: BVSModule(config)
 	, identifier("BVSExampleModule")
 	, logger(identifier)
-	 , config(config)
+	, config(config)
 {
 
 }
@@ -20,53 +20,57 @@ BVSExampleModule::~BVSExampleModule()
 
 
 
-void BVSExampleModule::onLoad()
+BVSStatus BVSExampleModule::onLoad()
 {
-	LOG(2, "loaded BVSExampleModule!");
+LOG(2, "loaded BVSExampleModule module!");
+
+	return BVSStatus::OK;
 }
 
 
 
-void BVSExampleModule::preExecute()
+BVSStatus BVSExampleModule::preExecute()
 {
-
+	return BVSStatus::OK;
 }
 
 
 
-void BVSExampleModule::execute()
+BVSStatus BVSExampleModule::execute()
 {
+	LOG(2, "Execution of " << identifier << "!");
 
+	return BVSStatus::OK;
 }
 
 
 
-void BVSExampleModule::postExecute()
+BVSStatus BVSExampleModule::postExecute()
 {
-
+	return BVSStatus::OK;
 }
 
 
 
-void BVSExampleModule::debugDisplay()
+BVSStatus BVSExampleModule::debugDisplay()
 {
-
+	return BVSStatus::OK;
 }
 
 
 
-void BVSExampleModule::onClose()
+BVSStatus BVSExampleModule::onClose()
 {
-
+	return BVSStatus::OK;
 }
 
 
 
 extern "C" {
 	// register with framework
-	int bvsRegisterModule(BVSConfig& config)
+	int bvsRegisterModule(std::string identifier, BVSConfig& config)
 	{
-		BVS::registerModule("BVSExampleModule", new BVSExampleModule(config));
+		BVS::registerModule(identifier, new BVSExampleModule(config));
 		return 0;
 	}
 }

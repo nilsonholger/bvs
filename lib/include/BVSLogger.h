@@ -34,7 +34,6 @@ class BVSLogSystem;
  */
 class BVSLogger
 {
-	// better than using mutex and unlocking in separate function
 	public:
 		/** Available logging targets. */
 		enum BVSLogTarget { OFF, TO_CLI, TO_FILE, TO_CLI_AND_FILE};

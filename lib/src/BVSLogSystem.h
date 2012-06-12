@@ -96,7 +96,6 @@ class BVSLogSystem
 		 * This way one can specify verbosity levels in a config file:
 		 * @code
 		 * [BVSLogger]
-		 * ALL = 3 # set override for all loggers
 		 * LoggerOne = 0
 		 * LoggerTwo = 1
 		 * @endcode
@@ -121,8 +120,8 @@ class BVSLogSystem
 		 * messages with a level below or equal this value will be logged.
 		 * This value can be changed by using:
 		 * @code
-		 * [BVSLogger]
-		 * All = 0 # your desired level
+		 * [BVS]
+		 * logVerbosity = 0 # your desired level
 		 * @endcode
 		 * */
 		unsigned short systemVerbosity;

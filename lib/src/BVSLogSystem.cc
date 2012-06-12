@@ -193,6 +193,9 @@ BVSLogSystem& BVSLogSystem::updateSettings(BVSConfig& config)
 		enableLogFile(configFile, append);
 	}
 
+	// check log system verbosity
+	systemVerbosity = config.getValue<unsigned short>("BVS.logVerbosity", 3);
+
 	return *this;
 }
 
@@ -205,14 +208,6 @@ BVSLogSystem& BVSLogSystem::updateLoggerLevels(BVSConfig& config)
 	{
 		if (it.first.substr(0, 10)=="BVSLogger.")
 		{
-			// check for overall system setting
-			if (it.first.substr(10, std::string::npos)=="All")
-			{
-				systemVerbosity = config.getValue<unsigned short>(it.first, 0);
-				continue;
-			}
-
-			// set level override from config
 			loggerLevels[it.first.substr(10, std::string::npos)] = config.getValue<unsigned short>(it.first, 0);
 		}
 	}

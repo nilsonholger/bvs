@@ -20,6 +20,7 @@ class BVSModule;
 /** The BVS framework base.
  * This is the BVS base, use this to interact with the framework.
  * TODO COMMENTS for BVS settings... and maybe usage
+ * TODO finish callthrougs for all BVS sub parts
  */
 class BVS
 {
@@ -34,22 +35,19 @@ class BVS
 		 * @return Reference to object.
 		 */
 		BVS& loadModules();
-		// TODO possibility: return list of loaded modules, name and ID pairs
 
 		/** Load selected module given by name.
-		 * @param[in] name The name of the module.
+		 * @param[in] identifier The name of the module.
 		 * @param[in] asThread Select, if the module should run in it's own thread.
 		 * @return Reference to object.
 		 */
-		BVS& loadModule(const std::string& name, bool asThread = false);
-		// TODO possibility: return ID
+		BVS& loadModule(const std::string& identifier, bool asThread = false);
 
-		// TODO should be ID
 		/** Unload module given by name.
-		 * @param[in] name The name of the module.
+		 * @param[in] identifier The name of the module.
 		 * @return Reference to object.
 		 */
-		BVS& unloadModule(const std::string& name);
+		BVS& unloadModule(const std::string& identifier);
 
 		/** Loads a config File and updates the system.
 		 * @param[in] configFile Name of or path to config file.
@@ -114,10 +112,8 @@ class BVS
 		BVSLogger logger; /**< BVS' logging instance. */
 		BVSMaster* master; /**< BVS' module loader. */
 
-		static BVSModuleID moduleCount;
-
 		/** Map of modules known by the BVS framework. */
-		static BVSModuleMap modules;
+		// TODO static BVSModuleMap modules;
 
 		BVS(const BVS&) = delete; /**< -Weffc++ */
 		BVS& operator=(const BVS&) = delete; /**< -Weffc++ */

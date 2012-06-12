@@ -4,19 +4,11 @@
 
 
 
-BVSModuleID BVS::moduleCount = 1;
-
-
-
-BVSModuleMap BVS::modules;
-
-
-
 BVS::BVS(int argc, char** argv)
 	: config("BVS", argc, argv)
 	, logSystem(BVSLogSystem::connectToLogSystem())
 	, logger("BVS")
-	, master(new BVSMaster(modules, config))
+	, master(new BVSMaster(config))
 {
 	logSystem->updateSettings(config);
 	logSystem->updateLoggerLevels(config);
@@ -26,9 +18,11 @@ BVS::BVS(int argc, char** argv)
 
 BVS& BVS::loadModules()
 {
-	// get module list from config
+	// get module list and thread settings from config
 	std::vector<std::string> moduleList;
 	config.getValue("BVS.modules", moduleList);
+	bool moduleThreads = config.getValue<bool>("BVS.moduleThreads", false);
+	bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads", false);
 
 	// check length
 	if (moduleList.size()==0)
@@ -37,31 +31,26 @@ BVS& BVS::loadModules()
 		return *this;
 	}
 
-	// load all selected modules, check for thread selection ('+')
+	// load all selected modules
 	bool asThread;
-	bool moduleThreads = config.getValue<bool>("BVS.moduleThreads", false);
-	bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads", false);
 	for (auto it : moduleList)
 	{
 		asThread = false;
 
+		// check for thread selection ('+' prefix) and system settings
 		if (it[0]=='+')
 		{
 			it.erase(0, 1);
 			asThread = true;
 		}
 
-		if (forceModuleThreads==true)
-		{
+		if (forceModuleThreads)
 			asThread = true;
-		}
 
-		if (moduleThreads==false)
-		{
+		if (!moduleThreads)
 			asThread = false;
-		}
 
-		loadModule(it, asThread);
+		loadModule(it , asThread);
 	}
 
 	return *this;
@@ -69,19 +58,18 @@ BVS& BVS::loadModules()
 
 
 
-BVS& BVS::loadModule(const std::string& name, bool asThread)
+BVS& BVS::loadModule(const std::string& identifier, bool asThread)
 {
-	master->load(name, asThread);
+	master->load(identifier, asThread);
 
 	return *this;
 }
 
 
 
-BVS& BVS::unloadModule(const std::string& name)
+BVS& BVS::unloadModule(const std::string& identifier)
 {
-	master->unload(name);
-	//modules.erase(master->getModuleID(name));
+	master->unload(identifier);
 
 	return *this;
 }
@@ -91,6 +79,7 @@ BVS& BVS::unloadModule(const std::string& name)
 BVS& BVS::loadConfigFile(const std::string& configFile)
 {
 	config.loadConfigFile(configFile);
+	logSystem->updateSettings(config);
 	logSystem->updateLoggerLevels(config);
 
 	return *this;
@@ -101,9 +90,7 @@ BVS& BVS::loadConfigFile(const std::string& configFile)
 BVS& BVS::setLogSystemVerbosity(const unsigned short verbosity)
 {
 	if (logSystem)
-	{
 		logSystem->setSystemVerbosity(verbosity);
-	}
 
 	return *this;
 }
@@ -113,9 +100,7 @@ BVS& BVS::setLogSystemVerbosity(const unsigned short verbosity)
 BVS& BVS::enableLogFile(const std::string& file, bool append)
 {
 	if (logSystem)
-	{
 		logSystem->enableLogFile(file, append);
-	}
 
 	return *this;
 }
@@ -125,9 +110,7 @@ BVS& BVS::enableLogFile(const std::string& file, bool append)
 BVS& BVS::disableLogFile()
 {
 	if (logSystem)
-	{
 		logSystem->disableLogFile();
-	}
 
 	return *this;
 }
@@ -137,9 +120,7 @@ BVS& BVS::disableLogFile()
 BVS& BVS::enableLogConsole(const std::ostream& out)
 {
 	if (logSystem)
-	{
 		logSystem->enableLogConsole(out);
-	}
 
 	return *this;
 }
@@ -149,9 +130,7 @@ BVS& BVS::enableLogConsole(const std::ostream& out)
 BVS& BVS::disableLogConsole()
 {
 	if (logSystem)
-	{
 		logSystem->disableLogConsole();
-	}
 
 	return *this;
 }
@@ -160,16 +139,14 @@ BVS& BVS::disableLogConsole()
 
 void BVS::registerModule(const std::string& identifier, BVSModule* module)
 {
-	modules[moduleCount] = std::shared_ptr<BVSModuleData>(new BVSModuleData{moduleCount, identifier, module, nullptr, false, std::thread()});
-	moduleCount++;
-	// TODO possibility: return BVSModuleID...
+	BVSMaster::registerModule(identifier, module);
 }
 
 
 
 BVS& BVS::run()
 {
-	master->control(std::shared_ptr<BVSModuleData>(new BVSModuleData{0, "BVSMaster", nullptr, nullptr, false, std::thread()}));
+	master->control();
 
 	return *this;
 }
@@ -178,12 +155,7 @@ BVS& BVS::run()
 
 BVS& BVS::quit()
 {
-	for (auto it: modules)
-	{
-		master->unload(it.second->name);
-
-	}
-	modules.clear();
+	master->unloadAll();
 
 	return *this;
 }

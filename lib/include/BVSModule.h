@@ -5,15 +5,20 @@
 
 
 
+/** BVSStatus possibilities. */
+enum BVSStatus { NONE = 0, OK = 1, WAIT = 2, FAIL = 4, NOINPUT = 8 };
+
+
+
 /** Base class for BVS Modules.
  * This is the base class for BVS Modules.
  * Extend this class and implement the functions below.
  */
 class BVSModule
 {
-	// TODO COMMENTS to explain usage and give examples
+	// TODO COMMENTS to explain usage and give examples, add comments to BVSExampleModule
 	public:
-		BVSModule(BVSConfig& config); /**< Constructor of Module Base. */
+		BVSModule(const BVSConfig& config); /**< Constructor of Module Base. */
 		virtual ~BVSModule(); /**< Destructor of Module Base. */
 		virtual BVSStatus onLoad() = 0;
 		virtual BVSStatus preExecute() = 0;
@@ -23,8 +28,7 @@ class BVSModule
 		virtual BVSStatus onClose() = 0;
 
 	protected:
-		// TODO finish moving from module to base class
-		BVSConfig& config;
+		const BVSConfig& config;
 
 	private:
 		BVSModule(const BVSModule&) = delete; /**< -Weffc++ */

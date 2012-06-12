@@ -2,7 +2,7 @@
 
 
 
-BVSModule::BVSModule(BVSConfig& config)
+BVSModule::BVSModule(const BVSConfig& config)
 	: config(config)
 {
 
