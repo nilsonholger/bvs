@@ -1,2 +1,1 @@
-add_subdirectory(INPUT)
-add_subdirectory(OUTPUT)
+add_subdirectory(test)

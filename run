@@ -9,6 +9,7 @@ BASE="ssh://git.hyve.org:119"
 function bvs_clean {
 echo ">>> make clean"
 [ -r Makefile ] && make clean
+[ -r libbvs/doc ] && rm -rf libbvs/doc
 
 DIRS="./"
 [ -r bvsd ] && DIRS+=" bvsd/"
@@ -59,6 +60,8 @@ EOF
 
 function bvs_new_module {
 [ -z $1 ] && echo "No module name given!" && exit 1
+[ -z ${1/*.*} ] && echo "Module name cannot contain '.' due to internal reasons! Please choose a different name!" && exit 1
+[ -r modules/$1 ] && echo "A module of name $1 already exits! Please choose a different name!" && exit 1
 ORIG=BVSExampleModule
 ORIGC=`echo $ORIG | tr "[:lower:]" "[:upper:]"`
 MOD=$1
@@ -67,12 +70,12 @@ cp -r libbvs/module modules/$MOD
 cd modules/$MOD
 mv $ORIG.h $MOD.h
 mv $ORIG.cc $MOD.cc
-FILES="CMakeLists.txt $MOD.h $MOD.cc"
-sed -i '' -e "s/$ORIG/$MOD/g" $FILES
-sed -i '' -e "s/$ORIGC/$MODC/g" $FILES
+FILES=(CMakeLists.txt $MOD.h $MOD.cc)
+sed -i'' -e "s/$ORIG/$MOD/g" $FILES
+sed -i'' -e "s/$ORIGC/$MODC/g" $FILES
 cd ../..
 echo "#add_subdirectory($MOD)" >> modules/CMakeLists.txt
-echo "Created $MOD, uncomment add_subdirectory($MOD) in modules/CMakeLists.txt to add it to compilation!"
+echo "Created Module $MOD! Please modify modules/CMakeLists.txt to add it to compilation!"
 }
 
 
@@ -88,7 +91,7 @@ git submodule foreach git checkout master
 
 
 function bvs_run {
-[ -n $GDB -a -r /usr/local/bin/gdb ] && GDB="/usr/local/bin/gdb"
+[ -n "$GDB" -a -r /usr/local/bin/gdb ] && GDB="/usr/local/bin/gdb"
 [ ! -r bin/bvsd ] && echo "bvsd executable not found, run make first..." && exit
 [ $# != 0 ] && (cd bin && $GDB $GDBOPTS ./bvsd "$@") || (cd bin && $GDB $GDBOPTS ./bvsd --bvs.config=BVSConfig.txt)
 }

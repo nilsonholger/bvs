@@ -1,24 +1,31 @@
-# settings for BVS library
+# settings for BVS library -- vim:ft=config:
 [BVS]
 logSystem = true
 logConsole = true
 logFile = BVSLog.txt
 # logFile = +BVSLog.txt # append to log file
+logVerbosity = 0
 
 moduleThreads = ON
 forceModuleThreads = false
 
-# list of modules, a '+' as prefix to the name starts module in own thread, if permitted
-modules = INPUT
-+modules = OUTPUT
-+modules = +OUTPUT
-+modules = +OUTPUT
+# list of modules, '+' prefix starts module in own thread (if permitted)
+# TODO update (usage of '.')
+modules = test
++modules = +test2.test
+#+modules = +test3.test
+#+modules = +test4.test
+#+modules = +test5.test
+#+modules = +test6.test
+#+modules = +test7.test
+#+modules = +test8.test
+#+modules = +test9.test
+#+modules = +test10.test
 
 
 
 # Logger level settings
 [BVSLogger]
-All = 3
 #BVS = 0
 #BVSDaemon = 0
 #BVSMaster = 0
