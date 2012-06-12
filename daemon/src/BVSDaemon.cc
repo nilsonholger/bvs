@@ -95,7 +95,7 @@ int testConfig()
 	LOG(0, "Getting string: " << s);
 	LOG(0, "Getting bool: " << b);
 
-	i = bvs->config.getValue<int>("BVSLogger.All", 0);
+	i = bvs->config.getValue<int>("BVS.logVerbosity", 0);
 	s = bvs->config.getValue<std::string>("BVS.logFile", std::string("default"));
 	b = bvs->config.getValue<bool>("BVS.logSystem", false);
 	LOG(0, "Getting int directly: " << i);
