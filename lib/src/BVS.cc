@@ -146,6 +146,7 @@ void BVS::registerModule(const std::string& identifier, BVSModule* module)
 
 BVS& BVS::run()
 {
+	// TODO control state by using system flag in master, e.g. run, paus, step, step_back, quit
 	master->control();
 
 	return *this;

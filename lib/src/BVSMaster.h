@@ -50,6 +50,7 @@ class BVSMaster
 		 */
 		BVSMaster& load(const std::string& identifier, bool asThread);
 
+		// TODO main control thread
 		BVSMaster& control();
 
 		/** Controls given module.

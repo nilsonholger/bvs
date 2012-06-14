@@ -101,7 +101,7 @@ BVSMaster& BVSMaster::load(const std::string& id, bool asThread)
 
 BVSMaster& BVSMaster::control()
 {
-	// first run: activate all modules
+	// first run: activate all threaded modules
 	for (auto it: modules)
 	{
 		//if (it.second->asThread)

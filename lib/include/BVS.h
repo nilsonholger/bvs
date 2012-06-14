@@ -112,9 +112,6 @@ class BVS
 		BVSLogger logger; /**< BVS' logging instance. */
 		BVSMaster* master; /**< BVS' module loader. */
 
-		/** Map of modules known by the BVS framework. */
-		// TODO static BVSModuleMap modules;
-
 		BVS(const BVS&) = delete; /**< -Weffc++ */
 		BVS& operator=(const BVS&) = delete; /**< -Weffc++ */
 };
