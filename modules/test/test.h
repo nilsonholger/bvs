@@ -6,7 +6,7 @@
 class test : public BVSModule
 {
 	public:
-		test(const BVSConfig& config);
+		test(const std::string identifier, const BVSConfig& config);
 		~test();
 		BVSStatus onLoad();
 		BVSStatus preExecute();

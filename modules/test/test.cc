@@ -2,9 +2,9 @@
 
 
 
-test::test(const BVSConfig& config)
+test::test(const std::string identifier, const BVSConfig& config)
 	: BVSModule(config)
-	, identifier("test")
+	, identifier(identifier)
 	, logger(identifier)
 	, config(config)
 {
@@ -70,7 +70,8 @@ extern "C" {
 	// register with framework
 	int bvsRegisterModule(std::string identifier, BVSConfig& config)
 	{
-		BVS::registerModule(identifier, new test(config));
+		BVS::registerModule(identifier, new test(identifier, config));
+
 		return 0;
 	}
 }
