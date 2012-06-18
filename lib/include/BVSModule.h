@@ -6,7 +6,7 @@
 
 
 /** BVSStatus possibilities. */
-enum BVSStatus { NONE = 0, OK = 1, WAIT = 2, FAIL = 4, NOINPUT = 8 };
+enum class BVSStatus { NONE = 0, OK = 1, WAIT = 2, FAIL = 4, NOINPUT = 8 };
 
 
 

@@ -25,6 +25,11 @@ struct BVSModuleData;
 
 
 
+// TODO
+enum class BVSFlag { QUIT = 0, NOOP = 1, RUN = 2, STEP = 3, STEP_BACK = 4 };
+
+
+
 /** Module List. */
 typedef std::map<std::string, std::shared_ptr<BVSModuleData>, std::less<std::string>> BVSModuleMap;
 
@@ -56,6 +61,8 @@ class BVSMaster
 		BVSMaster& control();
 
 		/** Controls given module.
+		 * TODO explain important difference inside function if called by threaded
+		 * module
 		 * @param[in] data Module meta data.
 		 * @return Reference to object.
 		 */
@@ -72,6 +79,8 @@ class BVSMaster
 		 */
 		BVSMaster& unloadAll();
 
+		BVSFlag flag;
+
 	private:
 		/** Map of registered modules and their metadata. */
 		static BVSModuleMap modules;
@@ -87,7 +96,6 @@ class BVSMaster
 		std::unique_lock<std::mutex> masterLock;
 		std::condition_variable masterCond;
 
-		std::atomic<int> state;
 		std::mutex threadMutex;
 		std::condition_variable threadCond;
 
@@ -105,9 +113,9 @@ struct BVSModuleData
 	BVSModule* module; /**< Pointer to the module. */
 	void* dlib; /**< Dlib handle to module's lib. */
 	std::thread thread; /**< Thread handle of module. */
-	// TODO needs BVS system state information...
-	// BVSStatus status;
 	bool asThread; /**< Determines if module runs in its own thread. */
+	BVSFlag flag; /**< System control flag for module. */
+	BVSStatus status; /**< Return Status of module functions. */
 };
 
 

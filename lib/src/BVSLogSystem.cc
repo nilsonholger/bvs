@@ -206,8 +206,10 @@ BVSLogSystem& BVSLogSystem::updateLoggerLevels(BVSConfig& config)
 	// check for LOGLEVEL.* variables and update logger levels
 	for (auto it : config.dumpOptionStore())
 	{
+		std::cerr << it.first << std::endl;
 		if (it.first.substr(0, 10)=="BVSLogger.")
 		{
+			// TODO fix, we broke this as we made everything inside optionStore lower case
 			loggerLevels[it.first.substr(10, std::string::npos)] = config.getValue<unsigned short>(it.first, 0);
 		}
 	}
