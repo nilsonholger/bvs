@@ -1,11 +1,13 @@
 #ifndef BVSMASTER_H
 #define BVSMASTER_H
 
+#include<atomic>
 #include<cstdlib>
 #include<condition_variable>
 #include<iostream>
 #include<list>
 #include<map>
+#include<mutex>
 #include<string>
 #include<thread>
 #include<vector>
@@ -74,11 +76,20 @@ class BVSMaster
 		/** Map of registered modules and their metadata. */
 		static BVSModuleMap modules;
 
-		//std::condition_variable controller;
-		//std::mutex threadMutex;
-
 		BVSLogger logger; /**< Logger metadata. */
 		BVSConfig& config; /**< Config reference. */
+
+		// TODO comment
+		std::atomic<int> runningThreads;
+		int threadedModules;
+
+		std::mutex masterMutex;
+		std::unique_lock<std::mutex> masterLock;
+		std::condition_variable masterCond;
+
+		std::atomic<int> state;
+		std::mutex threadMutex;
+		std::condition_variable threadCond;
 
 		BVSMaster(const BVSMaster&) = delete; /**< -Weffc++ */
 		BVSMaster& operator=(const BVSMaster&) = delete; /**< -Weffc++ */
@@ -89,12 +100,14 @@ class BVSMaster
 /** Module metadata. */
 struct BVSModuleData
 {
-	std::string name; /**< Name of module. */
-	BVSModule* module; /**< Pointer to the module. */
+	std::string identifier; /**< Name of module. */
 	std::string library; /**< Library to load module from. */
+	BVSModule* module; /**< Pointer to the module. */
 	void* dlib; /**< Dlib handle to module's lib. */
-	bool asThread; /**< Determines if module runs in its own thread. */
 	std::thread thread; /**< Thread handle of module. */
+	// TODO needs BVS system state information...
+	// BVSStatus status;
+	bool asThread; /**< Determines if module runs in its own thread. */
 };
 
 

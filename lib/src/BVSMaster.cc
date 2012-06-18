@@ -7,10 +7,17 @@ BVSModuleMap BVSMaster::modules;
 
 
 BVSMaster::BVSMaster(BVSConfig& config)
-	//, controller()
-	//, threadMutex()
 	: logger("BVSMaster")
 	, config(config)
+	, runningThreads(0)
+	, threadedModules(0)
+	, masterMutex()
+	, masterLock(masterMutex)
+	, masterCond()
+	, state(0)
+	, threadMutex()
+	//, threadLock(threadMutex)
+	, threadCond()
 {
 
 }
@@ -19,7 +26,7 @@ BVSMaster::BVSMaster(BVSConfig& config)
 
 void BVSMaster::registerModule(const std::string& identifier, BVSModule* module)
 {
-	modules[identifier] = std::shared_ptr<BVSModuleData>(new BVSModuleData{identifier, module, std::string(), nullptr, false, std::thread()});
+	modules[identifier] = std::shared_ptr<BVSModuleData>(new BVSModuleData{identifier, std::string(), module, nullptr, std::thread(), false});
 }
 
 
@@ -72,7 +79,7 @@ BVSMaster& BVSMaster::load(const std::string& id, bool asThread)
 		exit(-1);
 	}
 	bvsRegisterModule(identifier, config);
-	LOG(2, identifier << " loaded and registered!");
+	LOG(3, identifier << " loaded and registered!");
 
 	// save handle and library name for later use
 	modules[identifier]->dlib = dlib;
@@ -84,13 +91,15 @@ BVSMaster& BVSMaster::load(const std::string& id, bool asThread)
 	// set threading metadata if needed
 	if (asThread==true)
 	{
-		LOG(2, identifier << " now running in own thread!");
+		LOG(3, identifier << " will be started in own thread!");
 		modules[identifier]->asThread = true;
 		modules[identifier]->thread = std::thread(&BVSMaster::moduleController, this, modules[identifier]);
+		//runningThreads++;
+		threadedModules++;
 	}
 	else
 	{
-		LOG(2, identifier << " controlled by BVSMaster!");
+		LOG(3, identifier << " will be controlled by BVSMaster!");
 		modules[identifier]->asThread = false;
 	}
 
@@ -101,20 +110,41 @@ BVSMaster& BVSMaster::load(const std::string& id, bool asThread)
 
 BVSMaster& BVSMaster::control()
 {
-	// first run: activate all threaded modules
-	for (auto it: modules)
-	{
-		//if (it.second->asThread)
-		//it.second-> unlock mutex
-	}
+	masterCond.wait(masterLock, [&](){ return threadedModules == runningThreads; });
+	runningThreads = 0;
 
-	// second run: iterate through remaining modules
-	for (auto it: modules)
+	// TODO NEXT create BVS(System)State to activacte while(true) loops
+	//while (true)
 	{
-		// skip threaded modules
-		if (it.second->asThread)
-			continue;
-		moduleController(it.second);
+		masterCond.wait(masterLock, [&](){ return runningThreads == 0; });
+		LOG(3, "starting next round!");
+
+		// first run: activate all threaded modules
+		for (auto it: modules)
+		{
+			if (it.second->asThread)
+			{
+				LOG(3, "activating: " << it.second->identifier);
+				runningThreads++;
+			}
+			//it.second-> unlock mutex
+			//TODO per thread state = RUN
+		}
+		state = 1;
+		threadCond.notify_all();
+
+		// second run: iterate through remaining modules
+		for (auto it: modules)
+		{
+			// skip threaded modules
+			if (it.second->asThread)
+				continue;
+			LOG(3, "executing: " << it.second->identifier);
+			moduleController(it.second);
+		}
+
+		LOG(3, "waiting for threads to finish!");
+		masterCond.wait(masterLock, [&](){ return runningThreads == 0; });
 	}
 
 	return *this;
@@ -124,7 +154,41 @@ BVSMaster& BVSMaster::control()
 
 BVSMaster& BVSMaster::moduleController(std::shared_ptr<BVSModuleData> data)
 {
-	LOG(0, "Control of " << data->name << "!");
+	LOG(3, "Control of " << data->identifier << "!");
+	std::unique_lock<std::mutex> threadLock(threadMutex);
+
+	if (data->asThread)
+		runningThreads++;
+
+	//while (true)
+	{
+		if (data->asThread)
+		{
+			//runningThreads--;
+			masterCond.notify_one();
+			LOG(3, data->identifier << " waiting for signal from master!");
+			threadCond.wait(threadLock, [&](){
+					LOG(0, data->identifier << " state: " << state);
+					return state != 0; });
+			//threadLock.unlock();
+		}
+
+		// TODO
+		//data->status = 
+		LOG(3, data->identifier << " executing...");
+		data->module->execute();
+
+		if (data->asThread)
+		{
+			runningThreads--;
+			masterCond.notify_one();
+			LOG(3, data->identifier << " DONE!");
+		}
+
+		// if not a thread, return control to master
+		//if (!data->asThread)
+		//	break;
+	}
 	//data->module->execute();
 
 
@@ -168,9 +232,13 @@ BVSMaster& BVSMaster::unload(const std::string& identifier)
 	// wait for thread to join
 	if (modules[identifier]->asThread == true)
 	{
+		// TODO potential pitfall if threads quits between call to joinable() and join()
 		if (modules[identifier]->thread.joinable())
+		{
 			// TODO signal thread to quit
+			LOG(0, "joining: " << identifier);
 			modules[identifier]->thread.join();
+		}
 	}
 
 	// close lib and check for errors
@@ -195,7 +263,7 @@ BVSMaster& BVSMaster::unload(const std::string& identifier)
 		LOG(0, "While closing " << modulePath << " following error occured: " << dlerror());
 		exit(-1);
 	}
-	LOG(2, identifier << " unloaded and deregistered!");
+	LOG(3, identifier << " unloaded and deregistered!");
 
 	return *this;
 }
@@ -205,7 +273,7 @@ BVSMaster& BVSMaster::unload(const std::string& identifier)
 BVSMaster& BVSMaster::unloadAll()
 {
 	for (auto it: modules)
-		unload(it.second->name);
+		unload(it.second->identifier);
 
 	modules.clear();
 

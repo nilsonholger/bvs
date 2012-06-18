@@ -6,7 +6,7 @@
 class BVSExampleModule : public BVSModule
 {
 	public:
-		BVSExampleModule(const BVSConfig& config);
+		BVSExampleModule(const std::string identifier, const BVSConfig& config);
 		~BVSExampleModule();
 		BVSStatus onLoad();
 		BVSStatus preExecute();
