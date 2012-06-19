@@ -144,10 +144,36 @@ void BVS::registerModule(const std::string& identifier, BVSModule* module)
 
 
 
+BVS& BVS::start()
+{
+	master->masterController();
+
+	return *this;
+}
+
+
+
 BVS& BVS::run()
 {
-	// TODO control state by using system flag in master, e.g. run, paus, step, step_back, quit
-	master->control();
+	master->control(BVSFlag::RUN);
+
+	return *this;
+}
+
+
+
+BVS& BVS::step()
+{
+	master->control(BVSFlag::STEP);
+
+	return *this;
+}
+
+
+
+BVS& BVS::pause()
+{
+	master->control(BVSFlag::PAUSE);
 
 	return *this;
 }
@@ -156,6 +182,7 @@ BVS& BVS::run()
 
 BVS& BVS::quit()
 {
+	master->control(BVSFlag::QUIT);
 	master->unloadAll();
 
 	return *this;

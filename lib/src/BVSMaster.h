@@ -26,7 +26,7 @@ struct BVSModuleData;
 
 
 // TODO
-enum class BVSFlag { QUIT = 0, NOOP = 1, STEP = 2, STEP_BACK = 3 };
+enum class BVSFlag { QUIT = 0, PAUSE = 1, RUN = 2, STEP = 3, STEP_BACK = 4 };
 
 
 
@@ -58,9 +58,24 @@ class BVSMaster
 		 */
 		BVSMaster& load(const std::string& identifier, bool asThread);
 
-		// TODO thread option?
-		BVSMaster& control();
+		// TODO comment
+		BVSMaster& control(const BVSFlag controlFlag = BVSFlag::PAUSE);
 
+		// TODO comment
+		BVSMaster& masterController(const bool forkMasterController = true);
+
+		/** Unload the given module.
+		 * @param[in] moduleName The name of the module.
+		 * @return Reference to object.
+		 */
+		BVSMaster& unload(const std::string& moduleName, const bool eraseFromMap = true);
+
+		/** Unload all modules.
+		 * @return Reference to object.
+		 */
+		BVSMaster& unloadAll();
+
+	private:
 		/** Controls given module.
 		 * @param[in] data Module meta data.
 		 * @return Reference to object.
@@ -73,20 +88,9 @@ class BVSMaster
 		 */
 		BVSMaster& threadController(std::shared_ptr<BVSModuleData> data);
 
-		/** Unload the given module.
-		 * @param[in] moduleName The name of the module.
-		 * @return Reference to object.
-		 */
-		BVSMaster& unload(const std::string& moduleName);
+		// TODO comment
+		std::atomic<BVSFlag> flag;
 
-		/** Unload all modules.
-		 * @return Reference to object.
-		 */
-		BVSMaster& unloadAll();
-
-		BVSFlag flag;
-
-	private:
 		/** Map of registered modules and their metadata. */
 		static BVSModuleMap modules;
 
@@ -103,6 +107,8 @@ class BVSMaster
 
 		std::mutex threadMutex;
 		std::condition_variable threadCond;
+
+		std::thread controlThread;
 
 		BVSMaster(const BVSMaster&) = delete; /**< -Weffc++ */
 		BVSMaster& operator=(const BVSMaster&) = delete; /**< -Weffc++ */

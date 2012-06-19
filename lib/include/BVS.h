@@ -98,12 +98,14 @@ class BVS
 		static void registerModule(const std::string& identifier, BVSModule* module);
 
 		// TODO build data exchange between modules
+
+		// TODO comment IMPORTANT, maybe include forkMasterController, explain difference in usage
+		BVS& start();
 		BVS& run();
-		//void step();
-		//void pause();
+		BVS& step();
+		BVS& pause();
 		//void stop();
 		BVS& quit();
-		//~BVS();
 
 		BVSConfig config; /**< BVS' config system. */
 
