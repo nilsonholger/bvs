@@ -1,4 +1,5 @@
 #include "BVS.h"
+#include<unistd.h>
 
 
 
@@ -23,11 +24,35 @@ int main(int argc, char** argv)
 	LOG(2, "loading Modules!");
 	bvs->loadModules();
 
-	LOG(2, "run!");
+	LOG(2, "starting!");
+	bvs->start();
+	sleep(1);
+	LOG(2, "STEP!!!");
+	bvs->step();
+	sleep(1);
+	LOG(2, "RUN!!!");
 	bvs->run();
+	sleep(1);
+	LOG(2, "PAUSING!!!");
+	bvs->pause();
+	sleep(1);
+	/*
+	bvs->pause();
+	LOG(2, "sleep 1");
+	sleep(1);
+	LOG(2, "step...");
+	bvs->step();
+	LOG(2, "sleep 1");
+	sleep(1);
+	LOG(2, "step...");
+	bvs->step();
+	LOG(2, "sleep 1");
+	sleep(1);
+	*/
 
+	LOG(0, "quitting...");
 	bvs->quit();
-	LOG(0, "finishing");
+	LOG(0, "finished");
 
 	return 0;
 }
