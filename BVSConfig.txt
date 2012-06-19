@@ -11,19 +11,19 @@ forceModuleThreads = false
 
 # list of modules, '+' prefix starts module in own thread (if permitted)
 # TODO update (usage of '.')
-modules = master.test
-#+modules = master2.test
-#+modules = master3.test
-#+modules = master4.test
-#+modules = master5.test
-#+modules = master6.test
-#+modules = master7.test
-#+modules = master8.test
-#+modules = master9.test
-#+modules = master10.test
+modules = main.test
+#+modules = main2.test
+#+modules = main3.test
+#+modules = main4.test
+#+modules = main5.test
+#+modules = main6.test
+#+modules = main7.test
+#+modules = main8.test
+#+modules = main9.test
+#+modules = main10.test
 +modules = +thread11.test
-+modules = +thread12.test
-+modules = +thread13.test
+#+modules = +thread12.test
+#+modules = +thread13.test
 #+modules = +thread14.test
 #+modules = +thread15.test
 #+modules = +thread16.test
