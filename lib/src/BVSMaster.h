@@ -26,7 +26,7 @@ struct BVSModuleData;
 
 
 // TODO
-enum class BVSFlag { QUIT = 0, NOOP = 1, RUN = 2, STEP = 3, STEP_BACK = 4 };
+enum class BVSFlag { QUIT = 0, NOOP = 1, STEP = 2, STEP_BACK = 3 };
 
 
 
@@ -49,24 +49,29 @@ class BVSMaster
 		 */
 		static void registerModule(const std::string& identifier, BVSModule* module);
 
-		/** Load the given module, executes bvsRegisterModule function in module
-		 * to register it with the system.
+		/** Load the given module.
+		 * Executes bvsRegisterModule function in module to register it with the
+		 * system.
 		 * @param[in] identifier The name of the module.
 		 * @param[in] asThread Whether to load the module inside a thread or not.
 		 * @return Reference to object.
 		 */
 		BVSMaster& load(const std::string& identifier, bool asThread);
 
-		// TODO main control thread
+		// TODO thread option?
 		BVSMaster& control();
 
 		/** Controls given module.
-		 * TODO explain important difference inside function if called by threaded
-		 * module
 		 * @param[in] data Module meta data.
 		 * @return Reference to object.
 		 */
 		BVSMaster& moduleController(std::shared_ptr<BVSModuleData> data);
+
+		/** Controls a module started as a thread.
+		 * @param[in] data Module meta data.
+		 * @return Reference to object.
+		 */
+		BVSMaster& threadController(std::shared_ptr<BVSModuleData> data);
 
 		/** Unload the given module.
 		 * @param[in] moduleName The name of the module.

@@ -7,7 +7,7 @@ BVSModuleMap BVSMaster::modules;
 
 
 BVSMaster::BVSMaster(BVSConfig& config)
-	: flag(BVSFlag::RUN)
+	: flag(BVSFlag::STEP) // TODO NOOP
 	, logger("BVSMaster")
 	, config(config)
 	, runningThreads(0)
@@ -84,22 +84,21 @@ BVSMaster& BVSMaster::load(const std::string& id, bool asThread)
 	modules[identifier]->dlib = dlib;
 	modules[identifier]->library = library;
 
-	// call library module load function
-	modules[identifier]->module->onLoad();
-
 	// set threading metadata if needed
 	if (asThread==true)
 	{
-		LOG(2, identifier << " will be started in own thread!");
+		LOG(3, identifier << " will be started in own thread!");
 		modules[identifier]->asThread = true;
-		modules[identifier]->thread = std::thread(&BVSMaster::moduleController, this, modules[identifier]);
-		//runningThreads++;
+		modules[identifier]->thread = std::thread(&BVSMaster::threadController, this, modules[identifier]);
 		threadedModules++;
 	}
 	else
 	{
-		LOG(2, identifier << " will be controlled by BVSMaster!");
+		LOG(3, identifier << " will be controlled by BVSMaster!");
 		modules[identifier]->asThread = false;
+
+		// call library module load function
+		modules[identifier]->module->onLoad();
 	}
 
 	return *this;
@@ -109,7 +108,6 @@ BVSMaster& BVSMaster::load(const std::string& id, bool asThread)
 
 BVSMaster& BVSMaster::control()
 {
-	int round = 0;
 	// wait until all started threads have reached their control loop and reset runningThreads
 	masterCond.wait(masterLock, [&](){ return threadedModules == runningThreads; });
 	runningThreads = 0;
@@ -117,14 +115,6 @@ BVSMaster& BVSMaster::control()
 	// main loop, repeat until explicit break is reached
 	while (bool(flag))
 	{
-		// TODO remove and set flag from outside
-		if (round > 2)
-		{
-			LOG(0, "QUIT");
-			flag = BVSFlag::QUIT;
-		}
-
-		round++;
 		// wait until all threads are synchronized
 		masterCond.wait(masterLock, [&](){ return runningThreads == 0; });
 
@@ -135,11 +125,11 @@ BVSMaster& BVSMaster::control()
 				break;
 			case BVSFlag::NOOP:
 				break;
-			case BVSFlag::RUN:
+			case BVSFlag::STEP:
 				LOG(3, "starting next round, notifying threads and executing modules!");
 
 				// first run: activate all threaded modules
-				for (auto it: modules)
+				for (auto& it: modules)
 				{
 					it.second->flag = flag;
 					if (it.second->asThread)
@@ -148,7 +138,7 @@ BVSMaster& BVSMaster::control()
 				threadCond.notify_all();
 
 				// second run: iterate through remaining modules
-				for (auto it: modules)
+				for (auto& it: modules)
 				{
 					// skip threaded modules
 					if (it.second->asThread)
@@ -157,14 +147,14 @@ BVSMaster& BVSMaster::control()
 				}
 
 				LOG(3, "waiting for threads to finish!");
-				break;
-			case BVSFlag::STEP:
+
+				// reset flag
+				flag = BVSFlag::NOOP;
+
 				break;
 			case BVSFlag::STEP_BACK:
 				break;
 		}
-
-		sleep (1);
 	}
 
 	return *this;
@@ -174,51 +164,55 @@ BVSMaster& BVSMaster::control()
 
 BVSMaster& BVSMaster::moduleController(std::shared_ptr<BVSModuleData> data)
 {
+	switch (data->flag)
+	{
+		case BVSFlag::QUIT:
+			data->module->onClose();
+			break;
+		case BVSFlag::NOOP:
+			break;
+		case BVSFlag::STEP:
+			// reset flag
+			data->flag = BVSFlag::NOOP;
+
+			// call execution functions
+			data->module->preExecute();
+			data->status = data->module->execute();
+			data->module->postExecute();
+			break;
+		case BVSFlag::STEP_BACK:
+			data->flag = BVSFlag::NOOP;
+			break;
+	}
+
+	return *this;
+}
+
+
+
+BVSMaster& BVSMaster::threadController(std::shared_ptr<BVSModuleData> data)
+{
+	// call library module load function
+	data->module->onLoad();
+
 	// acquire lock needed for conditional variable
 	std::unique_lock<std::mutex> threadLock(threadMutex);
 
-	// if run by thread, tell system that thread has started
-	if (data->asThread)
-		runningThreads++;
+	// tell system that thread has started
+	runningThreads++;
 
 	while (bool(data->flag))
 	{
 		// wait for master to announce next round
-		if (data->asThread)
-		{
-			masterCond.notify_one();
-			threadCond.wait(threadLock, [&](){ return data->flag != BVSFlag::NOOP; });
-		}
+		masterCond.notify_one();
+		threadCond.wait(threadLock, [&](){ return data->flag != BVSFlag::NOOP; });
 
-		switch (data->flag)
-		{
-			case BVSFlag::QUIT:
-				break;
-			case BVSFlag::NOOP:
-				break;
-			case BVSFlag::RUN:
-				data->flag = BVSFlag::NOOP;
-				LOG(3, data->identifier << " calling execute()!");
-				data->status = data->module->execute();
-				break;
-			case BVSFlag::STEP:
-				data->flag = BVSFlag::NOOP;
-				break;
-			case BVSFlag::STEP_BACK:
-				data->flag = BVSFlag::NOOP;
-				break;
-		}
-
-		// if not a thread, return control to master
-		if (!data->asThread)
-			break;
+		// call module control
+		moduleController(data);
 
 		// tell master that thread has finished this round
-		if (data->asThread)
-		{
-			runningThreads--;
-			masterCond.notify_one();
-		}
+		runningThreads--;
+		masterCond.notify_one();
 	}
 
 	return *this;
