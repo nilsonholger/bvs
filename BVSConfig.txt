@@ -38,4 +38,4 @@ modules = master.test
 [BVSLogger]
 #BVS = 0
 #BVSDaemon = 0
-BVSMaster = 0
+#BVSMaster = 0
