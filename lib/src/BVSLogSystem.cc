@@ -1,3 +1,5 @@
+#include<algorithm>
+
 #include "BVSLogSystem.h"
 
 
@@ -24,6 +26,7 @@ std::shared_ptr<BVSLogSystem> BVSLogSystem::connectToLogSystem()
 
 	BVSLogSystem::BVSLogSystem()
 	: loggerLevels()
+	, tmpName()
 	, namePadding(0)
 	, systemVerbosity(3)
 	, outMutex()
@@ -43,10 +46,14 @@ std::ostream& BVSLogSystem::out(const BVSLogger& logger, int level)
 {
 	outMutex.lock();
 
+	// convert name to lowercase
+	tmpName = logger.getName();
+	std::transform(tmpName.begin(), tmpName.end(), tmpName.begin(), ::tolower);
+
 	// check verbosity of system and logger
 	if (level > systemVerbosity) return nullStream;
 	if (level > logger.verbosity) return nullStream;
-	if (level > loggerLevels[logger.getName()]) return nullStream;
+	if (level > loggerLevels[tmpName]) return nullStream;
 
 	// select (enabled/open) output stream according to selected target
 	std::ostream* out;
@@ -104,9 +111,13 @@ BVSLogSystem& BVSLogSystem::announce(const BVSLogger& logger)
 		namePadding = logger.getName().length();
 	}
 
-	if (loggerLevels.find(logger.getName())==loggerLevels.end())
+	// convert name to lowercase
+	tmpName = logger.getName();
+	std::transform(tmpName.begin(), tmpName.end(), tmpName.begin(), ::tolower);
+
+	if (loggerLevels.find(tmpName)==loggerLevels.end())
 	{
-		loggerLevels[logger.getName()] = logger.verbosity;
+		loggerLevels[tmpName] = logger.verbosity;
 	}
 
 	return *this;
@@ -207,10 +218,10 @@ BVSLogSystem& BVSLogSystem::updateLoggerLevels(BVSConfig& config)
 	for (auto it : config.dumpOptionStore())
 	{
 		std::cerr << it.first << std::endl;
-		if (it.first.substr(0, 10)=="BVSLogger.")
+		if (it.first.substr(0, 10)=="bvslogger.")
 		{
-			// TODO fix, we broke this as we made everything inside optionStore lower case
 			loggerLevels[it.first.substr(10, std::string::npos)] = config.getValue<unsigned short>(it.first, 0);
+			std::cerr << loggerLevels[it.first.substr(10, std::string::npos)] << std::endl;
 		}
 	}
 

@@ -109,8 +109,11 @@ class BVSLogSystem
 		*/
 		BVSLogSystem();
 
-		/** Logger clients' levels from config(s). */
+		/** Logger clients' levels from config(s) in lowercase. */
 		std::map<std::string, int, std::less<std::string>> loggerLevels;
+
+		/** Temp object needed for output and announce function. */
+		std::string tmpName;
 
 		/** Name padding size for fancy output, updated in announce function. */
 		unsigned int namePadding;
