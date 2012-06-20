@@ -24,7 +24,7 @@ std::shared_ptr<BVSLogSystem> BVSLogSystem::connectToLogSystem()
 
 
 
-	BVSLogSystem::BVSLogSystem()
+BVSLogSystem::BVSLogSystem()
 	: loggerLevels()
 	, tmpName()
 	, namePadding(0)
@@ -32,7 +32,7 @@ std::shared_ptr<BVSLogSystem> BVSLogSystem::connectToLogSystem()
 	, outMutex()
 	, outCLI(std::cout.rdbuf())
 	, outFile()
-	  , outBoth(outCLI, outFile)
+	, outBoth(outCLI, outFile)
 {
 	// show bools as "true"/"false" instead of "0"/"1"
 	outCLI.setf(outCLI.boolalpha);
@@ -176,7 +176,7 @@ BVSLogSystem& BVSLogSystem::disableLogConsole()
 BVSLogSystem& BVSLogSystem::updateSettings(BVSConfig& config)
 {
 	// disable log system
-	if(config.getValue<bool>("BVS.logSystem", false)==false)
+	if(config.getValue<bool>("BVS.logSystem", BVS_LOG_SYSTEM)==false && BVS_LOG_SYSTEM)
 	{
 		systemVerbosity = 0;
 		disableLogConsole();
@@ -186,13 +186,13 @@ BVSLogSystem& BVSLogSystem::updateSettings(BVSConfig& config)
 	}
 
 	// disable console log output
-	if(config.getValue<bool>("BVS.logConsole", false)==false)
+	if(config.getValue<bool>("BVS.logConsole", BVS_LOG_TO_CONSOLE)==false)
 	{
 		disableLogConsole();
 	}
 
 	// enable log file, append if selected
-	std::string configFile = config.getValue<std::string>("BVS.logFile", std::string());
+	std::string configFile = config.getValue<std::string>("BVS.logFile", BVS_LOG_TO_LOGFILE);
 	bool append = false;
 	if(!configFile.empty())
 	{
@@ -205,7 +205,7 @@ BVSLogSystem& BVSLogSystem::updateSettings(BVSConfig& config)
 	}
 
 	// check log system verbosity
-	systemVerbosity = config.getValue<unsigned short>("BVS.logVerbosity", 3);
+	systemVerbosity = config.getValue<unsigned short>("BVS.logVerbosity", BVS_LOG_SYSTEM_VERBOSITY);
 
 	return *this;
 }
@@ -219,7 +219,7 @@ BVSLogSystem& BVSLogSystem::updateLoggerLevels(BVSConfig& config)
 	{
 		if (it.first.substr(0, 10)=="bvslogger.")
 		{
-			loggerLevels[it.first.substr(10, std::string::npos)] = config.getValue<unsigned short>(it.first, 0);
+			loggerLevels[it.first.substr(10, std::string::npos)] = config.getValue<unsigned short>(it.first, BVS_LOG_CLIENT_DEFAULT_VERBOSITY);
 		}
 	}
 

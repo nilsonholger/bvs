@@ -21,8 +21,6 @@ BVS& BVS::loadModules()
 	// get module list and thread settings from config
 	std::vector<std::string> moduleList;
 	config.getValue("BVS.modules", moduleList);
-	bool moduleThreads = config.getValue<bool>("BVS.moduleThreads", false);
-	bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads", false);
 
 	// check length
 	if (moduleList.size()==0)
@@ -44,12 +42,6 @@ BVS& BVS::loadModules()
 			asThread = true;
 		}
 
-		if (forceModuleThreads)
-			asThread = true;
-
-		if (!moduleThreads)
-			asThread = false;
-
 		loadModule(it , asThread);
 	}
 
@@ -60,6 +52,15 @@ BVS& BVS::loadModules()
 
 BVS& BVS::loadModule(const std::string& identifier, bool asThread)
 {
+	bool moduleThreads = config.getValue<bool>("BVS.moduleThreads", BVS_MODULE_THREADS);
+	bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads", BVS_MODULE_FORCE_THREADS);
+
+	if (forceModuleThreads)
+		asThread = true;
+
+	if (!moduleThreads)
+		asThread = false;
+
 	master->load(identifier, asThread);
 
 	return *this;

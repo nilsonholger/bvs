@@ -13,10 +13,10 @@
 
 
 /** Macro to use with BVSLogger. */
-#ifndef BVS_LOG_DISABLED
+#if (BVS_LOG_SYSTEM)
 #define LOG(level, args) { logger.out(level) << args << std::endl; logger.endl(); }
 #else
-#define LOG(level, args)
+#define LOG(level, args) { }
 #endif
 
 
