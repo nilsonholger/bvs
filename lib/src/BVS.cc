@@ -156,7 +156,7 @@ BVS& BVS::start()
 
 BVS& BVS::run()
 {
-	master->control(BVSFlag::RUN);
+	master->control(BVSSystemFlag::RUN);
 
 	return *this;
 }
@@ -165,7 +165,7 @@ BVS& BVS::run()
 
 BVS& BVS::step()
 {
-	master->control(BVSFlag::STEP);
+	master->control(BVSSystemFlag::STEP);
 
 	return *this;
 }
@@ -174,7 +174,7 @@ BVS& BVS::step()
 
 BVS& BVS::pause()
 {
-	master->control(BVSFlag::PAUSE);
+	master->control(BVSSystemFlag::PAUSE);
 
 	return *this;
 }
@@ -183,7 +183,7 @@ BVS& BVS::pause()
 
 BVS& BVS::quit()
 {
-	master->control(BVSFlag::QUIT);
+	master->control(BVSSystemFlag::QUIT);
 	master->unloadAll();
 
 	return *this;

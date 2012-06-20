@@ -8,7 +8,7 @@ BVSModuleMap BVSMaster::modules;
 
 
 BVSMaster::BVSMaster(BVSConfig& config)
-	: flag(BVSFlag::PAUSE)
+	: flag(BVSSystemFlag::PAUSE)
 	, logger("BVSMaster")
 	, config(config)
 	, runningThreads(0)
@@ -27,7 +27,7 @@ BVSMaster::BVSMaster(BVSConfig& config)
 
 void BVSMaster::registerModule(const std::string& identifier, BVSModule* module)
 {
-	modules[identifier] = std::shared_ptr<BVSModuleData>(new BVSModuleData{identifier, std::string(), module, nullptr, std::thread(), false, BVSFlag::PAUSE, BVSStatus::NONE});
+	modules[identifier] = std::shared_ptr<BVSModuleData>(new BVSModuleData{identifier, std::string(), module, nullptr, std::thread(), false, BVSModuleFlag::WAIT, BVSStatus::NONE});
 }
 
 
@@ -108,7 +108,7 @@ BVSMaster& BVSMaster::load(const std::string& id, bool asThread)
 
 
 
-BVSMaster& BVSMaster::control(const BVSFlag controlFlag)
+BVSMaster& BVSMaster::control(const BVSSystemFlag controlFlag)
 {
 	LOG(3, "control() called with flag: " << (int)controlFlag);
 	flag = controlFlag;
@@ -126,7 +126,7 @@ BVSMaster& BVSMaster::control(const BVSFlag controlFlag)
 	}
 
 	// on quitting, wait for control thread if necessary
-	if (controlFlag == BVSFlag::QUIT)
+	if (controlFlag == BVSSystemFlag::QUIT)
 	{
 		if (controlThread.joinable())
 		{
@@ -144,7 +144,7 @@ BVSMaster& BVSMaster::masterController(const bool forkMasterController)
 {
 	if (forkMasterController)
 	{
-		LOG(2, "forking master controller!");
+		LOG(2, "master controller forking, now running in its own thread!");
 		//create thread with this function and this object
 		controlThread = std::thread(&BVSMaster::masterController, this, false);
 		return *this;
@@ -156,7 +156,7 @@ BVSMaster& BVSMaster::masterController(const bool forkMasterController)
 	runningThreads = 0;
 
 	// main loop, repeat until BVSFlag::QUIT is set
-	while (flag != BVSFlag::QUIT)
+	while (flag != BVSSystemFlag::QUIT)
 	{
 		// wait until all threads are synchronized
 		masterCond.wait(masterLock, [&](){ return runningThreads == 0; });
@@ -164,53 +164,42 @@ BVSMaster& BVSMaster::masterController(const bool forkMasterController)
 		// act on system flag
 		switch (flag)
 		{
-			case BVSFlag::QUIT: break;
-			case BVSFlag::PAUSE:
-				// if not own running inside own thread, return
-				if (!controlThread.joinable())
-				{
-					LOG(2, "returning from master control!");
-					return *this;
-				}
-				LOG(0, "master pausing...");
-				masterCond.wait(masterLock, [&](){ return flag != BVSFlag::PAUSE; });
-				LOG(0, "master continuing...");
+			case BVSSystemFlag::QUIT: break;
+			case BVSSystemFlag::PAUSE:
+				// if not running inside own thread, return
+				if (!controlThread.joinable()) return *this;
+				LOG(3, "master pausing...");
+				masterCond.wait(masterLock, [&](){ return flag != BVSSystemFlag::PAUSE; });
+				LOG(3, "master continuing...");
 				break;
-			case BVSFlag::RUN:
-			case BVSFlag::STEP:
-				LOG(2, "starting next round, notifying threads and executing modules!");
+			case BVSSystemFlag::RUN:
+			case BVSSystemFlag::STEP:
+				LOG(3, "starting next round, notifying threads and executing modules!");
 
-				// first run: activate all (threaded) modules
+				// set RUN flag for all modules and signal threads
 				for (auto& it: modules)
 				{
-					it.second->flag = flag;
+					it.second->flag = BVSModuleFlag::RUN;
 					if (it.second->asThread)
 						runningThreads++;
 				}
 				threadCond.notify_all();
 
-				// second run: iterate through remaining modules
+				// iterate through modules executed by master
 				for (auto& it: modules)
 				{
-					// skip threaded modules
-					if (it.second->asThread)
-						continue;
-					moduleController(it.second);
+					if (it.second->asThread) continue;
+					moduleController(*(it.second.get()));
 				}
 
-				if (flag == BVSFlag::STEP) flag = BVSFlag::PAUSE;
+				if (flag == BVSSystemFlag::STEP) flag = BVSSystemFlag::PAUSE;
 				break;
-			case BVSFlag::STEP_BACK: break;
+			case BVSSystemFlag::STEP_BACK: break;
 		}
-
 		LOG(3, "waiting for threads to finish!");
 
 		// return if not control thread
-		if (!controlThread.joinable() && flag != BVSFlag::RUN)
-		{
-			LOG(2, "returning from master control!");
-			return *this;
-		}
+		if (!controlThread.joinable() && flag != BVSSystemFlag::RUN) return *this;
 	}
 
 	return *this;
@@ -218,27 +207,23 @@ BVSMaster& BVSMaster::masterController(const bool forkMasterController)
 
 
 
-BVSMaster& BVSMaster::moduleController(std::shared_ptr<BVSModuleData> data)
+BVSMaster& BVSMaster::moduleController(BVSModuleData& data)
 {
-	switch (data->flag)
+	switch (data.flag)
 	{
-		case BVSFlag::QUIT:
-			data->module->onClose();
+		case BVSModuleFlag::QUIT:
+			data.module->onClose();
 			break;
-		case BVSFlag::PAUSE:
+		case BVSModuleFlag::WAIT:
 			break;
-		case BVSFlag::RUN:
-		case BVSFlag::STEP:
-			// reset flag
-			data->flag = BVSFlag::PAUSE;
-
+		case BVSModuleFlag::RUN:
 			// call execution functions
-			data->module->preExecute();
-			data->status = data->module->execute();
-			data->module->postExecute();
-			break;
-		case BVSFlag::STEP_BACK:
-			data->flag = BVSFlag::PAUSE;
+			data.module->preExecute();
+			data.status = data.module->execute();
+			data.module->postExecute();
+
+			// reset module flag
+			data.flag = BVSModuleFlag::WAIT;
 			break;
 	}
 
@@ -255,7 +240,7 @@ BVSMaster& BVSMaster::threadController(std::shared_ptr<BVSModuleData> data)
 	// acquire lock needed for conditional variable
 	std::unique_lock<std::mutex> threadLock(threadMutex);
 
-	// tell system that thread has started
+	// tell system that thread has started and waiting for master
 	runningThreads++;
 
 	while (bool(data->flag))
@@ -263,10 +248,10 @@ BVSMaster& BVSMaster::threadController(std::shared_ptr<BVSModuleData> data)
 		// wait for master to announce next round
 		LOG(3, data->identifier << " waiting for next round!");
 		masterCond.notify_one();
-		threadCond.wait(threadLock, [&](){ return data->flag != BVSFlag::PAUSE; });
+		threadCond.wait(threadLock, [&](){ return data->flag != BVSModuleFlag::WAIT; });
 
 		// call module control
-		moduleController(data);
+		moduleController(*(data.get()));
 
 		// tell master that thread has finished this round
 		runningThreads--;
@@ -286,7 +271,7 @@ BVSMaster& BVSMaster::unload(const std::string& identifier, const bool eraseFrom
 		if (modules[identifier]->thread.joinable())
 		{
 			// TODO signal thread to quit
-			modules[identifier]->flag = BVSFlag::QUIT;
+			modules[identifier]->flag = BVSModuleFlag::QUIT;
 			threadCond.notify_all();
 			LOG(3, "joining: " << identifier);
 			modules[identifier]->thread.join();

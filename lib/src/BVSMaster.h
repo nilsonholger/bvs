@@ -26,7 +26,8 @@ struct BVSModuleData;
 
 
 // TODO
-enum class BVSFlag { QUIT = 0, PAUSE = 1, RUN = 2, STEP = 3, STEP_BACK = 4 };
+enum class BVSSystemFlag { QUIT = 0, PAUSE = 1, RUN = 2, STEP = 3, STEP_BACK = 4 };
+enum class BVSModuleFlag { QUIT = 0, WAIT = 1, RUN = 2 };
 
 
 
@@ -59,7 +60,7 @@ class BVSMaster
 		BVSMaster& load(const std::string& identifier, bool asThread);
 
 		// TODO comment
-		BVSMaster& control(const BVSFlag controlFlag = BVSFlag::PAUSE);
+		BVSMaster& control(const BVSSystemFlag controlFlag = BVSSystemFlag::PAUSE);
 
 		// TODO comment
 		BVSMaster& masterController(const bool forkMasterController = true);
@@ -80,7 +81,7 @@ class BVSMaster
 		 * @param[in] data Module meta data.
 		 * @return Reference to object.
 		 */
-		BVSMaster& moduleController(std::shared_ptr<BVSModuleData> data);
+		BVSMaster& moduleController(BVSModuleData& data);
 
 		/** Controls a module started as a thread.
 		 * @param[in] data Module meta data.
@@ -89,7 +90,7 @@ class BVSMaster
 		BVSMaster& threadController(std::shared_ptr<BVSModuleData> data);
 
 		// TODO comment
-		std::atomic<BVSFlag> flag;
+		BVSSystemFlag flag;
 
 		/** Map of registered modules and their metadata. */
 		static BVSModuleMap modules;
@@ -125,7 +126,7 @@ struct BVSModuleData
 	void* dlib; /**< Dlib handle to module's lib. */
 	std::thread thread; /**< Thread handle of module. */
 	bool asThread; /**< Determines if module runs in its own thread. */
-	BVSFlag flag; /**< System control flag for module. */
+	BVSModuleFlag flag; /**< System control flag for module. */
 	BVSStatus status; /**< Return Status of module functions. */
 };
 
