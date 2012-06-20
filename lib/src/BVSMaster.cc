@@ -159,7 +159,7 @@ BVSMaster& BVSMaster::masterController(const bool forkMasterController)
 	while (flag != BVSSystemFlag::QUIT)
 	{
 		// wait until all threads are synchronized
-		masterCond.wait(masterLock, [&](){ return runningThreads == 0; });
+		masterCond.wait_for(masterLock, std::chrono::milliseconds(100), [&](){ return runningThreads == 0; });
 
 		// act on system flag
 		switch (flag)
@@ -240,7 +240,7 @@ BVSMaster& BVSMaster::threadController(std::shared_ptr<BVSModuleData> data)
 	// acquire lock needed for conditional variable
 	std::unique_lock<std::mutex> threadLock(threadMutex);
 
-	// tell system that thread has started and waiting for master
+	// tell system that thread has started
 	runningThreads++;
 
 	while (bool(data->flag))
@@ -255,7 +255,6 @@ BVSMaster& BVSMaster::threadController(std::shared_ptr<BVSModuleData> data)
 
 		// tell master that thread has finished this round
 		runningThreads--;
-		masterCond.notify_one();
 	}
 
 	return *this;
