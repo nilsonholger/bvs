@@ -18,41 +18,54 @@ int main(int argc, char** argv)
 {
 	setup(argc, argv);
 
-	//testLogger();
-	//testConfig();
-
 	LOG(2, "loading Modules!");
 	bvs->loadModules();
 
 	LOG(2, "starting!");
 	bvs->start();
-	sleep(1);
-	LOG(2, "STEP!!!");
-	bvs->step();
-	sleep(1);
-	LOG(2, "RUN!!!");
-	bvs->run();
-	sleep(1);
-	LOG(2, "PAUSING!!!");
-	bvs->pause();
-	sleep(1);
-	/*
-	bvs->pause();
-	LOG(2, "sleep 1");
-	sleep(1);
-	LOG(2, "step...");
-	bvs->step();
-	LOG(2, "sleep 1");
-	sleep(1);
-	LOG(2, "step...");
-	bvs->step();
-	LOG(2, "sleep 1");
-	sleep(1);
-	*/
 
-	LOG(0, "quitting...");
-	bvs->quit();
-	LOG(0, "finished");
+	std::string input;
+	while (input != "q" && input != "quit")
+	{
+		std::cin >> input;
+
+		if (input == "r" || input == "run")
+		{
+			LOG(2, "RUN!!!");
+			bvs->run();
+		}
+		else if (input == "s" || input == "step")
+		{
+			LOG(2, "STEP!!!");
+			bvs->step();
+		}
+		else if (input == "p" || input == "pause")
+		{
+			LOG(2, "PAUSING!!!");
+			bvs->pause();
+		}
+		else if (input == "t" || input == "test")
+		{
+			testLogger();
+			testConfig();
+		}
+		else if (input == "q" || input == "quit")
+		{
+			LOG(2, "quitting...");
+			bvs->quit();
+			LOG(2, "finished!");
+		}
+		else if (input == "h" || input == "help")
+		{
+			std::cout << "usage:" << std::endl;
+			std::cout << "   r|run     run system until paused" << std::endl;
+			std::cout << "   s|step    advance system by one step" << std::endl;
+			std::cout << "   p|pause   pause(stop) system" << std::endl;
+			std::cout << "   t|test    call test functions" << std::endl;
+			std::cout << "   q|quit    shutdown system and quit" << std::endl;
+			std::cout << "   h|help    help" << std::endl;
+		}
+	}
 
 	return 0;
 }
@@ -61,7 +74,6 @@ int main(int argc, char** argv)
 
 int setup(int argc, char** argv)
 {
-	// start BVS
 	bvs = new BVS(argc, argv);
 	//bvs.enableLogFile("BVSLog.txt");
 	//bvs.enableLogConsole();
@@ -112,7 +124,7 @@ int testConfig()
 	int i;
 	std::string s;
 	bool b;
-	bvs->config.getValue("BVSLogger.All", i, 0)
+	bvs->config.getValue("BVS.logVerbosity", i, 0)
 		.getValue("BVS.logFile", s, std::string("default"))
 		.getValue("BVS.logSystem", b, false);
 
@@ -133,7 +145,7 @@ int testConfig()
 
 	std::vector<std::string> list;
 	bvs->config.getValue("BVS.modules", list);
-	LOG(0, "List:");
+	LOG(0, "List: BVS.modules");
 	int count = 0;
 	for (auto it : list)
 	{
