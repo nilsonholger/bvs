@@ -27,14 +27,14 @@ int main(int argc, char** argv)
 	std::string input;
 	while (input != "q" && input != "quit")
 	{
-		std::cin >> input;
+		std::getline(std::cin, input);
 
 		if (input == "r" || input == "run")
 		{
 			LOG(2, "RUN!!!");
 			bvs->run();
 		}
-		else if (input == "s" || input == "step")
+		else if (input.empty() || input == "s" || input == "step")
 		{
 			LOG(2, "STEP!!!");
 			bvs->step();
