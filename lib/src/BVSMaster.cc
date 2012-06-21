@@ -19,6 +19,7 @@ BVSMaster::BVSMaster(BVSConfig& config)
 	, threadMutex()
 	, threadCond()
 	, controlThread()
+	, round(0)
 {
 
 }
@@ -175,6 +176,7 @@ BVSMaster& BVSMaster::masterController(const bool forkMasterController)
 			case BVSSystemFlag::RUN:
 			case BVSSystemFlag::STEP:
 				LOG(3, "starting next round, notifying threads and executing modules!");
+				LOG(2, "ROUND: " << round++);
 
 				// set RUN flag for all modules and signal threads
 				for (auto& it: modules)

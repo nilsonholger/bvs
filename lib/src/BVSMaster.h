@@ -2,6 +2,7 @@
 #define BVSMASTER_H
 
 #include<atomic>
+#include<chrono>
 #include<cstdlib>
 #include<condition_variable>
 #include<iostream>
@@ -110,6 +111,8 @@ class BVSMaster
 		std::condition_variable threadCond;
 
 		std::thread controlThread;
+
+		long long round;
 
 		BVSMaster(const BVSMaster&) = delete; /**< -Weffc++ */
 		BVSMaster& operator=(const BVSMaster&) = delete; /**< -Weffc++ */

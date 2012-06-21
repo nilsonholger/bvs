@@ -3,6 +3,9 @@
 
 
 
+// NOTE: these are all defaults and most if not all of them can be changed in
+// the config
+
 /** Enable/disable the builtin logging system.
  * Also, all LOG(*) calls will be removed if disabled.
  * Possible Values: true, false
