@@ -65,7 +65,7 @@ BVSMaster& BVSMaster::load(const std::string& id, bool asThread)
 	if (modules.find(identifier)!=modules.end())
 	{
 		LOG(0, "Duplicate identifier: " << identifier);
-		LOG(0, "If you try to load a module more than once, use unique identifiers and the identifier.library syntax!");
+		LOG(0, "If you try to load a module more than once, use unique identifiers and the identifier(library).options syntax!");
 		exit(-1);
 	}
 
@@ -173,7 +173,7 @@ BVSMaster& BVSMaster::masterController(const bool forkMasterController)
 	while (flag != BVSSystemFlag::QUIT)
 	{
 		// wait until all threads are synchronized
-		masterCond.wait_for(masterLock, std::chrono::milliseconds(100), [&](){ return runningThreads.load(); });
+		if (threadedModules) masterCond.wait_for(masterLock, std::chrono::milliseconds(100), [&](){ return runningThreads.load(); });
 
 		// act on system flag
 		switch (flag)
@@ -198,7 +198,7 @@ BVSMaster& BVSMaster::masterController(const bool forkMasterController)
 					if (it.second->asThread)
 						runningThreads.fetch_add(1);
 				}
-				threadCond.notify_all();
+				if (threadedModules) threadCond.notify_all();
 
 				// iterate through modules executed by master
 				for (auto& it: modules)
@@ -286,7 +286,7 @@ BVSMaster& BVSMaster::unload(const std::string& identifier, const bool eraseFrom
 		{
 			// TODO signal thread to quit
 			modules[identifier]->flag = BVSModuleFlag::QUIT;
-			threadCond.notify_all();
+			if (threadedModules) threadCond.notify_all();
 			LOG(3, "joining: " << identifier);
 			modules[identifier]->thread.join();
 		}
