@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 
 	LOG(2, "loading Modules!");
 	bvs->loadModules();
-
+//
 	LOG(2, "starting!");
 	bvs->start();
 
