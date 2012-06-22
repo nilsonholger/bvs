@@ -35,14 +35,27 @@ void BVSMaster::registerModule(const std::string& identifier, BVSModule* module)
 
 BVSMaster& BVSMaster::load(const std::string& id, bool asThread)
 {
+	std::string identifier;
 	std::string library;
-	std::string identifier = id;
+	std::string options;
 
-	// search for '.' in identifier and separate if necessary
-	size_t separator = identifier.find_first_of('.');
+	// search for '.' in identifier and separate identifier and options
+	// TODO set INPUT/OUTPUT stuff
+	size_t separator = id.find_first_of('.');
+	if (separator!=std::string::npos)
+	{
+		identifier = id.substr(0, separator);
+		options = id.substr(separator+1, std::string::npos);
+	}
+	else
+		identifier = id;
+
+	// search for '(' in identifier and separate if necessary
+	separator = identifier.find_first_of('(');
 	if (separator!=std::string::npos)
 	{
 		library = identifier.substr(separator+1, std::string::npos);
+		library.erase(library.length()-1);
 		identifier = identifier.erase(separator, std::string::npos);
 	}
 	else
