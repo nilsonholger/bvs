@@ -84,7 +84,6 @@ function bvs_setup {
 #TODO copy BVSExampleConfig to BVSConfig.txt
 mkdir bin
 #TODO symlink BVSConfig.txt to bin
-#TODO check if git subtree exists and use it...
 git submodule update --init --recursive
 git submodule foreach git checkout master
 }
