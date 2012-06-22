@@ -9,10 +9,12 @@ logVerbosity = 3
 moduleThreads = ON
 forceModuleThreads = false
 
+
+
 # list of modules, '+' prefix starts module in own thread (if permitted)
 # TODO update (usage of '.')
-modules = main(test)
-#+modules = main2(test)
+modules = main(test).OUT(out1)
++modules = main2(test).IN(main.out1)
 #+modules = main3(test)
 #+modules = main4(test)
 #+modules = main5(test)
@@ -21,7 +23,7 @@ modules = main(test)
 #+modules = main8(test)
 #+modules = main9(test)
 #+modules = main10(test)
-+modules = +thread11(test)
+#+modules = +thread11(test)
 #+modules = +thread12(test)
 #+modules = +thread13(test)
 #+modules = +thread14(test)
