@@ -153,14 +153,14 @@ BVSMaster& BVSMaster::masterController(const bool forkMasterController)
 
 	// wait until all started threads have reached their control loop
 	masterCond.notify_one();
-	masterCond.wait(masterLock, [&](){ return threadedModules == runningThreads; });
-	runningThreads = 0;
+	masterCond.wait(masterLock, [&](){ return threadedModules == runningThreads.load(); });
+	runningThreads.store(0);
 
 	// main loop, repeat until BVSFlag::QUIT is set
 	while (flag != BVSSystemFlag::QUIT)
 	{
 		// wait until all threads are synchronized
-		masterCond.wait_for(masterLock, std::chrono::milliseconds(100), [&](){ return runningThreads == 0; });
+		masterCond.wait_for(masterLock, std::chrono::milliseconds(100), [&](){ return runningThreads.load(); });
 
 		// act on system flag
 		switch (flag)
@@ -176,14 +176,14 @@ BVSMaster& BVSMaster::masterController(const bool forkMasterController)
 			case BVSSystemFlag::RUN:
 			case BVSSystemFlag::STEP:
 				LOG(3, "starting next round, notifying threads and executing modules!");
-				LOG(2, "ROUND: " << round++);
+				LOG(1, "ROUND: " << round++);
 
 				// set RUN flag for all modules and signal threads
 				for (auto& it: modules)
 				{
 					it.second->flag = BVSModuleFlag::RUN;
 					if (it.second->asThread)
-						runningThreads++;
+						runningThreads.fetch_add(1);
 				}
 				threadCond.notify_all();
 
@@ -243,7 +243,7 @@ BVSMaster& BVSMaster::threadController(std::shared_ptr<BVSModuleData> data)
 	std::unique_lock<std::mutex> threadLock(threadMutex);
 
 	// tell system that thread has started
-	runningThreads++;
+	runningThreads.fetch_add(1);
 
 	while (bool(data->flag))
 	{
@@ -256,7 +256,7 @@ BVSMaster& BVSMaster::threadController(std::shared_ptr<BVSModuleData> data)
 		moduleController(*(data.get()));
 
 		// tell master that thread has finished this round
-		runningThreads--;
+		runningThreads.fetch_sub(1);
 	}
 
 	return *this;
