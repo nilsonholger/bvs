@@ -60,7 +60,7 @@ EOF
 
 function bvs_new_module {
 [ -z $1 ] && echo "No module name given!" && exit 1
-[ -z ${1/*.*} ] && echo "Module name cannot contain '.' due to internal reasons! Please choose a different name!" && exit 1
+[ -z ${1/*(.|\(|\))*} ] && echo "Module name cannot contain '.','(' or ')' due to internal processing reasons! Please choose a different name!" && exit 1
 [ -r modules/$1 ] && echo "A module of name $1 already exits! Please choose a different name!" && exit 1
 ORIG=BVSExampleModule
 ORIGC=`echo $ORIG | tr "[:lower:]" "[:upper:]"`
@@ -84,6 +84,7 @@ function bvs_setup {
 #TODO copy BVSExampleConfig to BVSConfig.txt
 mkdir bin
 #TODO symlink BVSConfig.txt to bin
+#TODO check if git subtree exists and use it...
 git submodule update --init --recursive
 git submodule foreach git checkout master
 }
