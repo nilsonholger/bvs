@@ -12,9 +12,8 @@ forceModuleThreads = false
 
 
 # list of modules, '+' prefix starts module in own thread (if permitted)
-# TODO update (usage of '.')
-modules = main(test).OUT(out1)
-+modules = main2(test).IN(main.out1)
+modules = main(test).testIn(test2.testOut)
++modules = main2(test).testIn(test.testOut)
 #+modules = main3(test)
 #+modules = main4(test)
 #+modules = main5(test)

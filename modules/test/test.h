@@ -3,6 +3,7 @@
 
 #include "BVSModule.h"
 
+// TODO comments, usage examples...
 class test : public BVSModule
 {
 	public:
@@ -19,6 +20,10 @@ class test : public BVSModule
 		const std::string identifier;
 		BVSLogger logger;
 		const BVSConfig& config;
+
+		BVSConnector input;
+		BVSConnector output;
+
 		test(const test&) = delete; /**< -Weffc++ */
 		test& operator=(const test&) = delete; /**< -Weffc++ */
 };
