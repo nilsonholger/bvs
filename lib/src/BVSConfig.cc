@@ -6,15 +6,12 @@
 
 
 
-	BVSConfig::BVSConfig(std::string name, int argc, char** argv)
+BVSConfig::BVSConfig(std::string name, int argc, char** argv)
 	: name(name)
 	, mutex()
 	, optionStore()
 {
-	if (argc!=0 && argv!=nullptr)
-	{
-		loadCommandLine(argc, argv);
-	}
+	if (argc!=0 && argv!=nullptr) loadCommandLine(argc, argv);
 }
 
 
@@ -22,22 +19,6 @@
 BVSConfig& BVSConfig::getName(std::string& name)
 {
 	name = name;
-	return *this;
-}
-
-
-
-BVSConfig& BVSConfig::showOptionStore()
-{
-	std::lock_guard<std::mutex> lock(mutex);
-
-	// output optionStore to std::cerr
-	std::cerr << "[BVSConfig] OPTION = VALUE" << std::endl;
-	for ( auto it : optionStore)
-	{
-		std::cerr << "[BVSConfig] " << it.first << " = " << it.second << std::endl;
-	}
-
 	return *this;
 }
 
@@ -89,7 +70,6 @@ BVSConfig& BVSConfig::loadCommandLine(int argc, char** argv)
 
 			// save config file for later use
 			configFile = option;
-			//std::cout << "[BVSConfig] --bvs.config: " << configFile << std::endl;
 		}
 
 		// check for additional options
@@ -100,10 +80,9 @@ BVSConfig& BVSConfig::loadCommandLine(int argc, char** argv)
 			// check for missing argument
 			if (option.empty())
 			{
-				std::cerr<< "[ERROR|BVSConfig] no argument after --bvs.options=" << std::endl;
+				std::cerr << "[ERROR|BVSConfig] no argument after --bvs.options=" << std::endl;
 				exit(1);
 			}
-			//std::cout << "[BVSConfig] --bvs.options: " << option << std::endl;
 
 			// separate option string and add to optionStore
 			std::string bvsOption;
@@ -122,17 +101,13 @@ BVSConfig& BVSConfig::loadCommandLine(int argc, char** argv)
 
 				// add
 				optionStore[bvsOption.substr(0, equalPos)] = bvsOption.substr(equalPos+1, bvsOption.size());
-				//std::cout << "[BVSConfig] adding: " << bvsOption.substr(0, equalPos) << " -> " << bvsOption.substr(equalPos+1, bvsOption.size()) << std::endl;
 				option.erase(0, separatorPos+1);
 			}
 		}
 	}
 
 	// load config file if given on command line
-	if (!configFile.empty())
-	{
-		loadConfigFile(configFile);
-	}
+	if (!configFile.empty()) loadConfigFile(configFile);
 
 	return *this;
 }
@@ -150,7 +125,7 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
 	 *          CHECK for whitespace/tabs
 	 *      IGNORE comments and empty lines
 	 *      CHECK for section [...]
-	 *      CHECK section status
+	 *      CHECK for orphaned options (no section)
 	 *      CHECK for +option (appending)
 	 *      FIND delimiter
 	 *      APPEND option if set
@@ -188,7 +163,7 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
 		append = false;
 		lineNumber++;
 
-		//remove all whitespace/tabs except inside of '' or "" (useful for whitespace in for example status messages or other output)
+		//remove all whitespace/tabs except inside of '' or ""
 		for (unsigned int i=0; i<line.length(); i++)
 		{
 			// check quotation status, ignore character
@@ -220,10 +195,11 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
 			continue;
 		}
 
-		// ignore option if section empty
+		// check for orphaned options
 		if (section.empty())
 		{
-			std::cerr << "[ERROR|BVSConfig] found option belonging to no section in " << configFile << ":" << lineNumber << ": " << line << std::endl;
+			std::cerr << "[ERROR|BVSConfig] option without section." << std::endl;
+			std::cerr << "[ERROR|BVSConfig] " << configFile << ":" << lineNumber << ": " << line << std::endl;
 			exit(1);
 		}
 
@@ -244,7 +220,8 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
 		// check for empty option name
 		if (option.length()==section.length()+1 )
 		{
-			std::cerr << "[ERROR|BVSConfig] found line starting with '=' in " << configFile << ":" << lineNumber << ": " << line << std::endl;
+			std::cerr << "[ERROR|BVSConfig] starting line with '='." << std::endl;
+			std::cerr << "[ERROR|BVSConfig] " << configFile << ":" << lineNumber << ": " << line << std::endl;
 			exit(1);
 		}
 
@@ -258,7 +235,8 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
 			// check if option exists
 			if (optionStore.find(option)==optionStore.end())
 			{
-				std::cerr << "[ERROR|BVSConfig] cannot append to non existing option in " << configFile << ":" << lineNumber << ": " << line << std::endl;
+				std::cerr << "[ERROR|BVSConfig] cannot append to a non existing option." << std::endl;
+				std::cerr << "[ERROR|BVSConfig] " << configFile << ":" << lineNumber << ": " << line << std::endl;
 				exit(1);
 			}
 
@@ -266,12 +244,8 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
 			continue;
 		}
 
-		// only add when not already in store, thus command-line options can override config file options and first occurence is used
-		if (optionStore.find(option)==optionStore.end())
-		{
-			optionStore[option] = tmp;
-			//std::cout << "[BVSConfig] adding: " << option << " -> " << tmp.substr(pos+1, posComment-pos-1) << std::endl;
-		}
+		// only add when not already in store, thus command-line options overrides config file
+		if (optionStore.find(option)==optionStore.end()) optionStore[option] = tmp;
 	}
 	return *this;
 }
@@ -287,15 +261,10 @@ std::string BVSConfig::searchOption(std::string option)
 	// search for option in store
 	if(optionStore.find(option)!=optionStore.end())
 	{
-		//std::cout << "found: " << option << " --> " << optionStore[option] << std::endl;
 		std::string tmp = optionStore[option];
 		return tmp;
 	}
-	else
-	{
-		//std::cerr << "[ERROR|BVSConfig] option not found: " << option << std::endl;
-		return std::string();
-	}
+	else return std::string();
 }
 
 
@@ -311,14 +280,14 @@ template<> BVSConfig& BVSConfig::convertStringTo<std::string>(const std::string&
 template<> BVSConfig& BVSConfig::convertStringTo<bool>(const std::string& input, bool& b)
 {
 	// check for possible matches to various versions meaning true
-	if (input=="1" || input=="true" || input=="True" || input=="TRUE" || input=="on" || input=="On" || input=="ON" || input=="yes" || input=="Yes" || input=="YES")
+	if (input=="1" \
+			|| input=="true" || input=="True" || input=="TRUE" \
+			|| input=="on" || input=="On" || input=="ON" \
+			|| input=="yes" || input=="Yes" || input=="YES")
 	{
 		b = true;
 	}
-	else
-	{
-		b = false;
-	}
+	else b = false;
 
 	return *this;
 }

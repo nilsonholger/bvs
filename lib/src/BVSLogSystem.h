@@ -1,7 +1,7 @@
 #ifndef BVSLOGSYSTEM_H
 #define BVSLOGSYSTEM_H
 
-#include<iomanip>
+#include<fstream>
 #include<memory>
 #include<mutex>
 

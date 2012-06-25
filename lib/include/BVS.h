@@ -6,6 +6,7 @@
 #include<string>
 
 #include "BVSConfig.h"
+#include "BVSConnector.h"
 #include "BVSLogger.h"
 #include "BVSTraits.h"
 
@@ -21,6 +22,7 @@ class BVSModule;
  * This is the BVS base, use this to interact with the framework.
  * TODO COMMENTS for BVS settings... and maybe usage
  * TODO finish callthrougs for all BVS sub parts
+ * TODO sort functions by usage/group
  */
 class BVS
 {
@@ -98,6 +100,7 @@ class BVS
 		static void registerModule(const std::string& identifier, BVSModule* module);
 
 		// TODO build data exchange between modules
+		BVS& connectModules();
 
 		// TODO comment IMPORTANT, maybe include forkMasterController, explain difference in usage
 		BVS& start();
@@ -113,6 +116,8 @@ class BVS
 		std::shared_ptr<BVSLogSystem> logSystem; /**< Internal log system backend. */
 		BVSLogger logger; /**< BVS' logging instance. */
 		BVSMaster* master; /**< BVS' module loader. */
+
+		BVSConnectorList& connectors;
 
 		BVS(const BVS&) = delete; /**< -Weffc++ */
 		BVS& operator=(const BVS&) = delete; /**< -Weffc++ */

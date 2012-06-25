@@ -11,7 +11,6 @@
 #include "BVSConfig.h"
 #include "BVSLogger.h"
 #include "BVSModule.h"
-#include "BVSTraits.h"
 
 
 
@@ -26,7 +25,7 @@ enum class BVSModuleFlag { QUIT = 0, WAIT = 1, RUN = 2 };
 
 
 
-/** Module List. */
+/** Module Map. */
 typedef std::map<std::string, std::shared_ptr<BVSModuleData>, std::less<std::string>> BVSModuleMap;
 
 

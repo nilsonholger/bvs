@@ -1,7 +1,11 @@
 #ifndef BVSMODULE_H
 #define BVSMODULE_H
 
+// TODO remove dependeny, create intermediate
 #include "BVS.h"
+#include "BVSConfig.h"
+#include "BVSConnector.h"
+#include "BVSLogger.h"
 
 
 
@@ -16,7 +20,7 @@ enum class BVSStatus { NONE = 0, OK = 1, WAIT = 2, FAIL = 4, NOINPUT = 8 };
  */
 class BVSModule
 {
-	// TODO COMMENTS to explain usage and give examples, add comments to BVSExampleModule
+	// TODO comments
 	public:
 		BVSModule(const BVSConfig& config); /**< Constructor of Module Base. */
 		virtual ~BVSModule(); /**< Destructor of Module Base. */

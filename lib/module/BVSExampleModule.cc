@@ -7,6 +7,8 @@ BVSExampleModule::BVSExampleModule(const std::string identifier, const BVSConfig
 	, identifier(identifier)
 	, logger(identifier)
 	, config(config)
+	, input(identifier, "testIn", BVSConnectorType::IN)
+	, output(identifier, "testOut", BVSConnectorType::OUT)
 {
 
 }
@@ -75,3 +77,4 @@ extern "C" {
 		return 0;
 	}
 }
+

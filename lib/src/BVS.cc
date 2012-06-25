@@ -9,6 +9,7 @@ BVS::BVS(int argc, char** argv)
 	, logSystem(BVSLogSystem::connectToLogSystem())
 	, logger("BVS")
 	, master(new BVSMaster(config))
+	, connectors(BVSConnector::connectors)
 {
 	logSystem->updateSettings(config);
 	logSystem->updateLoggerLevels(config);
@@ -55,11 +56,9 @@ BVS& BVS::loadModule(const std::string& identifier, bool asThread)
 	bool moduleThreads = config.getValue<bool>("BVS.moduleThreads", BVS_MODULE_THREADS);
 	bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads", BVS_MODULE_FORCE_THREADS);
 
-	if (forceModuleThreads)
-		asThread = true;
+	if (forceModuleThreads) asThread = true;
 
-	if (!moduleThreads)
-		asThread = false;
+	if (!moduleThreads) asThread = false;
 
 	master->load(identifier, asThread);
 
@@ -90,8 +89,7 @@ BVS& BVS::loadConfigFile(const std::string& configFile)
 
 BVS& BVS::setLogSystemVerbosity(const unsigned short verbosity)
 {
-	if (logSystem)
-		logSystem->setSystemVerbosity(verbosity);
+	if (logSystem) logSystem->setSystemVerbosity(verbosity);
 
 	return *this;
 }
@@ -100,8 +98,7 @@ BVS& BVS::setLogSystemVerbosity(const unsigned short verbosity)
 
 BVS& BVS::enableLogFile(const std::string& file, bool append)
 {
-	if (logSystem)
-		logSystem->enableLogFile(file, append);
+	if (logSystem) logSystem->enableLogFile(file, append);
 
 	return *this;
 }
@@ -110,8 +107,7 @@ BVS& BVS::enableLogFile(const std::string& file, bool append)
 
 BVS& BVS::disableLogFile()
 {
-	if (logSystem)
-		logSystem->disableLogFile();
+	if (logSystem) logSystem->disableLogFile();
 
 	return *this;
 }
@@ -120,8 +116,7 @@ BVS& BVS::disableLogFile()
 
 BVS& BVS::enableLogConsole(const std::ostream& out)
 {
-	if (logSystem)
-		logSystem->enableLogConsole(out);
+	if (logSystem) logSystem->enableLogConsole(out);
 
 	return *this;
 }
@@ -130,8 +125,7 @@ BVS& BVS::enableLogConsole(const std::ostream& out)
 
 BVS& BVS::disableLogConsole()
 {
-	if (logSystem)
-		logSystem->disableLogConsole();
+	if (logSystem) logSystem->disableLogConsole();
 
 	return *this;
 }
@@ -141,6 +135,30 @@ BVS& BVS::disableLogConsole()
 void BVS::registerModule(const std::string& identifier, BVSModule* module)
 {
 	BVSMaster::registerModule(identifier, module);
+}
+
+
+
+BVS& BVS::connectModules()
+{
+	LOG(0, "Connectors: " << connectors.size());
+
+	for (auto& it: connectors)
+	{
+		LOG(0, "foo: " << it.id << "." << it.name);
+	}
+
+	//for (auto& it: connectors)
+	{
+		
+	}
+	// we need access to BVSMaster's module map
+	// change: connector needs no identifier -> add BVSConnector vector to BVSModuleData (HOW???), BVSConnector Constructor appends itself in there
+	// -> per module connector vector
+	// bvs can search, if desired module (identifier) exists, look for desired connector and connect them
+	// idea: check if connector identifier matches module identifier
+
+	return *this;
 }
 
 

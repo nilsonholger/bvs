@@ -3,9 +3,6 @@
 
 
 
-// NOTE: these are all defaults and most if not all of them can be changed in
-// the config
-
 /** Enable/disable the builtin logging system.
  * Also, all LOG(*) calls will be removed if disabled.
  * Possible Values: true, false
@@ -26,7 +23,7 @@
 /** Whether to log to a file or not.
  * If the name is prepended with a '+' sign, instead of overwriting, append
  * to given file name.
- * Possible Values: "" (NO log file), "$NAME"
+ * Possible Values: "" (NO log file), "$NAME", "+$NAME"
  */
 #define BVS_LOG_TO_LOGFILE ""
 

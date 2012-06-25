@@ -2,7 +2,6 @@
 #define BVSCONFIG_H
 
 #include<map>
-#include<memory>
 #include<mutex>
 #include<sstream>
 #include<string>
@@ -96,13 +95,6 @@ class BVSConfig
 		 * @param[in] configFile Name of or path to config file.
 		 */
 		BVSConfig& loadConfigFile(const std::string& configFile);
-
-		/** Prints all variables known by config system to std::cerr.
-		 * The option names will all be lower case, as this is the way
-		 * they are represented internally.
-		 * @return Reference to object.
-		 */
-		BVSConfig& showOptionStore();
 
 		/** Dump the optionStore to a local copy.
 		 * The option names will all be lower case, as this is the way

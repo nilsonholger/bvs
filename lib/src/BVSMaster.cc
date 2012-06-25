@@ -1,10 +1,7 @@
-#include<chrono>
-#include<cstdlib>
-#include<dlfcn.h>
-#include<unistd.h>
-
 #include "BVSMaster.h"
 
+#include<chrono>
+#include<dlfcn.h>
 
 
 
@@ -185,35 +182,35 @@ BVSMaster& BVSMaster::masterController(const bool forkMasterController)
 		{
 			case BVSSystemFlag::QUIT: break;
 			case BVSSystemFlag::PAUSE:
-				// if not running inside own thread, return
-				if (!controlThread.joinable()) return *this;
-				LOG(3, "master pausing...");
-				masterCond.wait(masterLock, [&](){ return flag != BVSSystemFlag::PAUSE; });
-				LOG(3, "master continuing...");
-				break;
+									  // if not running inside own thread, return
+									  if (!controlThread.joinable()) return *this;
+									  LOG(3, "master pausing...");
+									  masterCond.wait(masterLock, [&](){ return flag != BVSSystemFlag::PAUSE; });
+									  LOG(3, "master continuing...");
+									  break;
 			case BVSSystemFlag::RUN:
 			case BVSSystemFlag::STEP:
-				LOG(3, "starting next round, notifying threads and executing modules!");
-				LOG(1, "ROUND: " << round++);
+									  LOG(3, "starting next round, notifying threads and executing modules!");
+									  LOG(1, "ROUND: " << round++);
 
-				// set RUN flag for all modules and signal threads
-				for (auto& it: modules)
-				{
-					it.second->flag = BVSModuleFlag::RUN;
-					if (it.second->asThread)
-						runningThreads.fetch_add(1);
-				}
-				threadCond.notify_all();
+									  // set RUN flag for all modules and signal threads
+									  for (auto& it: modules)
+									  {
+										  it.second->flag = BVSModuleFlag::RUN;
+										  if (it.second->asThread)
+											  runningThreads.fetch_add(1);
+									  }
+									  threadCond.notify_all();
 
-				// iterate through modules executed by master
-				for (auto& it: modules)
-				{
-					if (it.second->asThread) continue;
-					moduleController(*(it.second.get()));
-				}
+									  // iterate through modules executed by master
+									  for (auto& it: modules)
+									  {
+										  if (it.second->asThread) continue;
+										  moduleController(*(it.second.get()));
+									  }
 
-				if (flag == BVSSystemFlag::STEP) flag = BVSSystemFlag::PAUSE;
-				break;
+									  if (flag == BVSSystemFlag::STEP) flag = BVSSystemFlag::PAUSE;
+									  break;
 			case BVSSystemFlag::STEP_BACK: break;
 		}
 		LOG(3, "waiting for threads to finish!");
@@ -341,3 +338,4 @@ BVSMaster& BVSMaster::unloadAll()
 
 	return *this;
 }
+

@@ -1,11 +1,8 @@
 #ifndef BVSLOGGER_H
 #define BVSLOGGER_H
 
-#include<fstream>
 #include<iostream>
-#include<map>
 #include<memory>
-#include<streambuf>
 #include<string>
 
 #include "BVSTraits.h"
