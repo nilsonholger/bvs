@@ -1,5 +1,4 @@
 #include "BVS.h"
-#include<unistd.h>
 
 
 
@@ -18,16 +17,20 @@ int main(int argc, char** argv)
 {
 	setup(argc, argv);
 
-	LOG(2, "loading Modules!");
+	LOG(2, "loading modules!");
 	bvs->loadModules();
+
+	// TODO
+	LOG(2, "connecting modules!");
+	bvs->connectModules();
 
 	LOG(2, "starting!");
 	bvs->start();
 
 	std::string input;
-	while (input != "q" && input != "quit")
+	//while (input != "q" && input != "quit")
 	{
-		std::getline(std::cin, input);
+		//std::getline(std::cin, input);
 
 		if (input == "r" || input == "run")
 		{
@@ -90,21 +93,27 @@ int testLogger()
 	LOG(0, "to CLI FILE");
 	bvs->disableLogConsole();
 	LOG(0, "to FILE only");
+
 	BVSLogger file("FILE LOG", 3, BVSLogger::TO_FILE);
 	file.out(0) << "FILE ONLY" << std::endl;
 	file.endl();
+
 	bvs->enableLogConsole();
 	BVSLogger cli("CLI LOG", 3, BVSLogger::TO_CLI);
 	cli.out(0) << "CLI ONLY" << std::endl;
 	cli.endl();
+
 	bvs->disableLogConsole();
 	bvs->disableLogFile();
 	LOG(0, "NOOP");
+
 	bvs->enableLogConsole();
 	LOG(0, "to CLI");
+
 	bvs->disableLogConsole();
 	bvs->enableLogFile("BVSLog.txt", true);
 	LOG(0, "to FILE AGAIN");
+
 	bvs->enableLogConsole();
 	BVSLogger both("to BOTH", 0, BVSLogger::TO_CLI_AND_FILE);
 	both.out(0) << "to CLI AND FILE" << std::endl;
@@ -117,8 +126,6 @@ int testLogger()
 
 int testConfig()
 {
-	LOG(0, "dump all config options to std::cout!");
-	bvs->config.showOptionStore();
 	LOG(0, "testing...");
 
 	int i;
@@ -127,7 +134,6 @@ int testConfig()
 	bvs->config.getValue("BVS.logVerbosity", i, 0)
 		.getValue("BVS.logFile", s, std::string("default"))
 		.getValue("BVS.logSystem", b, false);
-
 	LOG(0, "Getting int: " << i);
 	LOG(0, "Getting string: " << s);
 	LOG(0, "Getting bool: " << b);
@@ -154,3 +160,4 @@ int testConfig()
 
 	return 0;
 }
+
