@@ -6,7 +6,9 @@
 #include<memory>
 #include<string>
 #include<thread>
+#include<vector>
 
+#include "BVSConnector.h"
 #include "BVSModule.h"
 
 
@@ -21,12 +23,14 @@ struct BVSModuleData
 {
 	std::string identifier; /**< Name of module. */
 	std::string library; /**< Library to load module from. */
+	std::string options; /**< Module options. */
 	BVSModule* module; /**< Pointer to the module. */
 	void* dlib; /**< Dlib handle to module's lib. */
 	std::thread thread; /**< Thread handle of module. */
 	bool asThread; /**< Determines if module runs in its own thread. */
 	BVSModuleFlag flag; /**< System control flag for module. */
 	BVSStatus status; /**< Return Status of module functions. */
+	std::vector<BVSConnector> connectors; /**< Connector vector. */
 };
 
 

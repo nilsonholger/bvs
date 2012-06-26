@@ -20,7 +20,7 @@ BVSLoader::BVSLoader(BVSControl& control, BVSConfig& config)
 
 void BVSLoader::registerModule(const std::string& identifier, BVSModule* module)
 {
-	modules[identifier] = std::shared_ptr<BVSModuleData>(new BVSModuleData{identifier, std::string(), module, nullptr, std::thread(), false, BVSModuleFlag::WAIT, BVSStatus::NONE});
+	modules[identifier] = std::shared_ptr<BVSModuleData>(new BVSModuleData{identifier, std::string(), std::string(), module, nullptr, std::thread(), false, BVSModuleFlag::WAIT, BVSStatus::NONE, std::vector<BVSConnector>()});
 }
 
 
@@ -31,8 +31,7 @@ BVSLoader& BVSLoader::load(const std::string& id, bool asThread)
 	std::string library;
 	std::string options;
 
-	// search for '.' in identifier and separate identifier and options
-	// TODO set INPUT/OUTPUT stuff or do it in BVS
+	// search for '.' in identifier and separate identifier and options (throwaway, not needed here)
 	size_t separator = id.find_first_of('.');
 	if (separator!=std::string::npos)
 	{
@@ -88,11 +87,15 @@ BVSLoader& BVSLoader::load(const std::string& id, bool asThread)
 	bvsRegisterModule(identifier, config);
 	LOG(2, identifier << " loaded and registered!");
 
-	// save handle and library name for later use
+	// save handle,library name and option string for later use
 	modules[identifier]->dlib = dlib;
 	modules[identifier]->library = library;
+	modules[identifier]->options = options;
 
-	// set threading metadata if needed
+	// move connectors from temporary to metadata
+	modules[identifier]->connectors = std::move(BVSConnector::connectors);
+
+	// set metadata and start as thread if needed
 	if (asThread==true)
 	{
 		LOG(3, identifier << " will be started in own thread!");
@@ -170,6 +173,43 @@ BVSLoader& BVSLoader::unloadAll()
 
 	modules.clear();
 
+	return *this;
+}
+
+
+
+BVSLoader& BVSLoader::connectModules()
+{
+
+	// debug output
+	for (auto& it: modules)
+	{
+		LOG(0, "Module: " << it.second->identifier << " [" << it.second->connectors.size() << "]");
+		for (auto& con: it.second->connectors)
+		{
+			LOG(0, "-> " << it.second->identifier << "." << con.identifier);
+		}
+	}
+
+	// check options for each module
+	for (auto& it: modules)
+	{
+		// TODO NEXT parse option string
+		LOG(0, it.second->identifier << ": " << it.second->options);
+
+		// check if desired input exists
+
+		// check if desired module exists
+
+		// check if desired output exists
+
+		// connect
+	}
+
+
+
+	// check for sending data to oneself...
+	// do maintenance for load/unload, e.g. remove all connections for unloaded module...
 	return *this;
 }
 

@@ -8,7 +8,6 @@
 
 
 // Forward declaration
-class BVS;
 class BVSConnector;
 
 
@@ -27,17 +26,15 @@ typedef std::vector<BVSConnector> BVSConnectorList;
 class BVSConnector
 {
 	public:
-		BVSConnector(const std::string& identifier, const std::string& connectorName, BVSConnectorType connectorType);
+		BVSConnector(const std::string& connectorName, BVSConnectorType connectorType);
 		
 	private:
-		std::string id;
-		std::string name;
+		std::string identifier;
 		BVSConnectorType type;
-		//std::shared_ptr<BVSData> stuff;
 
 		static BVSConnectorList connectors;
 		
-		friend BVS;
+		friend class BVSLoader;
 };
 #endif //BVSCONNECTOR_H
 

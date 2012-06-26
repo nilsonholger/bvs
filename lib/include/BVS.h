@@ -6,13 +6,13 @@
 #include<string>
 
 #include "BVSConfig.h"
+#include "BVSConnector.h"
 #include "BVSLogger.h"
 #include "BVSTraits.h"
 
 
 
 // Forward declarations
-class BVSConnector;
 class BVSControl;
 class BVSLoader;
 
@@ -91,10 +91,10 @@ class BVS
 		 */
 		BVS& disableLogConsole();
 
-		// TODO build data exchange between modules
+		// TODO NEXT build data exchange between modules
 		BVS& connectModules();
 
-		// TODO comment IMPORTANT, -maybe- DEFINITELY include forkMasterController, explain difference in usage
+		// TODO comment IMPORTANT, -maybe- DEFINITELY include forkMasterController, explain difference in usage or link to doc
 		BVS& start();
 		BVS& run();
 		BVS& step();
@@ -109,8 +109,6 @@ class BVS
 		BVSLogger logger; /**< BVS' logging instance. */
 		BVSControl* control; /**< BVS' module loader. */
 		BVSLoader* loader;
-
-		//BVSConnectorList& connectors;
 
 		BVS(const BVS&) = delete; /**< -Weffc++ */
 		BVS& operator=(const BVS&) = delete; /**< -Weffc++ */

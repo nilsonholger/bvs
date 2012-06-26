@@ -13,7 +13,7 @@
 
 
 
-// TODO comment
+/** Possible commands to send to masterController, see sendCommand(). */
 enum class BVSSystemFlag { QUIT = 0, PAUSE = 1, RUN = 2, STEP = 3, STEP_BACK = 4 };
 
 

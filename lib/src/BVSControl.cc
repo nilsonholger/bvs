@@ -28,38 +28,6 @@ BVSControl::BVSControl()
 
 
 
-BVSControl& BVSControl::sendCommand(const BVSSystemFlag controlFlag)
-{
-	LOG(3, "control() called with flag: " << (int)controlFlag);
-	flag = controlFlag;
-
-	// check if controlThread is running and notify it, otherwise call control function each time
-	if (controlThread.joinable())
-	{
-		LOG(3, "control() notifying master!");
-		masterCond.notify_one();
-	}
-	else
-	{
-		LOG(3, "control() calling master control directly!");
-		masterController(false);
-	}
-
-	// on quitting, wait for control thread if necessary
-	if (controlFlag == BVSSystemFlag::QUIT)
-	{
-		if (controlThread.joinable())
-		{
-			LOG(2, "waiting for master control thread to join!");
-			controlThread.join();
-		}
-	}
-
-	return *this;
-}
-
-
-
 BVSControl& BVSControl::masterController(const bool forkMasterController)
 {
 	if (forkMasterController)
@@ -123,6 +91,38 @@ BVSControl& BVSControl::masterController(const bool forkMasterController)
 
 		// return if not control thread
 		if (!controlThread.joinable() && flag != BVSSystemFlag::RUN) return *this;
+	}
+
+	return *this;
+}
+
+
+
+BVSControl& BVSControl::sendCommand(const BVSSystemFlag controlFlag)
+{
+	LOG(3, "control() called with flag: " << (int)controlFlag);
+	flag = controlFlag;
+
+	// check if controlThread is running and notify it, otherwise call control function each time
+	if (controlThread.joinable())
+	{
+		LOG(3, "control() notifying master!");
+		masterCond.notify_one();
+	}
+	else
+	{
+		LOG(3, "control() calling master control directly!");
+		masterController(false);
+	}
+
+	// on quitting, wait for control thread if necessary
+	if (controlFlag == BVSSystemFlag::QUIT)
+	{
+		if (controlThread.joinable())
+		{
+			LOG(2, "waiting for master control thread to join!");
+			controlThread.join();
+		}
 	}
 
 	return *this;

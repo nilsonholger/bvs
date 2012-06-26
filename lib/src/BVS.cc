@@ -11,7 +11,6 @@ BVS::BVS(int argc, char** argv)
 	, logger("BVS")
 	, control(new BVSControl())
 	, loader(new BVSLoader(*control, config))
-	//, connectors(BVSConnector::connectors)
 {
 	logSystem->updateSettings(config);
 	logSystem->updateLoggerLevels(config);
@@ -136,22 +135,7 @@ BVS& BVS::disableLogConsole()
 
 BVS& BVS::connectModules()
 {
-	//LOG(0, "Connectors: " << connectors.size());
-
-	//for (auto& it: connectors)
-	{
-	//	LOG(0, "foo: " << it.id << "." << it.name);
-	}
-
-	//for (auto& it: connectors)
-	{
-		
-	}
-	// we need access to BVSLoader/Control's module map
-	// change: connector needs no identifier -> add BVSConnector vector to BVSModuleData (HOW???), BVSConnector Constructor appends itself in there
-	// -> per module connector vector
-	// bvs can search, if desired module (identifier) exists, look for desired connector and connect them
-	// idea: check if connector identifier matches module identifier
+	loader->connectModules();
 
 	return *this;
 }
