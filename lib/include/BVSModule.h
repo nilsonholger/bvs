@@ -1,8 +1,6 @@
 #ifndef BVSMODULE_H
 #define BVSMODULE_H
 
-// TODO remove dependeny, create intermediate
-#include "BVS.h"
 #include "BVSConfig.h"
 #include "BVSConnector.h"
 #include "BVSLogger.h"
@@ -39,6 +37,19 @@ class BVSModule
 		BVSModule& operator=(const BVSModule&) = delete; /**< -Weffc++ */
 
 };
+
+
+
+/** Register a Module with the BVS framework.
+ * This registers a module within the BVS framework.
+ * It should not be called by the module itself, but will instead be called
+ * by the system's module loader upon loading the module.
+ * @param[in] identifier The Module's name.
+ * @param[in] module A pointer to the module.
+ */
+void registerModule(const std::string& identifier, BVSModule* module);
+
+
 
 #endif //BVSMODULE_H
 

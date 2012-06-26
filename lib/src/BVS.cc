@@ -1,6 +1,7 @@
 #include "BVS.h"
+#include "BVSControl.h"
+#include "BVSLoader.h"
 #include "BVSLogSystem.h"
-#include "BVSMaster.h"
 
 
 
@@ -8,8 +9,9 @@ BVS::BVS(int argc, char** argv)
 	: config("BVS", argc, argv)
 	, logSystem(BVSLogSystem::connectToLogSystem())
 	, logger("BVS")
-	, master(new BVSMaster(config))
-	, connectors(BVSConnector::connectors)
+	, control(new BVSControl())
+	, loader(new BVSLoader(config))
+	//, connectors(BVSConnector::connectors)
 {
 	logSystem->updateSettings(config);
 	logSystem->updateLoggerLevels(config);
@@ -60,7 +62,7 @@ BVS& BVS::loadModule(const std::string& identifier, bool asThread)
 
 	if (!moduleThreads) asThread = false;
 
-	master->load(identifier, asThread);
+	loader->load(identifier, asThread);
 
 	return *this;
 }
@@ -69,7 +71,7 @@ BVS& BVS::loadModule(const std::string& identifier, bool asThread)
 
 BVS& BVS::unloadModule(const std::string& identifier)
 {
-	master->unload(identifier);
+	loader->unload(identifier);
 
 	return *this;
 }
@@ -132,27 +134,20 @@ BVS& BVS::disableLogConsole()
 
 
 
-void BVS::registerModule(const std::string& identifier, BVSModule* module)
-{
-	BVSMaster::registerModule(identifier, module);
-}
-
-
-
 BVS& BVS::connectModules()
 {
-	LOG(0, "Connectors: " << connectors.size());
+	//LOG(0, "Connectors: " << connectors.size());
 
-	for (auto& it: connectors)
+	//for (auto& it: connectors)
 	{
-		LOG(0, "foo: " << it.id << "." << it.name);
+	//	LOG(0, "foo: " << it.id << "." << it.name);
 	}
 
 	//for (auto& it: connectors)
 	{
 		
 	}
-	// we need access to BVSMaster's module map
+	// we need access to BVSLoader/Control's module map
 	// change: connector needs no identifier -> add BVSConnector vector to BVSModuleData (HOW???), BVSConnector Constructor appends itself in there
 	// -> per module connector vector
 	// bvs can search, if desired module (identifier) exists, look for desired connector and connect them
@@ -165,7 +160,7 @@ BVS& BVS::connectModules()
 
 BVS& BVS::start()
 {
-	master->masterController();
+	control->masterController();
 
 	return *this;
 }
@@ -174,7 +169,7 @@ BVS& BVS::start()
 
 BVS& BVS::run()
 {
-	master->control(BVSSystemFlag::RUN);
+	control->sendCommand(BVSSystemFlag::RUN);
 
 	return *this;
 }
@@ -183,7 +178,7 @@ BVS& BVS::run()
 
 BVS& BVS::step()
 {
-	master->control(BVSSystemFlag::STEP);
+	control->sendCommand(BVSSystemFlag::STEP);
 
 	return *this;
 }
@@ -192,7 +187,7 @@ BVS& BVS::step()
 
 BVS& BVS::pause()
 {
-	master->control(BVSSystemFlag::PAUSE);
+	control->sendCommand(BVSSystemFlag::PAUSE);
 
 	return *this;
 }
@@ -201,8 +196,8 @@ BVS& BVS::pause()
 
 BVS& BVS::quit()
 {
-	master->control(BVSSystemFlag::QUIT);
-	master->unloadAll();
+	control->sendCommand(BVSSystemFlag::QUIT);
+	loader->unloadAll();
 
 	return *this;
 }

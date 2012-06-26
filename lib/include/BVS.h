@@ -6,15 +6,15 @@
 #include<string>
 
 #include "BVSConfig.h"
-#include "BVSConnector.h"
 #include "BVSLogger.h"
 #include "BVSTraits.h"
 
 
 
 // Forward declarations
-class BVSMaster;
-class BVSModule;
+class BVSConnector;
+class BVSControl;
+class BVSLoader;
 
 
 
@@ -91,14 +91,6 @@ class BVS
 		 */
 		BVS& disableLogConsole();
 
-		/** Register a Module with the BVS framework.
-		 * This registers a module and should be used as a callback by the module
-		 * itself passing its name and a pointer to itself.
-		 * @param[in] identifier The Module's name.
-		 * @param[in] module A pointer to the module.
-		 */
-		static void registerModule(const std::string& identifier, BVSModule* module);
-
 		// TODO build data exchange between modules
 		BVS& connectModules();
 
@@ -115,9 +107,10 @@ class BVS
 	private:
 		std::shared_ptr<BVSLogSystem> logSystem; /**< Internal log system backend. */
 		BVSLogger logger; /**< BVS' logging instance. */
-		BVSMaster* master; /**< BVS' module loader. */
+		BVSControl* control; /**< BVS' module loader. */
+		BVSLoader* loader;
 
-		BVSConnectorList& connectors;
+		//BVSConnectorList& connectors;
 
 		BVS(const BVS&) = delete; /**< -Weffc++ */
 		BVS& operator=(const BVS&) = delete; /**< -Weffc++ */

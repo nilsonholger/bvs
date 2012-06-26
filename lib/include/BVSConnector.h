@@ -13,17 +13,17 @@ class BVSConnector;
 
 
 
-// TODO
+// TODO comment
 enum class BVSConnectorType { IN, OUT};
 
 
 
-// TODO
+// TODO comment
 typedef std::vector<BVSConnector> BVSConnectorList;
 
 
 
-// TODO
+// TODO comment
 class BVSConnector
 {
 	public:
