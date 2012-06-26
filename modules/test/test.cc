@@ -72,8 +72,9 @@ extern "C" {
 	// register with framework
 	int bvsRegisterModule(std::string identifier, BVSConfig& config)
 	{
-		BVS::registerModule(identifier, new test(identifier, config));
+		registerModule(identifier, new test(identifier, config));
 
 		return 0;
 	}
 }
+
