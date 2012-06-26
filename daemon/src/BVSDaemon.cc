@@ -20,7 +20,6 @@ int main(int argc, char** argv)
 	LOG(2, "loading modules!");
 	bvs->loadModules();
 
-	// TODO
 	LOG(2, "connecting modules!");
 	bvs->connectModules();
 
@@ -28,9 +27,9 @@ int main(int argc, char** argv)
 	bvs->start();
 
 	std::string input;
-	//while (input != "q" && input != "quit")
+	while (input != "q" && input != "quit")
 	{
-		//std::getline(std::cin, input);
+		std::getline(std::cin, input);
 
 		if (input == "r" || input == "run")
 		{
