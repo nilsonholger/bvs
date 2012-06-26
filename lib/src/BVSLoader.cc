@@ -1,12 +1,16 @@
 #include "BVSLoader.h"
-//#include "BVSControl.h"
 
 #include<dlfcn.h>
 
 
 
-BVSLoader::BVSLoader(BVSConfig& config)
-	: logger("BVSLoader")
+BVSModuleMap BVSLoader::modules;
+
+
+
+BVSLoader::BVSLoader(BVSControl& control, BVSConfig& config)
+	: control(control)
+	, logger("BVSLoader")
 	, config(config)
 {
 
@@ -28,7 +32,7 @@ BVSLoader& BVSLoader::load(const std::string& id, bool asThread)
 	std::string options;
 
 	// search for '.' in identifier and separate identifier and options
-	// TODO set INPUT/OUTPUT stuff
+	// TODO set INPUT/OUTPUT stuff or do it in BVS
 	size_t separator = id.find_first_of('.');
 	if (separator!=std::string::npos)
 	{
@@ -93,9 +97,8 @@ BVSLoader& BVSLoader::load(const std::string& id, bool asThread)
 	{
 		LOG(3, identifier << " will be started in own thread!");
 		modules[identifier]->asThread = true;
-		// TODO figure out way to start thread from loader in control
-		//modules[identifier]->thread = std::thread(&BVSControl::threadController, this, modules[identifier]);
-		threadedModules++;
+		modules[identifier]->thread = std::thread(&BVSControl::threadController, &control, modules[identifier]);
+		BVSControl::threadedModules++;
 	}
 	else
 	{
@@ -118,10 +121,8 @@ BVSLoader& BVSLoader::unload(const std::string& identifier, const bool eraseFrom
 	{
 		if (modules[identifier]->thread.joinable())
 		{
-			// TODO signal thread to quit
 			modules[identifier]->flag = BVSModuleFlag::QUIT;
-			// TODO notify thread
-			//BVSControl::threadCond.notify_all();
+			control.threadCond.notify_all();
 			LOG(3, "joining: " << identifier);
 			modules[identifier]->thread.join();
 		}

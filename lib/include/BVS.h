@@ -94,7 +94,7 @@ class BVS
 		// TODO build data exchange between modules
 		BVS& connectModules();
 
-		// TODO comment IMPORTANT, maybe include forkMasterController, explain difference in usage
+		// TODO comment IMPORTANT, -maybe- DEFINITELY include forkMasterController, explain difference in usage
 		BVS& start();
 		BVS& run();
 		BVS& step();

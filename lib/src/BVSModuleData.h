@@ -11,7 +11,7 @@
 
 
 
-// TODO
+/** Possible module flags (self explanatory). */
 enum class BVSModuleFlag { QUIT = 0, WAIT = 1, RUN = 2 };
 
 
@@ -30,19 +30,6 @@ struct BVSModuleData
 };
 
 
-
-/** Module Map. */
-typedef std::map<std::string, std::shared_ptr<BVSModuleData>, std::less<std::string>> BVSModuleMap;
-
-
-
-// TODO move into class or whatever or somewhere else to avoid useless warnings from some translation units
-/** Map of registered modules and their metadata. */
-static BVSModuleMap modules;
-
-// TODO comment
-static std::atomic<int> runningThreads;
-static int threadedModules = 0;
 
 #endif //BVSMODULEDATA_H
 

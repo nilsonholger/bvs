@@ -26,10 +26,28 @@ class BVSControl
 		 */
 		BVSControl();
 
-		// TODO comment
+		/** The master control function.
+		 * This is the master control function, it forks if desired and can be controlled
+		 * by using sendCommand(...).
+		 * @param[in] forkMasterController To fork or not to fork.
+		 * @return Reference to object.
+		 */
 		BVSControl& masterController(const bool forkMasterController = true);
 
-		// TODO comment
+		/** Send commands to master control.
+		 * This function sends commands to the master control. If the master controller
+		 * has forked, it will return immediately after dropping its flag.
+		 * Beware: if the master has not forked and a RUN flag is send, this function
+		 * will loop *forever* and never return.
+		 * Possible flags (BVSSystemFlag::...):
+		 * QUIT      - sends quitting signal to all modules.
+		 * PAUSE     - pauses system.
+		 * RUN       - runs system until another command is send.
+		 * STEP      - advances the system by one step/round.
+		 * STEP_BACK (not yet implemented)
+		 * @param controlFlag The desired command to be submitted to server.
+		 * @return Reference to object.
+		 */
 		BVSControl& sendCommand(const BVSSystemFlag controlFlag = BVSSystemFlag::PAUSE);
 
 	private:
@@ -45,27 +63,32 @@ class BVSControl
 		 */
 		BVSControl& threadController(std::shared_ptr<BVSModuleData> data);
 
-		// TODO comment
+		/** The number of actively running threads. */
+		static std::atomic<int> runningThreads;
+
+		/** The number of modules running in threads. */
+		static int threadedModules;
+
+		/** The active system flag used by master. */
 		BVSSystemFlag flag;
 
 		BVSLogger logger; /**< Logger metadata. */
 
-		std::mutex masterMutex;
-		std::unique_lock<std::mutex> masterLock;
-		std::condition_variable masterCond;
+		std::mutex masterMutex; /**< Mutex for masterController. */
+		std::unique_lock<std::mutex> masterLock; /**< Lock for masterController. */
+		std::condition_variable masterCond; /**< Condition variable for masterController. */
 
-		std::mutex threadMutex;
-		std::condition_variable threadCond;
+		std::mutex threadMutex; /**< Mutex for threadController. */
+		std::condition_variable threadCond; /**< Condition variable for threadController. */
 
-		std::thread controlThread;
+		std::thread controlThread; /**< Thread (if active) of masterController. */
 
-		long long round;
+		long long round; /**< System round counter. */
 
 		BVSControl(const BVSControl&) = delete; /**< -Weffc++ */
 		BVSControl& operator=(const BVSControl&) = delete; /**< -Weffc++ */
 
-		// TODO fix
-		friend BVSLoader;
+		friend class BVSLoader;
 };
 
 

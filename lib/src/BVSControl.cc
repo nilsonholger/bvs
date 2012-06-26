@@ -4,6 +4,14 @@
 
 
 
+std::atomic<int> BVSControl::runningThreads;
+
+
+
+int BVSControl::threadedModules = 0;
+
+
+
 BVSControl::BVSControl()
 	: flag(BVSSystemFlag::PAUSE)
 	, logger("BVSControl")
@@ -91,7 +99,7 @@ BVSControl& BVSControl::masterController(const bool forkMasterController)
 				LOG(1, "ROUND: " << round++);
 
 				// set RUN flag for all modules and signal threads
-				for (auto& it: modules)
+				for (auto& it: BVSLoader::modules)
 				{
 					it.second->flag = BVSModuleFlag::RUN;
 					if (it.second->asThread)
@@ -100,7 +108,7 @@ BVSControl& BVSControl::masterController(const bool forkMasterController)
 				threadCond.notify_all();
 
 				// iterate through modules executed by master
-				for (auto& it: modules)
+				for (auto& it: BVSLoader::modules)
 				{
 					if (it.second->asThread) continue;
 					moduleController(*(it.second.get()));

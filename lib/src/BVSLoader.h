@@ -5,11 +5,17 @@
 #include<thread>
 
 #include "BVSConfig.h"
+#include "BVSControl.h"
 #include "BVSLogger.h"
 #include "BVSModuleData.h"
 
 
-// TODO maybe the loader needs to know about the control to start the threads and signal quit to modules
+
+class BVSControl;
+/** Module Map. */
+typedef std::map<std::string, std::shared_ptr<BVSModuleData>, std::less<std::string>> BVSModuleMap;
+
+
 
 /** The system loader: loads, unloads and controls modules. */
 class BVSLoader
@@ -18,8 +24,8 @@ class BVSLoader
 		/** Constructor for loader.
 		 * @param[in] config Reference to config system.
 		 */
-		// TODO remove somehow, set from somewhere else
-		BVSLoader(BVSConfig& config);
+		// TODO remove config somehow, set config from somewhere else
+		BVSLoader(BVSControl& control, BVSConfig& config);
 
 		/** Registers a module.
 		 * @param[in] data Module meta data.
@@ -47,11 +53,19 @@ class BVSLoader
 		BVSLoader& unloadAll();
 
 	private:
+		/** Map of registered modules and their metadata. */
+		static BVSModuleMap modules;
+
+		/** Reference to control mechanism, needed to load und unload threaded modules. */
+		BVSControl& control;
+
 		BVSLogger logger; /**< Logger metadata. */
 		BVSConfig& config; /**< Config reference. */
 
 		BVSLoader(const BVSLoader&) = delete; /**< -Weffc++ */
 		BVSLoader& operator=(const BVSLoader&) = delete; /**< -Weffc++ */
+
+		friend class BVSControl;
 };
 
 

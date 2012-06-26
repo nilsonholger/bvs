@@ -10,7 +10,7 @@ BVS::BVS(int argc, char** argv)
 	, logSystem(BVSLogSystem::connectToLogSystem())
 	, logger("BVS")
 	, control(new BVSControl())
-	, loader(new BVSLoader(config))
+	, loader(new BVSLoader(*control, config))
 	//, connectors(BVSConnector::connectors)
 {
 	logSystem->updateSettings(config);
