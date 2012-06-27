@@ -30,7 +30,7 @@ struct BVSModuleData
 	bool asThread; /**< Determines if module runs in its own thread. */
 	BVSModuleFlag flag; /**< System control flag for module. */
 	BVSStatus status; /**< Return Status of module functions. */
-	std::vector<BVSConnector> connectors; /**< Connector vector. */
+	BVSConnectorMap connectors; /**< Connector vector. */
 };
 
 

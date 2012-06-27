@@ -1,9 +1,9 @@
 #ifndef BVSCONNECTOR_H
 #define BVSCONNECTOR_H
 
+#include<map>
 #include<memory>
 #include<string>
-#include<vector>
 
 
 
@@ -18,7 +18,7 @@ enum class BVSConnectorType { IN, OUT};
 
 
 // TODO comment
-typedef std::vector<BVSConnector> BVSConnectorList;
+typedef std::map<std::string, BVSConnector*, std::less<std::string>> BVSConnectorMap;
 
 
 
@@ -27,12 +27,13 @@ class BVSConnector
 {
 	public:
 		BVSConnector(const std::string& connectorName, BVSConnectorType connectorType);
+		std::shared_ptr<int> data;
 		
 	private:
 		std::string identifier;
 		BVSConnectorType type;
 
-		static BVSConnectorList connectors;
+		static BVSConnectorMap connectors;
 		
 		friend class BVSLoader;
 };

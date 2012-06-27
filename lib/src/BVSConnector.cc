@@ -2,12 +2,13 @@
 
 
 
-std::vector<BVSConnector> BVSConnector::connectors;
+BVSConnectorMap BVSConnector::connectors;
 
 BVSConnector::BVSConnector(const std::string& connectorName, BVSConnectorType connectorType)
-	: identifier(connectorName)
+	: data(new int)
+	, identifier(connectorName)
 	, type(connectorType)
 {
-	connectors.push_back(*this);
+	connectors[identifier] = this;
 }
 
