@@ -4,7 +4,7 @@ logSystem = true
 logConsole = true
 #logFile = BVSLog.txt
 # logFile = +BVSLog.txt # append to log file
-logVerbosity = 1
+logVerbosity = 3
 
 moduleThreads = ON
 forceModuleThreads = false
@@ -12,8 +12,8 @@ forceModuleThreads = false
 
 
 # list of modules, '+' prefix starts module in own thread (if permitted)
-modules = main(test).testIn(test2.testOut)
-+modules = +main2(test).testIn(test.testOut)
+modules = main(test).testIn(main2.testOut)
++modules = main2(test).testIn(main.testOut)
 #+modules = main3(test)
 #+modules = main4(test)
 #+modules = main5(test)

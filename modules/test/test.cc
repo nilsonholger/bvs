@@ -42,6 +42,8 @@ BVSStatus test::execute()
 {
 	LOG(2, "Execution of " << identifier << "!");
 
+	*output.data = 5;
+	LOG(0, "getting something: " << *input.data);
 	return BVSStatus::OK;
 }
 
