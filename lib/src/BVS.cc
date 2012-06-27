@@ -142,9 +142,9 @@ BVS& BVS::connectModules()
 
 
 
-BVS& BVS::start()
+BVS& BVS::start(bool forkMasterController)
 {
-	control->masterController();
+	control->masterController(forkMasterController);
 
 	return *this;
 }

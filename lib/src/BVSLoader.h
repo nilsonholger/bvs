@@ -58,6 +58,12 @@ class BVSLoader
 		 */
 		BVSLoader& unloadAll();
 
+		/** Connect modules.
+		 * Connects all modules by checking desired configuration options and
+		 * processing them one by one. This functions actually connects 2
+		 * connectors created by modules.
+		 * @return Reference to object.
+		 */
 		BVSLoader& connectModules();
 
 	private:

@@ -18,9 +18,13 @@ enum class BVSStatus { NONE = 0, OK = 1, WAIT = 2, FAIL = 4, NOINPUT = 8 };
  */
 class BVSModule
 {
-	// TODO comments
 	public:
-		BVSModule(const BVSConfig& config); /**< Constructor of Module Base. */
+		/** Constructor of Module Base.
+		 * @param config Reference to config object.
+		 */
+		BVSModule(const BVSConfig& config);
+
+		// TODO comments
 		virtual ~BVSModule(); /**< Destructor of Module Base. */
 		virtual BVSStatus onLoad() = 0;
 		virtual BVSStatus preExecute() = 0;
@@ -30,7 +34,7 @@ class BVSModule
 		virtual BVSStatus onClose() = 0;
 
 	protected:
-		const BVSConfig& config;
+		const BVSConfig& config; /** Reference to config object. */
 
 	private:
 		BVSModule(const BVSModule&) = delete; /**< -Weffc++ */

@@ -20,9 +20,6 @@ class BVSLoader;
 
 /** The BVS framework base.
  * This is the BVS base, use this to interact with the framework.
- * TODO COMMENTS for BVS settings... and maybe usage
- * TODO finish callthrougs for all BVS sub parts
- * TODO sort functions by usage/group
  */
 class BVS
 {
@@ -50,6 +47,13 @@ class BVS
 		 * @return Reference to object.
 		 */
 		BVS& unloadModule(const std::string& identifier);
+
+		/** Connects module connectors.
+		 * This connects ALL known module connectors by walking through the
+		 * list of known modules and scanning their supplied options.
+		 * @return Reference to object.
+		 */
+		BVS& connectModules();
 
 		/** Loads a config File and updates the system.
 		 * @param[in] configFile Name of or path to config file.
@@ -91,15 +95,48 @@ class BVS
 		 */
 		BVS& disableLogConsole();
 
-		// TODO NEXT build data exchange between modules
-		BVS& connectModules();
+		/** Starts the system.
+		 * This starts the system, but does not actually *start* the system.
+		 * It prepares the masterController and makes sure that all threads
+		 * are in a state where they can be controlled by the master.
+		 *
+		 * ATTENTION: When NOT forking the master controller and calling
+		 * ::run(), your thread of execution will never return, because it
+		 * stays inside the frameworks master control function.
+		 * @see BVSControl
+		 * @param[in] forkMasterController Whether to fork the controller.
+		 * @return Reference to object.
+		 */
+		BVS& start(bool forkMasterController = true);
 
-		// TODO comment IMPORTANT, -maybe- DEFINITELY include forkMasterController, explain difference in usage or link to doc
-		BVS& start();
+		/** Tells the system to keep running until paused or quit.
+		 * This will signal the system's controller to keep issuing new rounds/
+		 * steps until it is paused.
+		 * @return Reference to object.
+		 * @see BVS::start
+		 */
 		BVS& run();
+
+		/** Tells the system to advance by one round/step.
+		 * This will signal the system's controller to issue a new round/
+		 * step after which it will pause and wait for further signals.
+		 * @return Reference to object.
+		 */
 		BVS& step();
+
+		/** Tells the system to pause.
+		 * This will signal the system's controller to issue a pause signal to
+		 * all modules after which it will wait for further signals.
+		 * @return Reference to object.
+		 */
 		BVS& pause();
-		//void stop();
+
+		/** Tells the system to quit.
+		 * This will signal the system's controller to issue a quit signal to
+		 * all modules after which it will start to shutdown the entire system
+		 * by unloading all modules properly.
+		 * @return Reference to object.
+		 */
 		BVS& quit();
 
 		BVSConfig config; /**< BVS' config system. */
@@ -107,8 +144,8 @@ class BVS
 	private:
 		std::shared_ptr<BVSLogSystem> logSystem; /**< Internal log system backend. */
 		BVSLogger logger; /**< BVS' logging instance. */
-		BVSControl* control; /**< BVS' module loader. */
-		BVSLoader* loader;
+		BVSControl* control; /**< BVS' module controller. */
+		BVSLoader* loader; /**< BVS' module loader. */
 
 		BVS(const BVS&) = delete; /**< -Weffc++ */
 		BVS& operator=(const BVS&) = delete; /**< -Weffc++ */
