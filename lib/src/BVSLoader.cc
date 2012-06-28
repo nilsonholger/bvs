@@ -311,10 +311,10 @@ BVSLoader& BVSLoader::connectModules()
 
 			// check if input is already connected...
 
+			// check if input data type equals output data type
+
 			// connect
 			it.second->connectors[input]->data = modules[module]->connectors[output]->data;
-			LOG(0, modules[module]->connectors[output]->data);
-			LOG(0, it.second->connectors[input]->data);
 		}
 	}
 

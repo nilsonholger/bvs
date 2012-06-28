@@ -5,7 +5,7 @@
 BVSConnectorMap BVSConnector::connectors;
 
 BVSConnector::BVSConnector(const std::string& connectorName, BVSConnectorType connectorType)
-	: data(new int)
+	: data()
 	, identifier(connectorName)
 	, type(connectorType)
 {
