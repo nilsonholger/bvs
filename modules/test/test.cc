@@ -42,8 +42,14 @@ BVSStatus test::execute()
 {
 	LOG(2, "Execution of " << identifier << "!");
 
-	*output.data = 5;
-	LOG(0, "getting something: " << *input.data);
+	int* in = new int(42);
+	output.set(in);
+	int* foobar;
+	foobar = input.get<int>();
+	LOG(0, "getting: " << *foobar);
+
+	//*output.data = 5;
+	//LOG(0, "getting something: " << *input.data);
 	return BVSStatus::OK;
 }
 
