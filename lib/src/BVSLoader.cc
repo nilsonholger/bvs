@@ -18,9 +18,9 @@ BVSLoader::BVSLoader(BVSControl& control, BVSConfig& config)
 
 
 
-void BVSLoader::registerModule(const std::string& identifier, BVSModule* module)
+void BVSLoader::registerModule(const std::string& id, BVSModule* module)
 {
-	modules[identifier] = std::shared_ptr<BVSModuleData>(new BVSModuleData{identifier, std::string(), std::string(), module, nullptr, std::thread(), false, BVSModuleFlag::WAIT, BVSStatus::NONE, BVSConnectorMap()});
+	modules[id] = std::shared_ptr<BVSModuleData>(new BVSModuleData{id, std::string(), std::string(), module, nullptr, std::thread(), false, BVSModuleFlag::WAIT, BVSStatus::NONE, BVSConnectorMap()});
 }
 
 
@@ -28,50 +28,50 @@ void BVSLoader::registerModule(const std::string& identifier, BVSModule* module)
 BVSLoader& BVSLoader::load(const std::string& moduleTraits, const bool asThread)
 {
 	/* algorithm:
-	 * SEPARATE identifier(library).options
-	 * CHECK for duplicate identifiers
+	 * SEPARATE id(library).options
+	 * CHECK for duplicate ids
 	 * LOAD the library and CHECK errors
 	 * LINK and execute register function, CHECK errors
 	 * SAVE metadata
 	 * MOVE connectors to metadata
 	 * START (un/)threaded module
 	 */
-	std::string identifier;
+	std::string id;
 	std::string library;
 	std::string options;
 
-	// search for '.' in identifier and separate identifier and options (throwaway, not needed here)
+	// search for '.' in id and separate id and options (throwaway, not needed here)
 	size_t separator = moduleTraits.find_first_of('.');
 	if (separator!=std::string::npos)
 	{
-		identifier = moduleTraits.substr(0, separator);
+		id = moduleTraits.substr(0, separator);
 		options = moduleTraits.substr(separator+1, std::string::npos);
 	}
 	else
-		identifier = moduleTraits;
+		id = moduleTraits;
 
-	// search for '(' in identifier and separate if necessary
-	separator = identifier.find_first_of('(');
+	// search for '(' in id and separate if necessary
+	separator = id.find_first_of('(');
 	if (separator!=std::string::npos)
 	{
-		library = identifier.substr(separator+1, std::string::npos);
+		library = id.substr(separator+1, std::string::npos);
 		library.erase(library.length()-1);
-		identifier = identifier.erase(separator, std::string::npos);
+		id = id.erase(separator, std::string::npos);
 	}
 	else
-		library = identifier;
+		library = id;
 
-	// search for duplicate identifier in modules
-	if (modules.find(identifier)!=modules.end())
+	// search for duplicate id in modules
+	if (modules.find(id)!=modules.end())
 	{
-		LOG(0, "Duplicate identifier: " << identifier);
-		LOG(0, "If you try to load a module more than once, use unique identifiers and the identifier(library).options syntax!");
+		LOG(0, "Duplicate id: " << id);
+		LOG(0, "If you try to load a module more than once, use unique ids and the id(library).options syntax!");
 		exit(-1);
 	}
 
 	// prepare path and load the lib
 	std::string modulePath = "./lib" + library + ".so";
-	LOG(3, identifier << " will be loaded from " << modulePath);
+	LOG(3, id << " will be loaded from " << modulePath);
 	void* dlib = dlopen(modulePath.c_str(), RTLD_NOW);
 
 	// check for errors
@@ -82,7 +82,7 @@ BVSLoader& BVSLoader::load(const std::string& moduleTraits, const bool asThread)
 	}
 
 	// look for bvsRegisterModule in loaded lib, check for errors and execute register function
-	typedef void (*bvsRegisterModule_t)(const std::string& identifier, const BVSConfig& config);
+	typedef void (*bvsRegisterModule_t)(const std::string& id, const BVSConfig& config);
 	bvsRegisterModule_t bvsRegisterModule;
 	*reinterpret_cast<void**>(&bvsRegisterModule)=dlsym(dlib, "bvsRegisterModule");
 
@@ -93,32 +93,32 @@ BVSLoader& BVSLoader::load(const std::string& moduleTraits, const bool asThread)
 		LOG(0, "Loading function bvsRegisterModule() in " << modulePath << " resulted in: " << dlerr);
 		exit(-1);
 	}
-	bvsRegisterModule(identifier, config);
-	LOG(2, identifier << " loaded and registered!");
+	bvsRegisterModule(id, config);
+	LOG(2, id << " loaded and registered!");
 
 	// save handle,library name and option string for later use
-	modules[identifier]->dlib = dlib;
-	modules[identifier]->library = library;
-	modules[identifier]->options = options;
+	modules[id]->dlib = dlib;
+	modules[id]->library = library;
+	modules[id]->options = options;
 
 	// move connectors from temporary to metadata
-	modules[identifier]->connectors = std::move(BVSConnector::connectors);
+	modules[id]->connectors = std::move(BVSConnector::connectors);
 
 	// set metadata and start as thread if needed
 	if (asThread==true)
 	{
-		LOG(3, identifier << " will be started in own thread!");
-		modules[identifier]->asThread = true;
-		modules[identifier]->thread = std::thread(&BVSControl::threadController, &control, modules[identifier]);
+		LOG(3, id << " will be started in own thread!");
+		modules[id]->asThread = true;
+		modules[id]->thread = std::thread(&BVSControl::threadController, &control, modules[id]);
 		BVSControl::threadedModules++;
 	}
 	else
 	{
-		LOG(3, identifier << " will be controlled by BVSControl!");
-		modules[identifier]->asThread = false;
+		LOG(3, id << " will be controlled by BVSControl!");
+		modules[id]->asThread = false;
 
 		// call library module load function
-		modules[identifier]->module->onLoad();
+		modules[id]->module->onLoad();
 	}
 
 	return *this;
@@ -126,7 +126,7 @@ BVSLoader& BVSLoader::load(const std::string& moduleTraits, const bool asThread)
 
 
 
-BVSLoader& BVSLoader::unload(const std::string& identifier, const bool eraseFromMap)
+BVSLoader& BVSLoader::unload(const std::string& id, const bool eraseFromMap)
 {
 	/* algorithm:
 	 * CHECK thread, signal exit
@@ -135,26 +135,26 @@ BVSLoader& BVSLoader::unload(const std::string& identifier, const bool eraseFrom
 	 * CHECK errors
 	 */
 	// wait for thread to join, first check if it is still running
-	if (modules[identifier]->asThread == true)
+	if (modules[id]->asThread == true)
 	{
-		if (modules[identifier]->thread.joinable())
+		if (modules[id]->thread.joinable())
 		{
-			modules[identifier]->flag = BVSModuleFlag::QUIT;
+			modules[id]->flag = BVSModuleFlag::QUIT;
 			control.threadCond.notify_all();
-			LOG(3, "joining: " << identifier);
-			modules[identifier]->thread.join();
+			LOG(3, "joining: " << id);
+			modules[id]->thread.join();
 		}
 	}
 
 	// close lib and check for errors
-	std::string modulePath = "./lib" + modules[identifier]->library + ".so";
-	LOG(3, identifier << " will be closed using " << modulePath);
+	std::string modulePath = "./lib" + modules[id]->library + ".so";
+	LOG(3, id << " will be closed using " << modulePath);
 
 	// get handle from internals
-	void* dlib = modules[identifier]->dlib;
+	void* dlib = modules[id]->dlib;
 	if (dlib==nullptr)
 	{
-		LOG(0, "Requested module " << identifier << " not found!");
+		LOG(0, "Requested module " << id << " not found!");
 		exit(-1);
 	}
 
@@ -168,12 +168,12 @@ BVSLoader& BVSLoader::unload(const std::string& identifier, const bool eraseFrom
 		LOG(0, "While closing " << modulePath << " following error occured: " << dlerror());
 		exit(-1);
 	}
-	LOG(2, identifier << " unloaded and deregistered!");
+	LOG(2, id << " unloaded and deregistered!");
 
 	if (eraseFromMap)
 	{
-		modules.erase(identifier);
-		LOG(2, identifier << " erased from map!");
+		modules.erase(id);
+		LOG(2, id << " erased from map!");
 	}
 
 	return *this;
@@ -184,7 +184,7 @@ BVSLoader& BVSLoader::unload(const std::string& identifier, const bool eraseFrom
 BVSLoader& BVSLoader::unloadAll()
 {
 	for (auto it: modules)
-		unload(it.second->identifier, false);
+		unload(it.second->id, false);
 
 	modules.clear();
 
@@ -212,10 +212,10 @@ BVSLoader& BVSLoader::connectModules()
 	// debug output
 	/*for (auto& it: modules)
 	{
-		LOG(0, "Module: " << it.second->identifier << " [" << it.second->connectors.size() << "]");
+		LOG(0, "Module: " << it.second->id << " [" << it.second->connectors.size() << "]");
 		for (auto& con: it.second->connectors)
 		{
-			LOG(0, "-> " << it.second->identifier << "." << con.identifier);
+			LOG(0, "-> " << it.second->id << "." << con.id);
 		}
 	}*/
 
@@ -273,7 +273,7 @@ BVSLoader& BVSLoader::connectModules()
 			{
 				output = module.substr(separator+1, std::string::npos);
 				module = module.substr(0, separator);
-				LOG(3, it.second->identifier << ": " << input << "(" << module << "." << output << ")");
+				LOG(3, it.second->id << ": " << input << "(" << module << "." << output << ")");
 			}
 			else
 			{
@@ -289,7 +289,7 @@ BVSLoader& BVSLoader::connectModules()
 			}
 
 			// check for sending data to oneself...
-			if (module == it.second->identifier)
+			if (module == it.second->id)
 			{
 				LOG(0, "can not request data from self: " << selection);
 				exit(1);

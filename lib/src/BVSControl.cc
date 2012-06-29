@@ -169,7 +169,7 @@ BVSControl& BVSControl::threadController(std::shared_ptr<BVSModuleData> data)
 	while (bool(data->flag))
 	{
 		// wait for master to announce next round
-		LOG(3, data->identifier << " waiting for next round!");
+		LOG(3, data->id << " waiting for next round!");
 		masterCond.notify_one();
 		threadCond.wait(threadLock, [&](){ return data->flag != BVSModuleFlag::WAIT; });
 

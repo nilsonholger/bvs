@@ -36,17 +36,17 @@ class BVS
 		BVS& loadModules();
 
 		/** Load selected module given by name.
-		 * @param[in] identifier The name of the module.
+		 * @param[in] id The name of the module.
 		 * @param[in] asThread Select, if the module should run in it's own thread.
 		 * @return Reference to object.
 		 */
-		BVS& loadModule(const std::string& identifier, bool asThread = false);
+		BVS& loadModule(const std::string& id, bool asThread = false);
 
 		/** Unload module given by name.
-		 * @param[in] identifier The name of the module.
+		 * @param[in] id The name of the module.
 		 * @return Reference to object.
 		 */
-		BVS& unloadModule(const std::string& identifier);
+		BVS& unloadModule(const std::string& id);
 
 		/** Connects module connectors.
 		 * This connects ALL known module connectors by walking through the

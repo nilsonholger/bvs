@@ -21,7 +21,7 @@ enum class BVSModuleFlag { QUIT = 0, WAIT = 1, RUN = 2 };
 /** Module metadata. */
 struct BVSModuleData
 {
-	std::string identifier; /**< Name of module. */
+	std::string id; /**< Name of module. */
 	std::string library; /**< Library to load module from. */
 	std::string options; /**< Module options. */
 	BVSModule* module; /**< Pointer to the module. */

@@ -49,7 +49,7 @@ class BVSConnector
 		template<typename T> T* get();
 		
 	private:
-		std::string identifier; /**< The connector's identifier. */
+		std::string id; /**< The connector's id. */
 		BVSConnectorType type; /**< The connector's type. */
 
 		/** Map of connectors, used upon creating to register connector. */

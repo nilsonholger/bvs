@@ -2,10 +2,10 @@
 
 
 
-BVSExampleModule::BVSExampleModule(const std::string identifier, const BVSConfig& config)
+BVSExampleModule::BVSExampleModule(const std::string id, const BVSConfig& config)
 	: BVSModule(config)
-	, identifier(identifier)
-	, logger(identifier)
+	, id(id)
+	, logger(id)
 	, config(config)
 	, input("testIn", BVSConnectorType::IN)
 	, output("testOut", BVSConnectorType::OUT)
@@ -40,7 +40,7 @@ BVSStatus BVSExampleModule::preExecute()
 
 BVSStatus BVSExampleModule::execute()
 {
-	LOG(2, "Execution of " << identifier << "!");
+	LOG(2, "Execution of " << id << "!");
 
 	return BVSStatus::OK;
 }
@@ -70,9 +70,9 @@ BVSStatus BVSExampleModule::onClose()
 
 extern "C" {
 	// register with framework
-	int bvsRegisterModule(std::string identifier, BVSConfig& config)
+	int bvsRegisterModule(std::string id, BVSConfig& config)
 	{
-		registerModule(identifier, new BVSExampleModule(identifier, config));
+		registerModule(id, new BVSExampleModule(id, config));
 
 		return 0;
 	}

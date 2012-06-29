@@ -32,10 +32,10 @@ class BVSLoader
 		BVSLoader(BVSControl& control, BVSConfig& config);
 
 		/** Registers a module.
-		 * @param[in] identifier Name of module.
+		 * @param[in] id Name of module.
 		 * @param[in] module Pointer to module.
 		 */
-		static void registerModule(const std::string& identifier, BVSModule* module);
+		static void registerModule(const std::string& id, BVSModule* module);
 
 		/** Load the given module.
 		 * Executes bvsRegisterModule function in module to register it with the

@@ -9,7 +9,7 @@
 class BVSExampleModule : public BVSModule
 {
 	public:
-		BVSExampleModule(const std::string identifier, const BVSConfig& config);
+		BVSExampleModule(const std::string id, const BVSConfig& config);
 		~BVSExampleModule();
 		BVSStatus onLoad();
 		BVSStatus preExecute();
@@ -19,7 +19,7 @@ class BVSExampleModule : public BVSModule
 		BVSStatus onClose();
 
 	private:
-		const std::string identifier;
+		const std::string id;
 		BVSLogger logger;
 		const BVSConfig& config;
 

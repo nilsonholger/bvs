@@ -48,10 +48,10 @@ class BVSModule
  * This registers a module within the BVS framework.
  * It should not be called by the module itself, but will instead be called
  * by the system's module loader upon loading the module.
- * @param[in] identifier The Module's name.
+ * @param[in] id The Module's name.
  * @param[in] module A pointer to the module.
  */
-void registerModule(const std::string& identifier, BVSModule* module);
+void registerModule(const std::string& id, BVSModule* module);
 
 
 

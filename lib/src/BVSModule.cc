@@ -18,7 +18,7 @@ BVSModule::~BVSModule()
 
 
 
-void registerModule(const std::string& identifier, BVSModule* module)
+void registerModule(const std::string& id, BVSModule* module)
 {
-	BVSLoader::registerModule(identifier, module);
+	BVSLoader::registerModule(id, module);
 }

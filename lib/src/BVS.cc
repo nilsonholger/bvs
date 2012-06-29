@@ -52,7 +52,7 @@ BVS& BVS::loadModules()
 
 
 
-BVS& BVS::loadModule(const std::string& identifier, bool asThread)
+BVS& BVS::loadModule(const std::string& id, bool asThread)
 {
 	bool moduleThreads = config.getValue<bool>("BVS.moduleThreads", BVS_MODULE_THREADS);
 	bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads", BVS_MODULE_FORCE_THREADS);
@@ -61,16 +61,16 @@ BVS& BVS::loadModule(const std::string& identifier, bool asThread)
 
 	if (!moduleThreads) asThread = false;
 
-	loader->load(identifier, asThread);
+	loader->load(id, asThread);
 
 	return *this;
 }
 
 
 
-BVS& BVS::unloadModule(const std::string& identifier)
+BVS& BVS::unloadModule(const std::string& id)
 {
-	loader->unload(identifier);
+	loader->unload(id);
 
 	return *this;
 }
