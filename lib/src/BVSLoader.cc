@@ -130,6 +130,7 @@ BVSLoader& BVSLoader::unload(const std::string& id, const bool eraseFromMap)
 {
 	/* algorithm:
 	 * CHECK thread, signal exit
+	 * TODO DISCONNECT connectors
 	 * CHECK library handle
 	 * CLOSE library
 	 * CHECK errors
@@ -237,7 +238,7 @@ BVSLoader& BVSLoader::connectModules()
 			// get input name and selection
 			separator = options.find_first_of('(');
 			separator2 = options.find_first_of(')');
-			selection = options.substr(0, separator2);
+			selection = options.substr(0, separator2+1);
 			if (separator!=std::string::npos)
 			{
 				module= options.substr(separator+1, separator2-separator-1);
