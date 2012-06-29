@@ -101,8 +101,8 @@ class BVS
 		 * are in a state where they can be controlled by the master.
 		 *
 		 * ATTENTION: When NOT forking the master controller and calling
-		 * ::run(), your thread of execution will never return, because it
-		 * stays inside the frameworks master control function.
+		 * BVSControl::run(), your thread of execution will never return,
+		 * because it stays inside the frameworks master control function.
 		 * @see BVSControl
 		 * @param[in] forkMasterController Whether to fork the controller.
 		 * @return Reference to object.

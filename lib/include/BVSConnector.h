@@ -42,7 +42,7 @@ class BVSConnector
 		// TODO needs to be private, create access functions that also take care of synchronization
 		// maybe: get(where to store to) and get returns bool indicating success or failure
 		// remember queue design...
-		void* data;
+		std::shared_ptr<void*> data;
 
 		// TODO comments
 		template<typename T> void set(T* input);
@@ -67,7 +67,7 @@ template<typename T> void BVSConnector::set(T* input)
 {
 	//only for output
 
-	data = input;
+	*data = input;
 }
 
 
@@ -76,7 +76,7 @@ template<typename T> T* BVSConnector::get()
 {
 	//only for input
 
-	return static_cast<T*>(data);
+	return static_cast<T*>(*data);
 }
 
 
