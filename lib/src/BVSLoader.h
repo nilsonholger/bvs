@@ -40,11 +40,11 @@ class BVSLoader
 		/** Load the given module.
 		 * Executes bvsRegisterModule function in module to register it with the
 		 * system.
-		 * @param[in] identifier The name of the module.
+		 * @param[in] moduleTraits The name and traits of the module.
 		 * @param[in] asThread Whether to load the module inside a thread or not.
 		 * @return Reference to object.
 		 */
-		BVSLoader& load(const std::string& identifier, bool asThread);
+		BVSLoader& load(const std::string& moduleTraits, const bool asThread);
 
 		/** Unload the given module.
 		 * @param[in] moduleName The name of the module.

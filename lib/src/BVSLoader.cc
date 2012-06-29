@@ -25,7 +25,7 @@ void BVSLoader::registerModule(const std::string& identifier, BVSModule* module)
 
 
 
-BVSLoader& BVSLoader::load(const std::string& id, bool asThread)
+BVSLoader& BVSLoader::load(const std::string& moduleTraits, const bool asThread)
 {
 	/* algorithm:
 	 * SEPARATE identifier(library).options
@@ -41,14 +41,14 @@ BVSLoader& BVSLoader::load(const std::string& id, bool asThread)
 	std::string options;
 
 	// search for '.' in identifier and separate identifier and options (throwaway, not needed here)
-	size_t separator = id.find_first_of('.');
+	size_t separator = moduleTraits.find_first_of('.');
 	if (separator!=std::string::npos)
 	{
-		identifier = id.substr(0, separator);
-		options = id.substr(separator+1, std::string::npos);
+		identifier = moduleTraits.substr(0, separator);
+		options = moduleTraits.substr(separator+1, std::string::npos);
 	}
 	else
-		identifier = id;
+		identifier = moduleTraits;
 
 	// search for '(' in identifier and separate if necessary
 	separator = identifier.find_first_of('(');
