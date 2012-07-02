@@ -7,21 +7,29 @@
 
 
 
-// Forward declaration
-class BVSConnector;
-
-
-
 /** Connector Types.
- * IN  - used for input
- * OUT - used for output
+ * NOOP - not assigned
+ * IN   - used for input
+ * OUT  - used for output
  */
-enum class BVSConnectorType { IN, OUT};
+enum class BVSConnectorType { NOOP, IN, OUT};
 
 
+struct BVSConnectorData
+{
+	std::string id;
+	BVSConnectorType type;
+	bool active;
+	void* pointer;
+};
 
 /** Connector map definition. */
-typedef std::map<std::string, BVSConnector*, std::less<std::string>> BVSConnectorMap;
+typedef std::map<std::string, std::shared_ptr<BVSConnectorData>, std::less<std::string>> BVSConnectorMap;
+
+struct BVSConnectorDataCollector
+{
+	static BVSConnectorMap connectors;
+};
 
 
 
@@ -30,7 +38,7 @@ typedef std::map<std::string, BVSConnector*, std::less<std::string>> BVSConnecto
  * by creating a connector on each side and then pushing data through it like a
  * pipe.
  */
-class BVSConnector
+template<typename T> class BVSConnector
 {
 	public:
 		/** Constructs a connector.
@@ -38,22 +46,19 @@ class BVSConnector
 		 * @param connectorType The connector's type.
 		 */
 		BVSConnector(const std::string& connectorName, BVSConnectorType connectorType);
+		~BVSConnector();
 
 		// TODO needs to be private, create access functions that also take care of synchronization
 		// maybe: get(where to store to) and get returns bool indicating success or failure
 		// remember queue design...
-		std::shared_ptr<void*> data;
+		T* connection;
 
 		// TODO comments
-		template<typename T> void set(T* input);
-		template<typename T> T* get();
+		void set(T* input);
+		T* get();
 		
 	private:
-		std::string id; /**< The connector's id. */
-		BVSConnectorType type; /**< The connector's type. */
-
-		/** Map of connectors, used upon creating to register connector. */
-		static BVSConnectorMap connectors;
+		std::shared_ptr<BVSConnectorData> data;
 
 		BVSConnector(const BVSConnector&); /**< -Weffc++ */
 		BVSConnector operator=(const BVSConnector&); /**< -Weffc++ */
@@ -63,20 +68,49 @@ class BVSConnector
 
 
 
-template<typename T> void BVSConnector::set(T* input)
+template<typename T> BVSConnector<T>::BVSConnector(const std::string& connectorName, BVSConnectorType connectorType)
+	: connection(nullptr)
+	, data(std::shared_ptr<BVSConnectorData>(new BVSConnectorData{connectorName, connectorType, false, nullptr}))
 {
-	//only for output
+	BVSConnectorDataCollector::connectors[connectorName] = data;
+	
+	if (data->type == BVSConnectorType::OUT)
+	{
+		connection = new T();
+		data->pointer = connection;
+		data->active = true;
+		printf("%p\n", (void*)connection);
+		printf("%p\n", (void*)BVSConnectorDataCollector::connectors[connectorName]->pointer);
+	}
+}
 
-	*data = input;
+template<typename T> BVSConnector<T>::~BVSConnector()
+{
+	if (data->type == BVSConnectorType::IN) delete connection;
 }
 
 
 
-template<typename T> T* BVSConnector::get()
+template<typename T> void BVSConnector<T>::set(T* input)
 {
 	//only for input
 
-	return static_cast<T*>(*data);
+	data->pointer = input;
+}
+
+
+
+template<typename T> T* BVSConnector<T>::get()
+{
+	//only for output
+
+	if (connection == nullptr && data->pointer != nullptr && data->active)
+	{
+		connection = static_cast<T*>(data->pointer);
+		data->active = true;
+	}
+
+	return connection;
 }
 
 

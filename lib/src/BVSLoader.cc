@@ -102,7 +102,11 @@ BVSLoader& BVSLoader::load(const std::string& moduleTraits, const bool asThread)
 	modules[id]->options = options;
 
 	// move connectors from temporary to metadata
-	modules[id]->connectors = std::move(BVSConnector::connectors);
+	modules[id]->connectors = std::move(BVSConnectorDataCollector::connectors);
+	for (auto con: modules[id]->connectors)
+	{
+		LOG(0, id << ": " << con.second->id << " " << (int)con.second->type << " " << con.second->active << " " << con.second->pointer);
+	}
 
 	// set metadata and start as thread if needed
 	if (asThread==true)
@@ -210,16 +214,6 @@ BVSLoader& BVSLoader::connectModules()
 	 * DONE
 	 */
 
-	// debug output
-	/*for (auto& it: modules)
-	{
-		LOG(0, "Module: " << it.second->id << " [" << it.second->connectors.size() << "]");
-		for (auto& con: it.second->connectors)
-		{
-			LOG(0, "-> " << it.second->id << "." << con.id);
-		}
-	}*/
-
 	std::string options;
 	std::string selection;
 	std::string input;
@@ -274,7 +268,6 @@ BVSLoader& BVSLoader::connectModules()
 			{
 				output = module.substr(separator+1, std::string::npos);
 				module = module.substr(0, separator);
-				LOG(3, it.second->id << ": " << input << "(" << module << "." << output << ")");
 			}
 			else
 			{
@@ -315,7 +308,19 @@ BVSLoader& BVSLoader::connectModules()
 			// check if input data type equals output data type
 
 			// connect
-			it.second->connectors[input]->data = modules[module]->connectors[output]->data;
+			// TODO
+			it.second->connectors[input]->pointer = modules[module]->connectors[output]->pointer;
+			it.second->connectors[input]->active = true;
+			LOG(3, "connected: " << it.second->id << "." << it.second->connectors[input]->id << " <- " << modules[module]->id << "." << modules[module]->connectors[output]->id);
+
+			for (auto con: it.second->connectors)
+			{
+				LOG(0, it.second->id << ": " << con.second->id << " " << (int)con.second->type << " " << con.second->active << " " << con.second->pointer);
+			}
+			for (auto con: modules[module]->connectors)
+			{
+				LOG(0, modules[module]->id << ": " << con.second->id << " " << (int)con.second->type << " " << con.second->active << " " << con.second->pointer);
+			}
 		}
 	}
 
