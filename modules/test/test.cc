@@ -1,4 +1,5 @@
 #include "test.h"
+#include "cstdlib"
 
 
 
@@ -42,14 +43,15 @@ BVSStatus test::execute()
 {
 	LOG(2, "Execution of " << identifier << "!");
 
-	int* in = new int(42);
-	output.set(in);
+	int foo = rand();
+	//int* in = new int(42);
+	//output.set(in);
+	*output.get() = foo;
+	foo++;
 	int* foobar;
-	foobar = input.get<int>();
+	foobar = input.get();
 	LOG(0, "getting: " << *foobar);
 
-	//*output.data = 5;
-	//LOG(0, "getting something: " << *input.data);
 	return BVSStatus::OK;
 }
 

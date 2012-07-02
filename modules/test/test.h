@@ -23,8 +23,8 @@ class test : public BVSModule
 		BVSLogger logger;
 		const BVSConfig& config;
 
-		BVSConnector input;
-		BVSConnector output;
+		BVSConnector<int> input;
+		BVSConnector<int> output;
 
 		test(const test&) = delete; /**< -Weffc++ */
 		test& operator=(const test&) = delete; /**< -Weffc++ */
