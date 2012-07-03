@@ -47,11 +47,11 @@ BVSStatus test::execute()
 	std::string foo = "some string data!";
 	//int* in = new int(42);
 	//output.set(in);
-	*output.get() = foo;
+	output.set() = foo;
 	//foo++;
-	int* foobar;
+	int foobar;
 	foobar = input.get();
-	LOG(0, "getting: " << *foobar);
+	LOG(0, "getting: " << foobar);
 
 	return BVSStatus::OK;
 }
