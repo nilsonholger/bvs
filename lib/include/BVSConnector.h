@@ -54,8 +54,8 @@ template<typename T> class BVSConnector
 		T* connection;
 
 		// TODO comments
-		void set(T* input);
-		T* get();
+		T& set();
+		const T& get();
 		
 	private:
 		std::shared_ptr<BVSConnectorData> data;
@@ -91,18 +91,30 @@ template<typename T> BVSConnector<T>::~BVSConnector()
 
 
 
-template<typename T> void BVSConnector<T>::set(T* input)
+template<typename T> T& BVSConnector<T>::set()
 {
-	//only for input
+	// allow set only for output
+	if (data->type != BVSConnectorType::OUT)
+	{
+		//TODO tell to use get
+		//LOG(0, "trying to read from connector of type != OUT!");
+		exit(1);
+	}
 
-	data->pointer = input;
+	return *connection;
 }
 
 
 
-template<typename T> T* BVSConnector<T>::get()
+template<typename T> const T& BVSConnector<T>::get()
 {
 	//only for output
+	if (data->type != BVSConnectorType::IN)
+	{
+		//TODO tell to use set
+		//LOG(0, "trying to write to connector of type != IN!");
+		exit(1);
+	}
 
 	if (connection == nullptr && data->pointer != nullptr && data->active)
 	{
@@ -110,7 +122,7 @@ template<typename T> T* BVSConnector<T>::get()
 		data->active = true;
 	}
 
-	return connection;
+	return *connection;
 }
 
 
