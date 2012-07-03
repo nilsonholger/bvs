@@ -24,7 +24,7 @@ class test : public BVSModule
 		const BVSConfig& config;
 
 		BVSConnector<int> input;
-		BVSConnector<int> output;
+		BVSConnector<std::string> output;
 
 		test(const test&) = delete; /**< -Weffc++ */
 		test& operator=(const test&) = delete; /**< -Weffc++ */

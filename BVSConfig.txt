@@ -13,7 +13,7 @@ forceModuleThreads = false
 
 # list of modules, '+' prefix starts module in own thread (if permitted)
 modules = main(test).testIn(main2.testOut)
-+modules = main2(test).testIn(main.testOut)
++modules = main2(test2).testIn(main.testOut)
 #+modules = main3(test)
 #+modules = main4(test)
 #+modules = main5(test)

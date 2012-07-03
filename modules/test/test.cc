@@ -43,11 +43,12 @@ BVSStatus test::execute()
 {
 	LOG(2, "Execution of " << identifier << "!");
 
-	int foo = rand();
+	//int foo = rand();
+	std::string foo = "some string data!";
 	//int* in = new int(42);
 	//output.set(in);
 	*output.get() = foo;
-	foo++;
+	//foo++;
 	int* foobar;
 	foobar = input.get();
 	LOG(0, "getting: " << *foobar);
