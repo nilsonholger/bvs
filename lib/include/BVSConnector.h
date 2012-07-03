@@ -46,14 +46,12 @@ template<typename T> class BVSConnector
 		 * @param connectorType The connector's type.
 		 */
 		BVSConnector(const std::string& connectorName, BVSConnectorType connectorType);
-		~BVSConnector();
-
-		// TODO needs to be private, create access functions that also take care of synchronization
-		// maybe: get(where to store to) and get returns bool indicating success or failure
-		// remember queue design...
-		T* connection;
 
 		// TODO comments
+		~BVSConnector();
+
+		T* connection;
+
 		T& set();
 		const T& get();
 		
@@ -94,7 +92,7 @@ template<typename T> T& BVSConnector<T>::set()
 	// allow set only for output
 	if (data->type != BVSConnectorType::OUT)
 	{
-		//TODO tell to use get
+		//TODO tell to use get if input was desired
 		//LOG(0, "trying to read from connector of type != OUT!");
 		exit(1);
 	}
@@ -106,7 +104,7 @@ template<typename T> T& BVSConnector<T>::set()
 
 template<typename T> const T& BVSConnector<T>::get()
 {
-	//only for output
+	// allow get only for output (maybe compiler catches const before, check)
 	if (data->type != BVSConnectorType::IN)
 	{
 		//TODO tell to use set

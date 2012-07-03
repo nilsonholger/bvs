@@ -304,7 +304,6 @@ BVSLoader& BVSLoader::connectModules()
 			// check if input data type equals output data type
 
 			// connect
-			// TODO
 			it.second->connectors[input]->pointer = modules[module]->connectors[output]->pointer;
 			it.second->connectors[input]->active = true;
 			LOG(3, "connected: " << it.second->id << "." << it.second->connectors[input]->id << " <- " << modules[module]->id << "." << modules[module]->connectors[output]->id);
