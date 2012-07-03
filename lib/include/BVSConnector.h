@@ -79,8 +79,6 @@ template<typename T> BVSConnector<T>::BVSConnector(const std::string& connectorN
 		connection = new T();
 		data->pointer = connection;
 		data->active = true;
-		printf("%p\n", (void*)connection);
-		printf("%p\n", (void*)BVSConnectorDataCollector::connectors[connectorName]->pointer);
 	}
 }
 

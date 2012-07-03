@@ -103,10 +103,6 @@ BVSLoader& BVSLoader::load(const std::string& moduleTraits, const bool asThread)
 
 	// move connectors from temporary to metadata
 	modules[id]->connectors = std::move(BVSConnectorDataCollector::connectors);
-	for (auto con: modules[id]->connectors)
-	{
-		LOG(0, id << ": " << con.second->id << " " << (int)con.second->type << " " << con.second->active << " " << con.second->pointer);
-	}
 
 	// set metadata and start as thread if needed
 	if (asThread==true)
@@ -312,15 +308,6 @@ BVSLoader& BVSLoader::connectModules()
 			it.second->connectors[input]->pointer = modules[module]->connectors[output]->pointer;
 			it.second->connectors[input]->active = true;
 			LOG(3, "connected: " << it.second->id << "." << it.second->connectors[input]->id << " <- " << modules[module]->id << "." << modules[module]->connectors[output]->id);
-
-			for (auto con: it.second->connectors)
-			{
-				LOG(0, it.second->id << ": " << con.second->id << " " << (int)con.second->type << " " << con.second->active << " " << con.second->pointer);
-			}
-			for (auto con: modules[module]->connectors)
-			{
-				LOG(0, modules[module]->id << ": " << con.second->id << " " << (int)con.second->type << " " << con.second->active << " " << con.second->pointer);
-			}
 		}
 	}
 
