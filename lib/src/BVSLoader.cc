@@ -131,6 +131,7 @@ BVSLoader& BVSLoader::unload(const std::string& id, const bool eraseFromMap)
 	/* algorithm:
 	 * CHECK thread, signal exit
 	 * TODO DISCONNECT connectors
+	 * TODO DELETE module instance, call destructors first
 	 * CHECK library handle
 	 * CLOSE library
 	 * CHECK errors
