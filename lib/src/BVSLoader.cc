@@ -31,7 +31,7 @@ BVSLoader& BVSLoader::load(const std::string& moduleTraits, const bool asThread)
 	 * SEPARATE id(library).options
 	 * CHECK for duplicate ids
 	 * LOAD the library and CHECK errors
-	 * LINK and execute register function, CHECK errors
+	 * LINPUTK and execute register function, CHECK errors
 	 * SAVE metadata
 	 * MOVE connectors to metadata
 	 * START (un/)threaded module
@@ -130,7 +130,7 @@ BVSLoader& BVSLoader::unload(const std::string& id, const bool eraseFromMap)
 {
 	/* algorithm:
 	 * CHECK thread, signal exit
-	 * TODO DISCONNECT connectors
+	 * TODO DISCONNECT connectors (account for 1:N connections)
 	 * TODO DELETE module instance, call destructors first
 	 * CHECK library handle
 	 * CLOSE library
@@ -253,7 +253,7 @@ BVSLoader& BVSLoader::connectModules()
 			}
 
 			// check input type
-			if (it.second->connectors[input]->type != BVSConnectorType::IN)
+			if (it.second->connectors[input]->type != BVSConnectorType::INPUT)
 			{
 				LOG(0, "selected input is not of input type: " << selection);
 				exit(1);
@@ -294,17 +294,18 @@ BVSLoader& BVSLoader::connectModules()
 			}
 
 			// check output type
-			if (modules[module]->connectors[output]->type != BVSConnectorType::OUT)
+			if (modules[module]->connectors[output]->type != BVSConnectorType::OUTPUT)
 			{
 				LOG(0, "selected output is not of output type: " << selection);
 				exit(1);
 			}
 
-			// check if input is already connected...
+			// TODO check if input is already connected...
 
-			// check if input data type equals output data type
+			// TODO check if input data type equals output data type
 
 			// connect
+			// TODO account for 1:N connections
 			it.second->connectors[input]->pointer = modules[module]->connectors[output]->pointer;
 			it.second->connectors[input]->active = true;
 			LOG(3, "connected: " << it.second->id << "." << it.second->connectors[input]->id << " <- " << modules[module]->id << "." << modules[module]->connectors[output]->id);

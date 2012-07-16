@@ -19,22 +19,17 @@ enum class BVSStatus { NONE = 0, OK = 1, WAIT = 2, FAIL = 4, NOINPUT = 8 };
 class BVSModule
 {
 	public:
-		/** Constructor of Module Base.
-		 * @param config Reference to config object.
+		/** Base module constructor.
 		 */
-		BVSModule(const BVSConfig& config);
+		BVSModule();
 
-		// TODO comments
-		virtual ~BVSModule(); /**< Destructor of Module Base. */
-		virtual BVSStatus onLoad() = 0;
-		virtual BVSStatus preExecute() = 0;
-		virtual BVSStatus execute() = 0;
-		virtual BVSStatus postExecute() = 0;
-		virtual BVSStatus debugDisplay() = 0;
-		virtual BVSStatus onClose() = 0;
-
-	protected:
-		const BVSConfig& config; /** Reference to config object. */
+		virtual ~BVSModule(); /**< Base module destructor. */
+		virtual BVSStatus onLoad() = 0; /**< Executed at module load. */
+		virtual BVSStatus preExecute() = 0; /**< UNUSED */
+		virtual BVSStatus execute() = 0; /**< Execute function doing all the work. */
+		virtual BVSStatus postExecute() = 0; /**< UNUSED */
+		virtual BVSStatus debugDisplay() = 0; /**< UNUSED */
+		virtual BVSStatus onClose() = 0; /**< Executed at module unload. */
 
 	private:
 		BVSModule(const BVSModule&) = delete; /**< -Weffc++ */
