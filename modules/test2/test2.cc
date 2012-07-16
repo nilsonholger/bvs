@@ -3,7 +3,7 @@
 
 
 test2::test2(const std::string id, const BVSConfig& config)
-	: BVSModule(config)
+	: BVSModule()
 	, id(id)
 	, logger(id)
 	, config(config)

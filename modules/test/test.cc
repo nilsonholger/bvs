@@ -4,7 +4,7 @@
 
 
 test::test(const std::string identifier, const BVSConfig& config)
-	: BVSModule(config)
+	: BVSModule()
 	, identifier(identifier)
 	, logger(identifier)
 	, config(config)
