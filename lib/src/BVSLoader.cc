@@ -20,7 +20,17 @@ BVSLoader::BVSLoader(BVSControl& control, BVSConfig& config)
 
 void BVSLoader::registerModule(const std::string& id, BVSModule* module)
 {
-	modules[id] = std::shared_ptr<BVSModuleData>(new BVSModuleData{id, std::string(), std::string(), module, nullptr, std::thread(), false, BVSModuleFlag::WAIT, BVSStatus::NONE, BVSConnectorMap()});
+	modules[id] = std::shared_ptr<BVSModuleData>(new BVSModuleData{ \
+			id, \
+			std::string(), \
+			std::string(), \
+			module, \
+			nullptr, \
+			std::thread(), \
+			false, \
+			BVSModuleFlag::WAIT, \
+			BVSStatus::NONE, \
+			BVSConnectorMap()});
 }
 
 
@@ -40,7 +50,7 @@ BVSLoader& BVSLoader::load(const std::string& moduleTraits, const bool asThread)
 	std::string library;
 	std::string options;
 
-	// search for '.' in id and separate id and options (throwaway, not needed here)
+	// search for '.' in id and separate id and options
 	size_t separator = moduleTraits.find_first_of('.');
 	if (separator!=std::string::npos)
 	{
@@ -132,7 +142,7 @@ BVSLoader& BVSLoader::unload(const std::string& id, const bool eraseFromMap)
 {
 	/* algorithm:
 	 * CHECK thread, signal exit
-	 * TODO DISCONNECT connectors, only for OUTPUT type disconnect all receiving INPUTS, account for 1:N connections
+	 * DISCONNECT connectors
 	 * DELETE module instance and connectors
 	 * CHECK library handle
 	 * CLOSE library
@@ -147,6 +157,29 @@ BVSLoader& BVSLoader::unload(const std::string& id, const bool eraseFromMap)
 			control.threadCond.notify_all();
 			LOG(3, "joining: " << id);
 			modules[id]->thread.join();
+		}
+	}
+
+	// disconnect connectors
+	for (auto it: modules)
+	{
+		for (auto con: it.second->connectors)
+		{
+			if (con.second->type==BVSConnectorType::INPUT) continue;
+
+			// find and reset all inputs connected to output
+			for (auto mods: modules)
+			{
+				for (auto modCon: mods.second->connectors)
+				{
+					if (con.second->pointer==modCon.second->pointer)
+					{
+						modCon.second->pointer = nullptr;
+						modCon.second->active = false;
+					}
+				}
+
+			}
 		}
 	}
 
