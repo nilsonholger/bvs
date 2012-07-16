@@ -31,7 +31,7 @@ BVSLoader& BVSLoader::load(const std::string& moduleTraits, const bool asThread)
 	 * SEPARATE id(library).options
 	 * CHECK for duplicate ids
 	 * LOAD the library and CHECK errors
-	 * LINPUTK and execute register function, CHECK errors
+	 * LINK and execute register function, CHECK errors
 	 * SAVE metadata
 	 * MOVE connectors to metadata
 	 * START (un/)threaded module
@@ -93,6 +93,8 @@ BVSLoader& BVSLoader::load(const std::string& moduleTraits, const bool asThread)
 		LOG(0, "Loading function bvsRegisterModule() in " << modulePath << " resulted in: " << dlerr);
 		exit(-1);
 	}
+
+	// register
 	bvsRegisterModule(id, config);
 	LOG(2, id << " loaded and registered!");
 
@@ -130,8 +132,8 @@ BVSLoader& BVSLoader::unload(const std::string& id, const bool eraseFromMap)
 {
 	/* algorithm:
 	 * CHECK thread, signal exit
-	 * TODO DISCONNECT connectors (account for 1:N connections)
-	 * TODO DELETE module instance, call destructors first
+	 * TODO DISCONNECT connectors, only for OUTPUT type disconnect all receiving INPUTS, account for 1:N connections
+	 * DELETE module instance and connectors
 	 * CHECK library handle
 	 * CLOSE library
 	 * CHECK errors
@@ -147,6 +149,11 @@ BVSLoader& BVSLoader::unload(const std::string& id, const bool eraseFromMap)
 			modules[id]->thread.join();
 		}
 	}
+
+	// delete module and connectors
+	modules[id]->connectors.clear();
+	delete modules[id]->module;
+	modules[id]->module = nullptr;
 
 	// close lib and check for errors
 	std::string modulePath = "./lib" + modules[id]->library + ".so";
@@ -207,6 +214,7 @@ BVSLoader& BVSLoader::connectModules()
 	 *		CHECK module exists and self reference
 	 *		CHECK output exists
 	 *		CHECK output type
+	 *		CHECK input already connected
 	 *		CONNECT
 	 * DONE
 	 */
@@ -300,12 +308,14 @@ BVSLoader& BVSLoader::connectModules()
 				exit(1);
 			}
 
-			// TODO check if input is already connected...
-
-			// TODO check if input data type equals output data type
+			// check if input is already connected
+			if (it.second->connectors[input]->active)
+			{
+				LOG(0, "selected input is alreade connected to another output: " << selection);
+				exit(1);
+			}
 
 			// connect
-			// TODO account for 1:N connections
 			it.second->connectors[input]->pointer = modules[module]->connectors[output]->pointer;
 			it.second->connectors[input]->active = true;
 			LOG(3, "connected: " << it.second->id << "." << it.second->connectors[input]->id << " <- " << modules[module]->id << "." << modules[module]->connectors[output]->id);
