@@ -5,7 +5,6 @@
 
 
 
-// TODO comments, usage examples...
 class test2 : public BVSModule
 {
 	public:

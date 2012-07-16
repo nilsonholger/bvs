@@ -7,8 +7,8 @@ test2::test2(const std::string id, const BVSConfig& config)
 	, id(id)
 	, logger(id)
 	, config(config)
-	, input("testIn", BVSConnectorType::IN)
-	, output("testOut", BVSConnectorType::OUT)
+	, input("testIn", BVSConnectorType::INPUT)
+	, output("testOut", BVSConnectorType::OUTPUT)
 {
 
 }
