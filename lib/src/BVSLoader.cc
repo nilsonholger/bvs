@@ -185,6 +185,7 @@ BVSLoader& BVSLoader::unload(const std::string& id, const bool eraseFromMap)
 
 	// delete module and connectors
 	modules[id]->connectors.clear();
+	modules[id]->module->onClose();
 	delete modules[id]->module;
 	modules[id]->module = nullptr;
 
