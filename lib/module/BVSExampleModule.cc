@@ -14,8 +14,8 @@ BVSExampleModule::BVSExampleModule(const std::string id, const BVSConfig& config
 	, id(id)
 	, logger(id)
 	, config(config)
-	, input("testIn", BVSConnectorType::IN)
-	, output("testOut", BVSConnectorType::OUT)
+	, input("testIn", BVSConnectorType::INPUT)
+	, output("testOut", BVSConnectorType::OUTPUT)
 {
 
 }
@@ -34,7 +34,7 @@ BVSExampleModule::~BVSExampleModule()
 // Executed at module load.
 BVSStatus BVSExampleModule::onLoad()
 {
-LOG(2, "loaded BVSExampleModule module!");
+	LOG(2, "loaded BVSExampleModule module!");
 
 	return BVSStatus::OK;
 }

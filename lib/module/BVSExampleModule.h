@@ -83,8 +83,8 @@ class BVSExampleModule : public BVSModule
 		/** Example connector used to retrieve/send data from/to other modules.
 		 * @see BVSConnector
 		 */
-		BVSConnector input;
-		BVSConnector output;
+		BVSConnector<int> input;
+		BVSConnector<std::string> output;
 
 		BVSExampleModule(const BVSExampleModule&) = delete; /**< -Weffc++ */
 		BVSExampleModule& operator=(const BVSExampleModule&) = delete; /**< -Weffc++ */
