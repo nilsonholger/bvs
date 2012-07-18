@@ -17,7 +17,11 @@ input::input(const std::string id, const BVSConfig& config)
 	, output("image", BVSConnectorType::OUTPUT)
 	, capture()
 {
+	capture.open(0);
+	if(!capture.isOpened()) exit(1);
 
+	//capture.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
+	//capture.set(CV_CAP_PROP_FRAME_HEIGHT, 800);
 }
 
 
@@ -35,12 +39,6 @@ input::~input()
 BVSStatus input::onLoad()
 {
 LOG(2, "loaded input module!");
-
-	capture.open(0);
-	if(!capture.isOpened()) exit(1);
-
-	capture.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
-	capture.set(CV_CAP_PROP_FRAME_HEIGHT, 800);
 
 	return BVSStatus::OK;
 }
