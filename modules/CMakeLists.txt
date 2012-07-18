@@ -1,2 +1,2 @@
-add_subdirectory(test)
-add_subdirectory(test2)
+add_subdirectory(input)
+add_subdirectory(grey)
