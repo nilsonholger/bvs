@@ -20,8 +20,10 @@ input::input(const std::string id, const BVS::Config& config)
 	capture.open(0);
 	if(!capture.isOpened()) exit(1);
 
+	capture.set(CV_CAP_PROP_MODE, 0);
 	//capture.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
 	//capture.set(CV_CAP_PROP_FRAME_HEIGHT, 800);
+	capture.set(CV_CAP_PROP_FPS, 30);
 }
 
 
