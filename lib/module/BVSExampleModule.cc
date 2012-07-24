@@ -6,9 +6,7 @@
 // Please do not change its signature as it is called by the framework (so the
 // framework actually creates your module) and the framework assigns the unique
 // identifier and gives you access to the its config.
-// However, you might use it to create your data structures etc., or you can use
-// the onLoad() and onClose() functions, just be consistent in order to avoid
-// weird errors.
+// However, you should use it to create your data structures etc.
 BVSExampleModule::BVSExampleModule(const std::string id, const BVS::Config& config)
 	: BVS::Module()
 	, id(id)

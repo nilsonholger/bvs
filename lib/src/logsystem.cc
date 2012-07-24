@@ -218,7 +218,7 @@ BVS::LogSystem& BVS::LogSystem::updateLoggerLevels(Config& config)
 	// check for LOGLEVEL.* variables and update logger levels
 	for (auto& it : config.dumpOptionStore())
 	{
-		if (it.first.substr(0, 10)=="bvslogger.")
+		if (it.first.substr(0, 10)=="logger.")
 		{
 			loggerLevels[it.first.substr(10, std::string::npos)] = config.getValue<unsigned short>(it.first, BVS_LOG_CLIENT_DEFAULT_VERBOSITY);
 		}
