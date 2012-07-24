@@ -38,7 +38,7 @@ BVS::Status grey::execute()
 {
 	LOG(2, "Execution of " << id << "!");
 
-	frame = input.get();
+	frame = *input;
 	//LOG(0, frame.total());
 	if (frame.total() == 0) return BVS::Status::OK;
 	cv::cvtColor(frame, frame, CV_BGR2GRAY);

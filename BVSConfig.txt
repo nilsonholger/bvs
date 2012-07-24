@@ -4,7 +4,7 @@ logSystem = true
 logConsole = true
 #logFile = BVSLog.txt
 # logFile = +BVSLog.txt # append to log file
-logVerbosity = 1
+logVerbosity = 3
 
 moduleThreads = ON
 forceModuleThreads = false

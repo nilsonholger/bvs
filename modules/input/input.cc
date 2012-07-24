@@ -42,7 +42,7 @@ BVS::Status input::execute()
 {
 	LOG(2, "Execution of " << id << "!");
 
-	capture >> output.set();
+	capture >> *output;
 
 	return BVS::Status::OK;
 }
