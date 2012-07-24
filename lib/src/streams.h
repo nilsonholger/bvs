@@ -1,5 +1,5 @@
-#ifndef BVSSTREAMS_H
-#define BVSSTREAMS_H
+#ifndef BVS_STREAMS_H
+#define BVS_STREAMS_H
 
 #include<iostream>
 
@@ -83,5 +83,5 @@ namespace BVS
 
 
 
-#endif //BVSSTREAMS_H
+#endif //BVS_STREAMS_H
 

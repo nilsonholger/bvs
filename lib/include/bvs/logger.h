@@ -1,5 +1,5 @@
-#ifndef BVSLOGGER_H
-#define BVSLOGGER_H
+#ifndef BVS_LOGGER_H
+#define BVS_LOGGER_H
 
 #include<iostream>
 #include<memory>
@@ -89,5 +89,5 @@ namespace BVS
 
 
 
-#endif //BVSLOGGER_H
+#endif //BVS_LOGGER_H
 

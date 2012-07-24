@@ -1,5 +1,5 @@
-#ifndef BVSCONFIG_H
-#define BVSCONFIG_H
+#ifndef BVS_CONFIG_H
+#define BVS_CONFIG_H
 
 #include<map>
 #include<mutex>
@@ -245,5 +245,5 @@ namespace BVS
 
 
 
-#endif //BVSCONFIG_H
+#endif //BVS_CONFIG_H
 

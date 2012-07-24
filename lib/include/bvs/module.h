@@ -1,5 +1,5 @@
-#ifndef BVSMODULE_H
-#define BVSMODULE_H
+#ifndef BVS_MODULE_H
+#define BVS_MODULE_H
 
 #include "bvs/config.h"
 #include "bvs/connector.h"
@@ -50,5 +50,5 @@ void registerModule(const std::string& id, BVS::Module* module);
 
 
 
-#endif //BVSMODULE_H
+#endif //BVS_MODULE_H
 

@@ -47,7 +47,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 	while (flag != SystemFlag::QUIT)
 	{
 		// wait until all threads are synchronized
-		masterCond.wait_for(masterLock, std::chrono::milliseconds(100), [&](){ return runningThreads.load() == 0; });
+		masterCond.wait_for(masterLock, std::chrono::milliseconds(10), [&](){ return runningThreads.load() == 0; });
 
 		// act on system flag
 		switch (flag)
@@ -64,7 +64,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 			case SystemFlag::RUN:
 			case SystemFlag::STEP:
 				LOG(3, "starting next round, notifying threads and executing modules!");
-				LOG(1, "ROUND: " << round++);
+				LOG(2, "ROUND: " << round++);
 
 				// set RUN flag for all modules and signal threads
 				for (auto& it: Loader::modules)

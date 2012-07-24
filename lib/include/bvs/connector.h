@@ -1,5 +1,5 @@
-#ifndef BVSCONNECTOR_H
-#define BVSCONNECTOR_H
+#ifndef BVS_CONNECTOR_H
+#define BVS_CONNECTOR_H
 
 #include<iostream>
 #include<map>
@@ -147,5 +147,5 @@ namespace BVS
 
 
 
-#endif //BVSCONNECTOR_H
+#endif //BVS_CONNECTOR_H
 

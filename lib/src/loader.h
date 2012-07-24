@@ -1,5 +1,5 @@
-#ifndef BVSLOADER_H
-#define BVSLOADER_H
+#ifndef BVS_LOADER_H
+#define BVS_LOADER_H
 
 #include<string>
 #include<thread>
@@ -88,5 +88,5 @@ namespace BVS
 
 
 
-#endif //BVSLOADER_H
+#endif //BVS_LOADER_H
 

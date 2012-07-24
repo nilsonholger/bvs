@@ -1,5 +1,5 @@
-#ifndef BVSMODULEDATA_H
-#define BVSMODULEDATA_H
+#ifndef BVS_MODULEDATA_H
+#define BVS_MODULEDATA_H
 
 #include<atomic>
 #include<map>
@@ -39,5 +39,5 @@ namespace BVS
 
 
 
-#endif //BVSMODULEDATA_H
+#endif //BVS_MODULEDATA_H
 

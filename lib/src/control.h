@@ -1,5 +1,5 @@
-#ifndef BVSCONTROL_H
-#define BVSCONTROL_H
+#ifndef BVS_CONTROL_H
+#define BVS_CONTROL_H
 
 #include<atomic>
 #include<condition_variable>
@@ -97,5 +97,5 @@ namespace BVS
 
 
 
-#endif //BVSCONTROL_H
+#endif //BVS_CONTROL_H
 

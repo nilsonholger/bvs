@@ -1,5 +1,5 @@
-#ifndef BVSTRAITS_H
-#define BVSTRAITS_H
+#ifndef BVS_TRAITS_H
+#define BVS_TRAITS_H
 
 
 
@@ -46,5 +46,5 @@
 
 
 
-#endif //BVSTRAITS_H
+#endif //BVS_TRAITS_H
 

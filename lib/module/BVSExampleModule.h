@@ -13,7 +13,7 @@
  * - Outputs
  * - Configuration Options
  */
-class BVSExampleModule : public BVSModule
+class BVSExampleModule : public BVS::Module
 {
 	public:
 		/** Your module constructor.
@@ -23,7 +23,7 @@ class BVSExampleModule : public BVSModule
 		 * @param[in] id Your modules unique identifier, will be set by framework.
 		 * @param[in] config Reference to config to enable option retrieval.
 		 */
-		BVSExampleModule(const std::string id, const BVSConfig& config);
+		BVSExampleModule(const std::string id, const BVS::Config& config);
 
 		/** Your module destructor. */
 		~BVSExampleModule();

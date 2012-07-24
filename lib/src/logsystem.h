@@ -1,5 +1,5 @@
-#ifndef BVSLOGSYSTEM_H
-#define BVSLOGSYSTEM_H
+#ifndef BVS_LOGSYSTEM_H
+#define BVS_LOGSYSTEM_H
 
 #include<fstream>
 #include<memory>
@@ -147,5 +147,5 @@ namespace BVS
 
 
 
-#endif //BVSLOGSYSTEM_H
+#endif //BVS_LOGSYSTEM_H
 
