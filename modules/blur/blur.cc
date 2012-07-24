@@ -1,4 +1,4 @@
-#include "grey.h"
+#include "blur.h"
 
 
 
@@ -6,27 +6,25 @@
 // Please do not change its signature as it is called by the framework (so the
 // framework actually creates your module) and the framework assigns the unique
 // identifier and gives you access to the its config.
-// However, you might use it to create your data structures etc., or you can use
-// the onLoad() and onClose() functions, just be consistent in order to avoid
-// weird errors.
-grey::grey(const std::string id, const BVS::Config& config)
+// However, you should use it to create your data structures etc.
+blur::blur(const std::string id, const BVS::Config& config)
 	: BVS::Module()
 	, id(id)
 	, logger(id)
 	, config(config)
 	, input("input", BVS::ConnectorType::INPUT)
-	, output("outGrey", BVS::ConnectorType::OUTPUT)
+	, output("outBlur", BVS::ConnectorType::OUTPUT)
 	, frame()
 {
 
-	cv::namedWindow("grey", 1);
+	cv::namedWindow("blur", 1);
 }
 
 
 
 // This is your module's destructor.
 // See the constructor for more info.
-grey::~grey()
+blur::~blur()
 {
 
 }
@@ -34,18 +32,18 @@ grey::~grey()
 
 
 // Put all your work here.
-BVS::Status grey::execute()
+BVS::Status blur::execute()
 {
 	LOG(2, "Execution of " << id << "!");
 
 	frame = input.get();
 	//LOG(0, frame.total());
 	if (frame.total() == 0) return BVS::Status::OK;
-	cv::cvtColor(frame, frame, CV_BGR2GRAY);
-	cv::imshow("grey", frame);
+	cv::GaussianBlur(frame, frame, cv::Size(7,7), 1.5, 1.5);
+	cv::imshow("blur", frame);
 	//cv::imwrite("foo.bmp", frame);
 	cv::waitKey(1);
-
+	
 	output.set() = frame;
 
 	return BVS::Status::OK;
@@ -53,7 +51,8 @@ BVS::Status grey::execute()
 
 
 
-BVS::Status grey::debugDisplay()
+// UNUSED
+BVS::Status blur::debugDisplay()
 {
 	return BVS::Status::OK;
 }
@@ -67,7 +66,7 @@ extern "C" {
 	// register with framework
 	int bvsRegisterModule(std::string id, BVS::Config& config)
 	{
-		registerModule(id, new grey(id, config));
+		registerModule(id, new blur(id, config));
 
 		return 0;
 	}

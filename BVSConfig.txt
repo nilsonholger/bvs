@@ -4,7 +4,7 @@ logSystem = true
 logConsole = true
 #logFile = BVSLog.txt
 # logFile = +BVSLog.txt # append to log file
-logVerbosity = 3
+logVerbosity = 1
 
 moduleThreads = ON
 forceModuleThreads = false
@@ -14,6 +14,8 @@ forceModuleThreads = false
 # list of modules, '+' prefix starts module in own thread (if permitted)
 modules = +input(input)
 +modules = +grey(grey).input(input.image)
++modules = +blur(blur).input(grey.outGrey)
++modules = +canny(canny).input(blur.outBlur)
 #+modules = main3(test)
 #+modules = main4(test)
 #+modules = main5(test)
@@ -36,7 +38,7 @@ modules = +input(input)
 
 
 # Logger level settings
-[BVSLogger]
+[Logger]
 #BVS = 0
 #BVSDaemon = 0
 #BVSMaster = 0

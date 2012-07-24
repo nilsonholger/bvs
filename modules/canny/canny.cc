@@ -1,4 +1,4 @@
-#include "grey.h"
+#include "canny.h"
 
 
 
@@ -6,27 +6,27 @@
 // Please do not change its signature as it is called by the framework (so the
 // framework actually creates your module) and the framework assigns the unique
 // identifier and gives you access to the its config.
-// However, you might use it to create your data structures etc., or you can use
-// the onLoad() and onClose() functions, just be consistent in order to avoid
-// weird errors.
-grey::grey(const std::string id, const BVS::Config& config)
+// However, you should use it to create your data structures etc.
+canny::canny(const std::string id, const BVS::Config& config)
 	: BVS::Module()
 	, id(id)
 	, logger(id)
 	, config(config)
 	, input("input", BVS::ConnectorType::INPUT)
-	, output("outGrey", BVS::ConnectorType::OUTPUT)
+	, output("cannyOut", BVS::ConnectorType::OUTPUT)
 	, frame()
+	, start(std::chrono::high_resolution_clock::now())
+	, counter(0)
 {
 
-	cv::namedWindow("grey", 1);
+	cv::namedWindow("canny", 1);
 }
 
 
 
 // This is your module's destructor.
 // See the constructor for more info.
-grey::~grey()
+canny::~canny()
 {
 
 }
@@ -34,26 +34,35 @@ grey::~grey()
 
 
 // Put all your work here.
-BVS::Status grey::execute()
+BVS::Status canny::execute()
 {
 	LOG(2, "Execution of " << id << "!");
 
 	frame = input.get();
 	//LOG(0, frame.total());
 	if (frame.total() == 0) return BVS::Status::OK;
-	cv::cvtColor(frame, frame, CV_BGR2GRAY);
-	cv::imshow("grey", frame);
+	cv::Canny(frame, frame, 0, 30, 3);
+	cv::imshow("canny", frame);
 	//cv::imwrite("foo.bmp", frame);
 	cv::waitKey(1);
-
+	
 	output.set() = frame;
+
+	counter++;
+	if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-start).count() > 1000)
+	{
+		LOG(0, "fps: " << counter);
+		start = std::chrono::high_resolution_clock::now();
+		counter = 0;
+	}
 
 	return BVS::Status::OK;
 }
 
 
 
-BVS::Status grey::debugDisplay()
+// UNUSED
+BVS::Status canny::debugDisplay()
 {
 	return BVS::Status::OK;
 }
@@ -67,7 +76,7 @@ extern "C" {
 	// register with framework
 	int bvsRegisterModule(std::string id, BVS::Config& config)
 	{
-		registerModule(id, new grey(id, config));
+		registerModule(id, new canny(id, config));
 
 		return 0;
 	}
