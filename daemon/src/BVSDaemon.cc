@@ -1,9 +1,9 @@
-#include "BVS.h"
+#include "bvs/bvs.h"
 
 
 
-BVS* bvs;
-BVSLogger logger("BVSDaemon");
+BVS::BVS* bvs;
+BVS::Logger logger("Daemon");
 
 
 
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
 
 int setup(int argc, char** argv)
 {
-	bvs = new BVS(argc, argv);
+	bvs = new BVS::BVS(argc, argv);
 	//bvs.enableLogFile("BVSLog.txt");
 	//bvs.enableLogConsole();
 
@@ -93,12 +93,12 @@ int testLogger()
 	bvs->disableLogConsole();
 	LOG(0, "to FILE only");
 
-	BVSLogger file("FILE LOG", 3, BVSLogger::TO_FILE);
+	BVS::Logger file("FILE LOG", 3, BVS::Logger::TO_FILE);
 	file.out(0) << "FILE ONLY" << std::endl;
 	file.endl();
 
 	bvs->enableLogConsole();
-	BVSLogger cli("CLI LOG", 3, BVSLogger::TO_CLI);
+	BVS::Logger cli("CLI LOG", 3, BVS::Logger::TO_CLI);
 	cli.out(0) << "CLI ONLY" << std::endl;
 	cli.endl();
 
@@ -114,7 +114,7 @@ int testLogger()
 	LOG(0, "to FILE AGAIN");
 
 	bvs->enableLogConsole();
-	BVSLogger both("to BOTH", 0, BVSLogger::TO_CLI_AND_FILE);
+	BVS::Logger both("to BOTH", 0, BVS::Logger::TO_CLI_AND_FILE);
 	both.out(0) << "to CLI AND FILE" << std::endl;
 	both.endl();
 
@@ -152,7 +152,7 @@ int testConfig()
 	bvs->config.getValue("BVS.modules", list);
 	LOG(0, "List: BVS.modules");
 	int count = 0;
-	for (auto it : list)
+	for (auto& it : list)
 	{
 		LOG(0, count++ << ": " << it);
 	}
