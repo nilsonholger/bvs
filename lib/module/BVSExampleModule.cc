@@ -31,24 +31,6 @@ BVSExampleModule::~BVSExampleModule()
 
 
 
-// Executed at module load.
-BVS::Status BVSExampleModule::onLoad()
-{
-	LOG(2, "loaded BVSExampleModule module!");
-
-	return BVS::Status::OK;
-}
-
-
-
-// UNUSED
-BVS::Status BVSExampleModule::preExecute()
-{
-	return BVS::Status::OK;
-}
-
-
-
 // Put all your work here.
 BVS::Status BVSExampleModule::execute()
 {
@@ -60,22 +42,7 @@ BVS::Status BVSExampleModule::execute()
 
 
 // UNUSED
-BVS::Status BVSExampleModule::postExecute()
-{
-	return BVS::Status::OK;
-}
-
-
-
 BVS::Status BVSExampleModule::debugDisplay()
-{
-	return BVS::Status::OK;
-}
-
-
-
-// Executed at module unload.
-BVS::Status BVSExampleModule::onClose()
 {
 	return BVS::Status::OK;
 }
