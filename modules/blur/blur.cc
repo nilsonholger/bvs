@@ -36,7 +36,7 @@ BVS::Status blur::execute()
 {
 	LOG(2, "Execution of " << id << "!");
 
-	frame = input.get();
+	frame = *input;
 	//LOG(0, frame.total());
 	if (frame.total() == 0) return BVS::Status::OK;
 	cv::GaussianBlur(frame, frame, cv::Size(7,7), 1.5, 1.5);
@@ -44,7 +44,7 @@ BVS::Status blur::execute()
 	//cv::imwrite("foo.bmp", frame);
 	cv::waitKey(1);
 	
-	output.set() = frame;
+	*output = frame;
 
 	return BVS::Status::OK;
 }

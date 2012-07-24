@@ -46,7 +46,7 @@ BVS::Status grey::execute()
 	//cv::imwrite("foo.bmp", frame);
 	cv::waitKey(1);
 
-	output.set() = frame;
+	*output = frame;
 
 	return BVS::Status::OK;
 }
