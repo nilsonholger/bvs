@@ -1,31 +1,31 @@
 #include<algorithm>
 #include<iomanip>
 
-#include "BVSLogSystem.h"
+#include "logsystem.h"
 
 
 
-BVSNullStream BVSLogSystem::nullStream;
+BVS::NullStream BVS::LogSystem::nullStream;
 
 
 
-std::shared_ptr<BVSLogSystem> BVSLogSystem::instance = nullptr;
+std::shared_ptr<BVS::LogSystem> BVS::LogSystem::instance = nullptr;
 
 
 
-std::shared_ptr<BVSLogSystem> BVSLogSystem::connectToLogSystem()
+std::shared_ptr<BVS::LogSystem> BVS::LogSystem::connectToLogSystem()
 {
 	// check if system exists, if not create first
 	if (instance == nullptr)
 	{
-		instance = std::shared_ptr<BVSLogSystem>(new BVSLogSystem());
+		instance = std::shared_ptr<LogSystem>(new LogSystem());
 	}
 	return instance;
 }
 
 
 
-BVSLogSystem::BVSLogSystem()
+BVS::LogSystem::LogSystem()
 	: loggerLevels()
 	, tmpName()
 	, namePadding(0)
@@ -43,7 +43,7 @@ BVSLogSystem::BVSLogSystem()
 
 
 
-std::ostream& BVSLogSystem::out(const BVSLogger& logger, int level)
+std::ostream& BVS::LogSystem::out(const Logger& logger, int level)
 {
 	outMutex.lock();
 
@@ -60,18 +60,18 @@ std::ostream& BVSLogSystem::out(const BVSLogger& logger, int level)
 	std::ostream* out;
 	switch (logger.target)
 	{
-		case BVSLogger::OFF:
+		case Logger::OFF:
 			out = &nullStream;
 			break;
-		case BVSLogger::TO_CLI:
+		case Logger::TO_CLI:
 			if (outCLI.rdbuf() != nullStream.rdbuf()) out = &outCLI;
 			else out = &nullStream;
 			break;
-		case BVSLogger::TO_FILE:
+		case Logger::TO_FILE:
 			if (outFile.is_open()) out = &outFile;
 			else out = &nullStream;
 			break;
-		case BVSLogger::TO_CLI_AND_FILE:
+		case Logger::TO_CLI_AND_FILE:
 			if (outFile.is_open() && outCLI.rdbuf() != nullStream.rdbuf()) out = &outBoth;
 			else if (outFile.is_open()) out = &outFile;
 			else if (outCLI.rdbuf() != nullStream.rdbuf()) out = &outCLI;
@@ -88,14 +88,14 @@ std::ostream& BVSLogSystem::out(const BVSLogger& logger, int level)
 
 
 
-void BVSLogSystem::endl()
+void BVS::LogSystem::endl()
 {
 	outMutex.unlock();
 }
 
 
 
-BVSLogSystem& BVSLogSystem::setSystemVerbosity(int verbosity)
+BVS::LogSystem& BVS::LogSystem::setSystemVerbosity(int verbosity)
 {
 	systemVerbosity = verbosity;
 
@@ -104,7 +104,7 @@ BVSLogSystem& BVSLogSystem::setSystemVerbosity(int verbosity)
 
 
 
-BVSLogSystem& BVSLogSystem::announce(const BVSLogger& logger)
+BVS::LogSystem& BVS::LogSystem::announce(const Logger& logger)
 {
 	// update padding size for fancy (aligned) output
 	if (logger.getName().length() > namePadding)
@@ -126,7 +126,7 @@ BVSLogSystem& BVSLogSystem::announce(const BVSLogger& logger)
 
 
 
-BVSLogSystem& BVSLogSystem::enableLogFile(const std::string& file, bool append)
+BVS::LogSystem& BVS::LogSystem::enableLogFile(const std::string& file, bool append)
 {
 	if (outFile.is_open()) outFile.close();
 
@@ -145,7 +145,7 @@ BVSLogSystem& BVSLogSystem::enableLogFile(const std::string& file, bool append)
 
 
 
-BVSLogSystem& BVSLogSystem::disableLogFile()
+BVS::LogSystem& BVS::LogSystem::disableLogFile()
 {
 	outFile.close();
 
@@ -154,7 +154,7 @@ BVSLogSystem& BVSLogSystem::disableLogFile()
 
 
 
-BVSLogSystem& BVSLogSystem::enableLogConsole(const std::ostream& out)
+BVS::LogSystem& BVS::LogSystem::enableLogConsole(const std::ostream& out)
 {
 	// set internals to use given stream's buffer
 	outCLI.rdbuf(out.rdbuf());
@@ -164,7 +164,7 @@ BVSLogSystem& BVSLogSystem::enableLogConsole(const std::ostream& out)
 
 
 
-BVSLogSystem& BVSLogSystem::disableLogConsole()
+BVS::LogSystem& BVS::LogSystem::disableLogConsole()
 {
 	// set internals to log to nirvana
 	outCLI.rdbuf(nullStream.rdbuf());
@@ -174,7 +174,7 @@ BVSLogSystem& BVSLogSystem::disableLogConsole()
 
 
 
-BVSLogSystem& BVSLogSystem::updateSettings(BVSConfig& config)
+BVS::LogSystem& BVS::LogSystem::updateSettings(Config& config)
 {
 	// disable log system
 	if(config.getValue<bool>("BVS.logSystem", BVS_LOG_SYSTEM)==false && BVS_LOG_SYSTEM)
@@ -213,10 +213,10 @@ BVSLogSystem& BVSLogSystem::updateSettings(BVSConfig& config)
 
 
 
-BVSLogSystem& BVSLogSystem::updateLoggerLevels(BVSConfig& config)
+BVS::LogSystem& BVS::LogSystem::updateLoggerLevels(Config& config)
 {
 	// check for LOGLEVEL.* variables and update logger levels
-	for (auto it : config.dumpOptionStore())
+	for (auto& it : config.dumpOptionStore())
 	{
 		if (it.first.substr(0, 10)=="bvslogger.")
 		{

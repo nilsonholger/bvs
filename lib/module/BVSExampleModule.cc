@@ -9,13 +9,13 @@
 // However, you might use it to create your data structures etc., or you can use
 // the onLoad() and onClose() functions, just be consistent in order to avoid
 // weird errors.
-BVSExampleModule::BVSExampleModule(const std::string id, const BVSConfig& config)
-	: BVSModule()
+BVSExampleModule::BVSExampleModule(const std::string id, const BVS::Config& config)
+	: BVS::Module()
 	, id(id)
 	, logger(id)
 	, config(config)
-	, input("testIn", BVSConnectorType::INPUT)
-	, output("testOut", BVSConnectorType::OUTPUT)
+	, input("testIn", BVS::ConnectorType::INPUT)
+	, output("testOut", BVS::ConnectorType::OUTPUT)
 {
 
 }
@@ -32,52 +32,52 @@ BVSExampleModule::~BVSExampleModule()
 
 
 // Executed at module load.
-BVSStatus BVSExampleModule::onLoad()
+BVS::Status BVSExampleModule::onLoad()
 {
 	LOG(2, "loaded BVSExampleModule module!");
 
-	return BVSStatus::OK;
+	return BVS::Status::OK;
 }
 
 
 
 // UNUSED
-BVSStatus BVSExampleModule::preExecute()
+BVS::Status BVSExampleModule::preExecute()
 {
-	return BVSStatus::OK;
+	return BVS::Status::OK;
 }
 
 
 
 // Put all your work here.
-BVSStatus BVSExampleModule::execute()
+BVS::Status BVSExampleModule::execute()
 {
 	LOG(2, "Execution of " << id << "!");
 
-	return BVSStatus::OK;
+	return BVS::Status::OK;
 }
 
 
 
 // UNUSED
-BVSStatus BVSExampleModule::postExecute()
+BVS::Status BVSExampleModule::postExecute()
 {
-	return BVSStatus::OK;
+	return BVS::Status::OK;
 }
 
 
 
-BVSStatus BVSExampleModule::debugDisplay()
+BVS::Status BVSExampleModule::debugDisplay()
 {
-	return BVSStatus::OK;
+	return BVS::Status::OK;
 }
 
 
 
 // Executed at module unload.
-BVSStatus BVSExampleModule::onClose()
+BVS::Status BVSExampleModule::onClose()
 {
-	return BVSStatus::OK;
+	return BVS::Status::OK;
 }
 
 
@@ -87,7 +87,7 @@ BVSStatus BVSExampleModule::onClose()
 // DO NOT CHANGE OR DELETE
 extern "C" {
 	// register with framework
-	int bvsRegisterModule(std::string id, BVSConfig& config)
+	int bvsRegisterModule(std::string id, BVS::Config& config)
 	{
 		registerModule(id, new BVSExampleModule(id, config));
 

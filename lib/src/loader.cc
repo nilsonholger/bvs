@@ -1,16 +1,16 @@
-#include "BVSLoader.h"
+#include "loader.h"
 
 #include<dlfcn.h>
 
 
 
-BVSModuleMap BVSLoader::modules;
+BVS::ModuleMap BVS::Loader::modules;
 
 
 
-BVSLoader::BVSLoader(BVSControl& control, BVSConfig& config)
+BVS::Loader::Loader(Control& control, Config& config)
 	: control(control)
-	, logger("BVSLoader")
+	, logger("Loader")
 	, config(config)
 {
 
@@ -18,9 +18,9 @@ BVSLoader::BVSLoader(BVSControl& control, BVSConfig& config)
 
 
 
-void BVSLoader::registerModule(const std::string& id, BVSModule* module)
+void BVS::Loader::registerModule(const std::string& id, Module* module)
 {
-	modules[id] = std::shared_ptr<BVSModuleData>(new BVSModuleData{ \
+	modules[id] = std::shared_ptr<ModuleData>(new ModuleData{ \
 			id, \
 			std::string(), \
 			std::string(), \
@@ -28,14 +28,14 @@ void BVSLoader::registerModule(const std::string& id, BVSModule* module)
 			nullptr, \
 			std::thread(), \
 			false, \
-			BVSModuleFlag::WAIT, \
-			BVSStatus::NONE, \
-			BVSConnectorMap()});
+			ModuleFlag::WAIT, \
+			Status::NONE, \
+			ConnectorMap()});
 }
 
 
 
-BVSLoader& BVSLoader::load(const std::string& moduleTraits, const bool asThread)
+BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThread)
 {
 	/* algorithm:
 	 * SEPARATE id(library).options
@@ -92,7 +92,7 @@ BVSLoader& BVSLoader::load(const std::string& moduleTraits, const bool asThread)
 	}
 
 	// look for bvsRegisterModule in loaded lib, check for errors and execute register function
-	typedef void (*bvsRegisterModule_t)(const std::string& id, const BVSConfig& config);
+	typedef void (*bvsRegisterModule_t)(const std::string& id, const Config& config);
 	bvsRegisterModule_t bvsRegisterModule;
 	*reinterpret_cast<void**>(&bvsRegisterModule)=dlsym(dlib, "bvsRegisterModule");
 
@@ -114,23 +114,20 @@ BVSLoader& BVSLoader::load(const std::string& moduleTraits, const bool asThread)
 	modules[id]->options = options;
 
 	// move connectors from temporary to metadata
-	modules[id]->connectors = std::move(BVSConnectorDataCollector::connectors);
+	modules[id]->connectors = std::move(ConnectorDataCollector::connectors);
 
 	// set metadata and start as thread if needed
 	if (asThread==true)
 	{
 		LOG(3, id << " will be started in own thread!");
 		modules[id]->asThread = true;
-		modules[id]->thread = std::thread(&BVSControl::threadController, &control, modules[id]);
-		BVSControl::threadedModules++;
+		modules[id]->thread = std::thread(&Control::threadController, &control, modules[id]);
+		Control::threadedModules++;
 	}
 	else
 	{
-		LOG(3, id << " will be controlled by BVSControl!");
+		LOG(3, id << " will be controlled by Control!");
 		modules[id]->asThread = false;
-
-		// call library module load function
-		modules[id]->module->onLoad();
 	}
 
 	return *this;
@@ -138,7 +135,7 @@ BVSLoader& BVSLoader::load(const std::string& moduleTraits, const bool asThread)
 
 
 
-BVSLoader& BVSLoader::unload(const std::string& id, const bool eraseFromMap)
+BVS::Loader& BVS::Loader::unload(const std::string& id, const bool eraseFromMap)
 {
 	/* algorithm:
 	 * CHECK thread, signal exit
@@ -153,7 +150,7 @@ BVSLoader& BVSLoader::unload(const std::string& id, const bool eraseFromMap)
 	{
 		if (modules[id]->thread.joinable())
 		{
-			modules[id]->flag = BVSModuleFlag::QUIT;
+			modules[id]->flag = ModuleFlag::QUIT;
 			control.threadCond.notify_all();
 			LOG(3, "joining: " << id);
 			modules[id]->thread.join();
@@ -161,16 +158,16 @@ BVSLoader& BVSLoader::unload(const std::string& id, const bool eraseFromMap)
 	}
 
 	// disconnect connectors
-	for (auto it: modules)
+	for (auto& it: modules)
 	{
-		for (auto con: it.second->connectors)
+		for (auto& con: it.second->connectors)
 		{
-			if (con.second->type==BVSConnectorType::INPUT) continue;
+			if (con.second->type==ConnectorType::INPUT) continue;
 
 			// find and reset all inputs connected to output
-			for (auto mods: modules)
+			for (auto& mods: modules)
 			{
-				for (auto modCon: mods.second->connectors)
+				for (auto& modCon: mods.second->connectors)
 				{
 					if (con.second->pointer==modCon.second->pointer)
 					{
@@ -185,7 +182,6 @@ BVSLoader& BVSLoader::unload(const std::string& id, const bool eraseFromMap)
 
 	// delete module and connectors
 	modules[id]->connectors.clear();
-	modules[id]->module->onClose();
 	delete modules[id]->module;
 	modules[id]->module = nullptr;
 
@@ -224,9 +220,9 @@ BVSLoader& BVSLoader::unload(const std::string& id, const bool eraseFromMap)
 
 
 
-BVSLoader& BVSLoader::unloadAll()
+BVS::Loader& BVS::Loader::unloadAll()
 {
-	for (auto it: modules)
+	for (auto& it: modules)
 		unload(it.second->id, false);
 
 	modules.clear();
@@ -236,7 +232,7 @@ BVSLoader& BVSLoader::unloadAll()
 
 
 
-BVSLoader& BVSLoader::connectModules()
+BVS::Loader& BVS::Loader::connectModules()
 {
 	/* algorithm:
 	 * FOR EACH module
@@ -295,7 +291,7 @@ BVSLoader& BVSLoader::connectModules()
 			}
 
 			// check input type
-			if (it.second->connectors[input]->type != BVSConnectorType::INPUT)
+			if (it.second->connectors[input]->type != ConnectorType::INPUT)
 			{
 				LOG(0, "selected input is not of input type: " << selection);
 				exit(1);
@@ -336,7 +332,7 @@ BVSLoader& BVSLoader::connectModules()
 			}
 
 			// check output type
-			if (modules[module]->connectors[output]->type != BVSConnectorType::OUTPUT)
+			if (modules[module]->connectors[output]->type != ConnectorType::OUTPUT)
 			{
 				LOG(0, "selected output is not of output type: " << selection);
 				exit(1);

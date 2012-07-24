@@ -1,20 +1,20 @@
-#include "BVSControl.h"
+#include "control.h"
 
 #include<chrono>
 
 
 
-std::atomic<int> BVSControl::runningThreads;
+std::atomic<int> BVS::Control::runningThreads;
 
 
 
-int BVSControl::threadedModules = 0;
+int BVS::Control::threadedModules = 0;
 
 
 
-BVSControl::BVSControl()
-	: flag(BVSSystemFlag::PAUSE)
-	, logger("BVSControl")
+BVS::Control::Control()
+	: flag(SystemFlag::PAUSE)
+	, logger("Control")
 	, masterMutex()
 	, masterLock(masterMutex)
 	, masterCond()
@@ -28,13 +28,13 @@ BVSControl::BVSControl()
 
 
 
-BVSControl& BVSControl::masterController(const bool forkMasterController)
+BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 {
 	if (forkMasterController)
 	{
 		LOG(2, "master controller forking, now running in its own thread!");
 		//create thread with this function and this object
-		controlThread = std::thread(&BVSControl::masterController, this, false);
+		controlThread = std::thread(&Control::masterController, this, false);
 		return *this;
 	}
 
@@ -43,8 +43,8 @@ BVSControl& BVSControl::masterController(const bool forkMasterController)
 	masterCond.wait(masterLock, [&](){ return threadedModules == runningThreads.load(); });
 	runningThreads.store(0);
 
-	// main loop, repeat until BVSFlag::QUIT is set
-	while (flag != BVSSystemFlag::QUIT)
+	// main loop, repeat until SystemFlag::QUIT is set
+	while (flag != SystemFlag::QUIT)
 	{
 		// wait until all threads are synchronized
 		masterCond.wait_for(masterLock, std::chrono::milliseconds(100), [&](){ return runningThreads.load() == 0; });
@@ -52,45 +52,45 @@ BVSControl& BVSControl::masterController(const bool forkMasterController)
 		// act on system flag
 		switch (flag)
 		{
-			case BVSSystemFlag::QUIT:
+			case SystemFlag::QUIT:
 				break;
-			case BVSSystemFlag::PAUSE:
+			case SystemFlag::PAUSE:
 				// if not running inside own thread, return
 				if (!controlThread.joinable()) return *this;
 				LOG(3, "master pausing...");
-				masterCond.wait(masterLock, [&](){ return flag != BVSSystemFlag::PAUSE; });
+				masterCond.wait(masterLock, [&](){ return flag != SystemFlag::PAUSE; });
 				LOG(3, "master continuing...");
 				break;
-			case BVSSystemFlag::RUN:
-			case BVSSystemFlag::STEP:
+			case SystemFlag::RUN:
+			case SystemFlag::STEP:
 				LOG(3, "starting next round, notifying threads and executing modules!");
 				LOG(1, "ROUND: " << round++);
 
 				// set RUN flag for all modules and signal threads
-				for (auto& it: BVSLoader::modules)
+				for (auto& it: Loader::modules)
 				{
-					it.second->flag = BVSModuleFlag::RUN;
+					it.second->flag = ModuleFlag::RUN;
 					if (it.second->asThread)
 						runningThreads.fetch_add(1);
 				}
 				threadCond.notify_all();
 
 				// iterate through modules executed by master
-				for (auto& it: BVSLoader::modules)
+				for (auto& it: Loader::modules)
 				{
 					if (it.second->asThread) continue;
 					moduleController(*(it.second.get()));
 				}
 
-				if (flag == BVSSystemFlag::STEP) flag = BVSSystemFlag::PAUSE;
+				if (flag == SystemFlag::STEP) flag = SystemFlag::PAUSE;
 				break;
-			case BVSSystemFlag::STEP_BACK:
+			case SystemFlag::STEP_BACK:
 				break;
 		}
 		LOG(3, "waiting for threads to finish!");
 
 		// return if not control thread
-		if (!controlThread.joinable() && flag != BVSSystemFlag::RUN) return *this;
+		if (!controlThread.joinable() && flag != SystemFlag::RUN) return *this;
 	}
 
 	return *this;
@@ -98,7 +98,7 @@ BVSControl& BVSControl::masterController(const bool forkMasterController)
 
 
 
-BVSControl& BVSControl::sendCommand(const BVSSystemFlag controlFlag)
+BVS::Control& BVS::Control::sendCommand(const SystemFlag controlFlag)
 {
 	LOG(3, "control() called with flag: " << (int)controlFlag);
 	flag = controlFlag;
@@ -116,7 +116,7 @@ BVSControl& BVSControl::sendCommand(const BVSSystemFlag controlFlag)
 	}
 
 	// on quitting, wait for control thread if necessary
-	if (controlFlag == BVSSystemFlag::QUIT)
+	if (controlFlag == SystemFlag::QUIT)
 	{
 		if (controlThread.joinable())
 		{
@@ -130,23 +130,20 @@ BVSControl& BVSControl::sendCommand(const BVSSystemFlag controlFlag)
 
 
 
-BVSControl& BVSControl::moduleController(BVSModuleData& data)
+BVS::Control& BVS::Control::moduleController(ModuleData& data)
 {
 	switch (data.flag)
 	{
-		case BVSModuleFlag::QUIT:
-			data.module->onClose();
+		case ModuleFlag::QUIT:
 			break;
-		case BVSModuleFlag::WAIT:
+		case ModuleFlag::WAIT:
 			break;
-		case BVSModuleFlag::RUN:
+		case ModuleFlag::RUN:
 			// call execution functions
-			data.module->preExecute();
 			data.status = data.module->execute();
-			data.module->postExecute();
 
 			// reset module flag
-			data.flag = BVSModuleFlag::WAIT;
+			data.flag = ModuleFlag::WAIT;
 			break;
 	}
 
@@ -155,11 +152,8 @@ BVSControl& BVSControl::moduleController(BVSModuleData& data)
 
 
 
-BVSControl& BVSControl::threadController(std::shared_ptr<BVSModuleData> data)
+BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
 {
-	// call library module load function
-	data->module->onLoad();
-
 	// acquire lock needed for conditional variable
 	std::unique_lock<std::mutex> threadLock(threadMutex);
 
@@ -171,7 +165,7 @@ BVSControl& BVSControl::threadController(std::shared_ptr<BVSModuleData> data)
 		// wait for master to announce next round
 		LOG(3, data->id << " waiting for next round!");
 		masterCond.notify_one();
-		threadCond.wait(threadLock, [&](){ return data->flag != BVSModuleFlag::WAIT; });
+		threadCond.wait(threadLock, [&](){ return data->flag != ModuleFlag::WAIT; });
 
 		// call module control
 		moduleController(*(data.get()));

@@ -1,16 +1,16 @@
-#include "BVS.h"
-#include "BVSControl.h"
-#include "BVSLoader.h"
-#include "BVSLogSystem.h"
+#include "bvs/bvs.h"
+#include "control.h"
+#include "loader.h"
+#include "logsystem.h"
 
 
 
-BVS::BVS(int argc, char** argv)
+BVS::BVS::BVS(int argc, char** argv)
 	: config("BVS", argc, argv)
-	, logSystem(BVSLogSystem::connectToLogSystem())
+	, logSystem(LogSystem::connectToLogSystem())
 	, logger("BVS")
-	, control(new BVSControl())
-	, loader(new BVSLoader(*control, config))
+	, control(new Control())
+	, loader(new Loader(*control, config))
 {
 	logSystem->updateSettings(config);
 	logSystem->updateLoggerLevels(config);
@@ -18,7 +18,7 @@ BVS::BVS(int argc, char** argv)
 
 
 
-BVS& BVS::loadModules()
+BVS::BVS& BVS::BVS::loadModules()
 {
 	// get module list and thread settings from config
 	std::vector<std::string> moduleList;
@@ -33,7 +33,7 @@ BVS& BVS::loadModules()
 
 	// load all selected modules
 	bool asThread;
-	for (auto it : moduleList)
+	for (auto& it : moduleList)
 	{
 		asThread = false;
 
@@ -52,7 +52,7 @@ BVS& BVS::loadModules()
 
 
 
-BVS& BVS::loadModule(const std::string& id, bool asThread)
+BVS::BVS& BVS::BVS::loadModule(const std::string& id, bool asThread)
 {
 	bool moduleThreads = config.getValue<bool>("BVS.moduleThreads", BVS_MODULE_THREADS);
 	bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads", BVS_MODULE_FORCE_THREADS);
@@ -68,7 +68,7 @@ BVS& BVS::loadModule(const std::string& id, bool asThread)
 
 
 
-BVS& BVS::unloadModule(const std::string& id)
+BVS::BVS& BVS::BVS::unloadModule(const std::string& id)
 {
 	loader->unload(id);
 
@@ -77,7 +77,7 @@ BVS& BVS::unloadModule(const std::string& id)
 
 
 
-BVS& BVS::loadConfigFile(const std::string& configFile)
+BVS::BVS& BVS::BVS::loadConfigFile(const std::string& configFile)
 {
 	config.loadConfigFile(configFile);
 	logSystem->updateSettings(config);
@@ -88,7 +88,7 @@ BVS& BVS::loadConfigFile(const std::string& configFile)
 
 
 
-BVS& BVS::setLogSystemVerbosity(const unsigned short verbosity)
+BVS::BVS& BVS::BVS::setLogSystemVerbosity(const unsigned short verbosity)
 {
 	if (logSystem) logSystem->setSystemVerbosity(verbosity);
 
@@ -97,7 +97,7 @@ BVS& BVS::setLogSystemVerbosity(const unsigned short verbosity)
 
 
 
-BVS& BVS::enableLogFile(const std::string& file, bool append)
+BVS::BVS& BVS::BVS::enableLogFile(const std::string& file, bool append)
 {
 	if (logSystem) logSystem->enableLogFile(file, append);
 
@@ -106,7 +106,7 @@ BVS& BVS::enableLogFile(const std::string& file, bool append)
 
 
 
-BVS& BVS::disableLogFile()
+BVS::BVS& BVS::BVS::disableLogFile()
 {
 	if (logSystem) logSystem->disableLogFile();
 
@@ -115,7 +115,7 @@ BVS& BVS::disableLogFile()
 
 
 
-BVS& BVS::enableLogConsole(const std::ostream& out)
+BVS::BVS& BVS::BVS::enableLogConsole(const std::ostream& out)
 {
 	if (logSystem) logSystem->enableLogConsole(out);
 
@@ -124,7 +124,7 @@ BVS& BVS::enableLogConsole(const std::ostream& out)
 
 
 
-BVS& BVS::disableLogConsole()
+BVS::BVS& BVS::BVS::disableLogConsole()
 {
 	if (logSystem) logSystem->disableLogConsole();
 
@@ -133,7 +133,7 @@ BVS& BVS::disableLogConsole()
 
 
 
-BVS& BVS::connectModules()
+BVS::BVS& BVS::BVS::connectModules()
 {
 	loader->connectModules();
 
@@ -142,7 +142,7 @@ BVS& BVS::connectModules()
 
 
 
-BVS& BVS::start(bool forkMasterController)
+BVS::BVS& BVS::BVS::start(bool forkMasterController)
 {
 	control->masterController(forkMasterController);
 
@@ -151,36 +151,36 @@ BVS& BVS::start(bool forkMasterController)
 
 
 
-BVS& BVS::run()
+BVS::BVS& BVS::BVS::run()
 {
-	control->sendCommand(BVSSystemFlag::RUN);
+	control->sendCommand(SystemFlag::RUN);
 
 	return *this;
 }
 
 
 
-BVS& BVS::step()
+BVS::BVS& BVS::BVS::step()
 {
-	control->sendCommand(BVSSystemFlag::STEP);
+	control->sendCommand(SystemFlag::STEP);
 
 	return *this;
 }
 
 
 
-BVS& BVS::pause()
+BVS::BVS& BVS::BVS::pause()
 {
-	control->sendCommand(BVSSystemFlag::PAUSE);
+	control->sendCommand(SystemFlag::PAUSE);
 
 	return *this;
 }
 
 
 
-BVS& BVS::quit()
+BVS::BVS& BVS::BVS::quit()
 {
-	control->sendCommand(BVSSystemFlag::QUIT);
+	control->sendCommand(SystemFlag::QUIT);
 	loader->unloadAll();
 
 	return *this;

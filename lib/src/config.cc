@@ -1,4 +1,4 @@
-#include "BVSConfig.h"
+#include "bvs/config.h"
 
 #include<algorithm>
 #include<iostream>
@@ -6,7 +6,7 @@
 
 
 
-BVSConfig::BVSConfig(std::string name, int argc, char** argv)
+BVS::Config::Config(std::string name, int argc, char** argv)
 	: name(name)
 	, mutex()
 	, optionStore()
@@ -16,7 +16,7 @@ BVSConfig::BVSConfig(std::string name, int argc, char** argv)
 
 
 
-BVSConfig& BVSConfig::getName(std::string& name)
+BVS::Config& BVS::Config::getName(std::string& name)
 {
 	name = name;
 	return *this;
@@ -24,7 +24,7 @@ BVSConfig& BVSConfig::getName(std::string& name)
 
 
 
-std::map<std::string, std::string> BVSConfig::dumpOptionStore()
+std::map<std::string, std::string> BVS::Config::dumpOptionStore()
 {
 	std::lock_guard<std::mutex> lock(mutex);
 
@@ -35,7 +35,7 @@ std::map<std::string, std::string> BVSConfig::dumpOptionStore()
 
 
 
-BVSConfig& BVSConfig::loadCommandLine(int argc, char** argv)
+BVS::Config& BVS::Config::loadCommandLine(int argc, char** argv)
 {
 	/* algorithm:
 	 *  FOR EACH command line argument
@@ -64,7 +64,7 @@ BVSConfig& BVSConfig::loadCommandLine(int argc, char** argv)
 			// check for missing argument
 			if (option.empty())
 			{
-				std::cerr << "[ERROR|BVSConfig] no argument after --bvs.config=" << std::endl;
+				std::cerr << "[ERROR|Config] no argument after --bvs.config=" << std::endl;
 				exit(1);
 			}
 
@@ -80,7 +80,7 @@ BVSConfig& BVSConfig::loadCommandLine(int argc, char** argv)
 			// check for missing argument
 			if (option.empty())
 			{
-				std::cerr << "[ERROR|BVSConfig] no argument after --bvs.options=" << std::endl;
+				std::cerr << "[ERROR|Config] no argument after --bvs.options=" << std::endl;
 				exit(1);
 			}
 
@@ -114,7 +114,7 @@ BVSConfig& BVSConfig::loadCommandLine(int argc, char** argv)
 
 
 
-BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
+BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 {
 	/* algorithm:
 	 * FOR EACH line in config file
@@ -139,7 +139,7 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
 	// check if file can be read from
 	if (!file.is_open())
 	{
-		std::cerr << "[ERROR|BVSConfig] file not found: " << configFile << std::endl;
+		std::cerr << "[ERROR|Config] file not found: " << configFile << std::endl;
 		exit(1);
 	}
 
@@ -198,8 +198,8 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
 		// check for orphaned options
 		if (section.empty())
 		{
-			std::cerr << "[ERROR|BVSConfig] option without section." << std::endl;
-			std::cerr << "[ERROR|BVSConfig] " << configFile << ":" << lineNumber << ": " << line << std::endl;
+			std::cerr << "[ERROR|Config] option without section." << std::endl;
+			std::cerr << "[ERROR|Config] " << configFile << ":" << lineNumber << ": " << line << std::endl;
 			exit(1);
 		}
 
@@ -220,8 +220,8 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
 		// check for empty option name
 		if (option.length()==section.length()+1 )
 		{
-			std::cerr << "[ERROR|BVSConfig] starting line with '='." << std::endl;
-			std::cerr << "[ERROR|BVSConfig] " << configFile << ":" << lineNumber << ": " << line << std::endl;
+			std::cerr << "[ERROR|Config] starting line with '='." << std::endl;
+			std::cerr << "[ERROR|Config] " << configFile << ":" << lineNumber << ": " << line << std::endl;
 			exit(1);
 		}
 
@@ -235,8 +235,8 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
 			// check if option exists
 			if (optionStore.find(option)==optionStore.end())
 			{
-				std::cerr << "[ERROR|BVSConfig] cannot append to a non existing option." << std::endl;
-				std::cerr << "[ERROR|BVSConfig] " << configFile << ":" << lineNumber << ": " << line << std::endl;
+				std::cerr << "[ERROR|Config] cannot append to a non existing option." << std::endl;
+				std::cerr << "[ERROR|Config] " << configFile << ":" << lineNumber << ": " << line << std::endl;
 				exit(1);
 			}
 
@@ -252,7 +252,7 @@ BVSConfig& BVSConfig::loadConfigFile(const std::string& configFile)
 
 
 
-std::string BVSConfig::searchOption(std::string option)
+std::string BVS::Config::searchOption(std::string option)
 {
 	std::transform(option.begin(), option.end(), option.begin(), ::tolower);
 
@@ -269,7 +269,7 @@ std::string BVSConfig::searchOption(std::string option)
 
 
 
-template<> BVSConfig& BVSConfig::convertStringTo<std::string>(const std::string& input, std::string& output)
+template<> BVS::Config& BVS::Config::convertStringTo<std::string>(const std::string& input, std::string& output)
 {
 	output = input;
 	return *this;
@@ -277,7 +277,7 @@ template<> BVSConfig& BVSConfig::convertStringTo<std::string>(const std::string&
 
 
 
-template<> BVSConfig& BVSConfig::convertStringTo<bool>(const std::string& input, bool& b)
+template<> BVS::Config& BVS::Config::convertStringTo<bool>(const std::string& input, bool& b)
 {
 	// check for possible matches to various versions meaning true
 	if (input=="1" \
