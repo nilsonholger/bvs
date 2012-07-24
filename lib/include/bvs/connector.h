@@ -4,6 +4,7 @@
 #include<iostream>
 #include<map>
 #include<memory>
+#include<mutex>
 #include<string>
 #include<typeinfo>
 
@@ -29,6 +30,7 @@ namespace BVS
 		bool active; /**< If connector is active/assigned. */
 		void* pointer; /**< Void pointer to contained object. */
 		size_t hash; /**< Hash code of templated type. */
+		std::mutex* mutex; /**< Mutex to lock resource. */
 	};
 
 
@@ -78,7 +80,10 @@ namespace BVS
 			 */
 			const T& get();
 
-			// TODO
+			/** Access operator*.
+			 * Use this operator to write/read data to/from the connection.
+			 * TODO read/write explanation
+			 */
 			T& operator*();
 
 		private:
@@ -98,7 +103,7 @@ namespace BVS
 
 	template<typename T> Connector<T>::Connector(const std::string& connectorName, ConnectorType connectorType)
 		: connection(nullptr)
-		, data(std::shared_ptr<ConnectorData>(new ConnectorData{connectorName, connectorType, false, nullptr, typeid(T).hash_code()}))
+		, data(std::shared_ptr<ConnectorData>(new ConnectorData{connectorName, connectorType, false, nullptr, typeid(T).hash_code(), nullptr}))
 	{
 		ConnectorDataCollector::connectors[connectorName] = data;
 
@@ -107,6 +112,7 @@ namespace BVS
 			connection = new T();
 			data->pointer = connection;
 			data->active = true;
+			data->mutex = new std::mutex();
 		}
 	}
 
@@ -153,7 +159,9 @@ namespace BVS
 
 	template<typename T> T& Connector<T>::operator*()
 	{
-		// TODO
+		std::lock_guard<std::mutex> lock(*data->mutex);
+
+		// check initiliziation
 		if (connection == nullptr && data->pointer != nullptr && data->active)
 		{
 			connection = static_cast<T*>(data->pointer);
