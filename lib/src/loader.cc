@@ -244,6 +244,7 @@ BVS::Loader& BVS::Loader::connectModules()
 	 *		CHECK module exists and self reference
 	 *		CHECK output exists
 	 *		CHECK output type
+	 *		CHECK input typeid hash == output typeid hash
 	 *		CHECK input already connected
 	 *		CONNECT
 	 * DONE
@@ -293,7 +294,7 @@ BVS::Loader& BVS::Loader::connectModules()
 			// check input type
 			if (it.second->connectors[input]->type != ConnectorType::INPUT)
 			{
-				LOG(0, "selected input is not of input type: " << selection);
+				LOG(0, "selected input is not of input type: " << it.second->id << "." << selection);
 				exit(1);
 			}
 
@@ -335,6 +336,13 @@ BVS::Loader& BVS::Loader::connectModules()
 			if (modules[module]->connectors[output]->type != ConnectorType::OUTPUT)
 			{
 				LOG(0, "selected output is not of output type: " << selection);
+				exit(1);
+			}
+
+			// check input typeid hash == output typeid hash
+			if (it.second->connectors[input]->hash != modules[module]->connectors[output]->hash)
+			{
+				LOG(0, "selected input and output template instantiations are of different type: " << it.second->id << "." << selection);
 				exit(1);
 			}
 

@@ -11,9 +11,9 @@
 
 /** Macro to use with Logger. */
 #if (BVS_LOG_SYSTEM)
-#define LOG(level, args) { logger.out(level) << args << std::endl; logger.endl(); }
+#define LOG(level, args) { logger.out(level) << args << std::endl; logger.endl(); };
 #else
-#define LOG(level, args) { }
+#define LOG(level, args) { };
 #endif
 
 

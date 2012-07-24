@@ -5,6 +5,7 @@
 #include<map>
 #include<memory>
 #include<string>
+#include<typeinfo>
 
 
 
@@ -26,7 +27,8 @@ namespace BVS
 		std::string id; /**< Identifier. */
 		ConnectorType type; /**< Type. @see ConnectorType */
 		bool active; /**< If connector is active/assigned. */
-		void* pointer; /** Void pointer to contained object. */
+		void* pointer; /**< Void pointer to contained object. */
+		size_t hash; /**< Hash code of templated type. */
 	};
 
 
@@ -76,6 +78,9 @@ namespace BVS
 			 */
 			const T& get();
 
+			// TODO
+			T& operator*();
+
 		private:
 			/** Pointer to the actual object. */
 			T* connection;
@@ -93,7 +98,7 @@ namespace BVS
 
 	template<typename T> Connector<T>::Connector(const std::string& connectorName, ConnectorType connectorType)
 		: connection(nullptr)
-		  , data(std::shared_ptr<ConnectorData>(new ConnectorData{connectorName, connectorType, false, nullptr}))
+		, data(std::shared_ptr<ConnectorData>(new ConnectorData{connectorName, connectorType, false, nullptr, typeid(T).hash_code()}))
 	{
 		ConnectorDataCollector::connectors[connectorName] = data;
 
@@ -135,6 +140,20 @@ namespace BVS
 			exit(1);
 		}
 
+		if (connection == nullptr && data->pointer != nullptr && data->active)
+		{
+			connection = static_cast<T*>(data->pointer);
+			data->active = true;
+		}
+
+		return *connection;
+	}
+
+
+
+	template<typename T> T& Connector<T>::operator*()
+	{
+		// TODO
 		if (connection == nullptr && data->pointer != nullptr && data->active)
 		{
 			connection = static_cast<T*>(data->pointer);

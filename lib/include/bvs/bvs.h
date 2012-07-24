@@ -24,6 +24,7 @@ namespace BVS
 	/** The BVS framework base.
 	 * This is the BVS base, use this to interact with the framework.
 	 */
+	// TODO document settings/traits and config stuff
 	class BVS
 	{
 		public:

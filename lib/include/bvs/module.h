@@ -22,9 +22,7 @@ namespace BVS
 	class Module
 	{
 		public:
-			/** Base module constructor.
-			*/
-			Module();
+			Module(); /**< Base module constructor. */
 
 			virtual ~Module(); /**< Base module destructor. */
 			virtual Status execute() = 0; /**< Execute function doing all the work. */
