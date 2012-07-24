@@ -1,7 +1,7 @@
 #ifndef GREY_H
 #define GREY_H
 
-#include "BVSModule.h"
+#include "bvs/module.h"
 #include "opencv2/opencv.hpp"
 
 
@@ -14,7 +14,7 @@
  * - Outputs
  * - Configuration Options
  */
-class grey : public BVSModule
+class grey : public BVS::Module
 {
 	public:
 		/** Your module constructor.
@@ -26,66 +26,41 @@ class grey : public BVSModule
 		 * @param[in] id Your modules unique identifier, will be set by framework.
 		 * @param[in] config Reference to config to enable option retrieval.
 		 */
-		grey(const std::string id, const BVSConfig& config);
+		grey(const std::string id, const BVS::Config& config);
 
 		/** Your module destructor. */
 		~grey();
-
-		/** Executed at module load.
-		 * This function is called upon loading the module and can/should be
-		 * used to initialize your data structures etc.
-		 * @return Module's status.
-		 */
-		BVSStatus onLoad();
-
-		/** UNUSED
-		 * @return Module's status.
-		 */
-		BVSStatus preExecute();
 
 		/** Execute function doing all the work.
 		 * This function is executed exactly once and only once upon each started
 		 * round/step of the framework. It is supposed to contain the actual work
 		 * of your module.
 		 */
-		BVSStatus execute();
+		BVS::Status execute();
 
 		/** UNUSED
 		 * @return Module's status.
 		 */
-		BVSStatus postExecute();
-
-		/** UNUSED
-		 * @return Module's status.
-		 */
-		BVSStatus debugDisplay();
-
-		/** Executed at module unload.
-		 * This function complements the onLoad() function. It is called upon
-		 * closing the module the module and can/should be used to
-		 * deinitialize your data structures etc.
-		 * @return Module's status.
-		 */
-		BVSStatus onClose();
+		BVS::Status debugDisplay();
 
 	private:
 		const std::string id; /**< Your unique module id, set by framework. */
 
 		/** Your logger instance.
-		 * @see BVSLogger
+		 * @see BVS::Logger
 		 */
-		BVSLogger logger;
+		BVS::Logger logger;
 
 		/** Your config instance.
-		 * @see BVSConfig
+		 * @see BVS::Config
 		 */
-		const BVSConfig& config;
+		const BVS::Config& config;
 
 		/** Example connector used to retrieve/send data from/to other modules.
-		 * @see BVSConnector
+		 * @see BVS::Connector
 		 */
-		BVSConnector<cv::Mat> input;
-		//BVSConnector output;
+		BVS::Connector<cv::Mat> input;
+		//BVS::Connector output;
 
 		cv::Mat frame;
 

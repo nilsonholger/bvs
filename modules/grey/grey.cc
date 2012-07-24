@@ -9,13 +9,13 @@
 // However, you might use it to create your data structures etc., or you can use
 // the onLoad() and onClose() functions, just be consistent in order to avoid
 // weird errors.
-grey::grey(const std::string id, const BVSConfig& config)
-	: BVSModule()
+grey::grey(const std::string id, const BVS::Config& config)
+	: BVS::Module()
 	, id(id)
 	, logger(id)
 	, config(config)
-	, input("input", BVSConnectorType::INPUT)
-	//, output("testOut", BVSConnectorType::OUT)
+	, input("input", BVS::ConnectorType::INPUT)
+	//, output("testOut", BVS::ConnectorType::OUT)
 	, frame()
 {
 
@@ -32,61 +32,27 @@ grey::~grey()
 
 
 
-// Executed at module load.
-BVSStatus grey::onLoad()
-{
-LOG(2, "loaded grey module!");
-
-	return BVSStatus::OK;
-}
-
-
-
-// UNUSED
-BVSStatus grey::preExecute()
-{
-	return BVSStatus::OK;
-}
-
-
-
 // Put all your work here.
-BVSStatus grey::execute()
+BVS::Status grey::execute()
 {
 	LOG(2, "Execution of " << id << "!");
 
 	frame = input.get();
 	LOG(0, frame.total());
-	if (frame.total() == 0) return BVSStatus::OK;
+	if (frame.total() == 0) return BVS::Status::OK;
 	//cv::cvtColor(frame, frame, CV_BGR2GRAY);
 	cv::namedWindow("grey", 1);
 	cv::imshow("grey", frame);
 	//cv::imwrite("foo.bmp", frame);
 
-	return BVSStatus::OK;
+	return BVS::Status::OK;
 }
 
 
 
-// UNUSED
-BVSStatus grey::postExecute()
+BVS::Status grey::debugDisplay()
 {
-	return BVSStatus::OK;
-}
-
-
-
-BVSStatus grey::debugDisplay()
-{
-	return BVSStatus::OK;
-}
-
-
-
-// Executed at module unload.
-BVSStatus grey::onClose()
-{
-	return BVSStatus::OK;
+	return BVS::Status::OK;
 }
 
 
@@ -96,7 +62,7 @@ BVSStatus grey::onClose()
 // DO NOT CHANGE OR DELETE
 extern "C" {
 	// register with framework
-	int bvsRegisterModule(std::string id, BVSConfig& config)
+	int bvsRegisterModule(std::string id, BVS::Config& config)
 	{
 		registerModule(id, new grey(id, config));
 

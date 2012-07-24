@@ -9,12 +9,12 @@
 // However, you might use it to create your data structures etc., or you can use
 // the onLoad() and onClose() functions, just be consistent in order to avoid
 // weird errors.
-input::input(const std::string id, const BVSConfig& config)
-	: BVSModule()
+input::input(const std::string id, const BVS::Config& config)
+	: BVS::Module()
 	, id(id)
 	, logger(id)
 	, config(config)
-	, output("image", BVSConnectorType::OUTPUT)
+	, output("image", BVS::ConnectorType::OUTPUT)
 	, capture()
 {
 	capture.open(0);
@@ -35,55 +35,21 @@ input::~input()
 
 
 
-// Executed at module load.
-BVSStatus input::onLoad()
-{
-LOG(2, "loaded input module!");
-
-	return BVSStatus::OK;
-}
-
-
-
-// UNUSED
-BVSStatus input::preExecute()
-{
-	return BVSStatus::OK;
-}
-
-
-
 // Put all your work here.
-BVSStatus input::execute()
+BVS::Status input::execute()
 {
 	LOG(2, "Execution of " << id << "!");
 
 	capture >> output.set();
 
-	return BVSStatus::OK;
+	return BVS::Status::OK;
 }
 
 
 
-// UNUSED
-BVSStatus input::postExecute()
+BVS::Status input::debugDisplay()
 {
-	return BVSStatus::OK;
-}
-
-
-
-BVSStatus input::debugDisplay()
-{
-	return BVSStatus::OK;
-}
-
-
-
-// Executed at module unload.
-BVSStatus input::onClose()
-{
-	return BVSStatus::OK;
+	return BVS::Status::OK;
 }
 
 
@@ -93,7 +59,7 @@ BVSStatus input::onClose()
 // DO NOT CHANGE OR DELETE
 extern "C" {
 	// register with framework
-	int bvsRegisterModule(std::string id, BVSConfig& config)
+	int bvsRegisterModule(std::string id, BVS::Config& config)
 	{
 		registerModule(id, new input(id, config));
 
