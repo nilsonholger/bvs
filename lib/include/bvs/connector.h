@@ -8,51 +8,13 @@
 #include<string>
 #include<typeinfo>
 
+#include "bvs/connectordata.h"
+
 
 
 /** BVS namespace, contains all library stuff. */
 namespace BVS
 {
-	/** Connector Types.
-	 * NOOP - not assigned
-	 * INPUTPUT   - used for input
-	 * OUTPUTPUT  - used for output
-	 */
-	enum class ConnectorType { NOOP, INPUT, OUTPUT};
-
-
-
-	/** Connector meta data store. */
-	struct ConnectorData
-	{
-		std::string id; /**< Identifier. */
-		ConnectorType type; /**< Type. @see ConnectorType */
-		bool active; /**< If connector is active/assigned. */
-		void* pointer; /**< Void pointer to contained object. */
-		size_t hash; /**< Hash code of templated type. */
-		std::mutex* mutex; /**< Mutex to lock resource. */
-	};
-
-
-
-	/** Connector map definition. */
-	typedef std::map<std::string, std::shared_ptr<ConnectorData>, std::less<std::string>> ConnectorMap;
-
-
-
-	/** Connector meta data collector.
-	 * This is a workaround so that there can exists one map of connector metadata
-	 * for all possible template instatiations of connector that is truly shared
-	 * between all of them.
-	 */
-	struct ConnectorDataCollector
-	{
-		/** Map of connectors. */
-		static ConnectorMap connectors;
-	};
-
-
-
 	/** The connection between modules.
 	 * This class provides access to creating connections between different modules
 	 * by creating a connector on each side and then pushing data through it like a
@@ -64,6 +26,7 @@ namespace BVS
 			/** Constructs a connector.
 			 * @param[in] connectorName The connector's name.
 			 * @param[in] connectorType The connector's type.
+			 * @see ConnectorType
 			 */
 			Connector(const std::string& connectorName, ConnectorType connectorType);
 
@@ -103,7 +66,7 @@ namespace BVS
 
 	template<typename T> Connector<T>::Connector(const std::string& connectorName, ConnectorType connectorType)
 		: connection(nullptr)
-		, data(std::shared_ptr<ConnectorData>(new ConnectorData{connectorName, connectorType, false, nullptr, typeid(T).hash_code(), nullptr}))
+		, data(std::shared_ptr<ConnectorData>(new ConnectorData{connectorName, connectorType, false, nullptr, typeid(T).hash_code(), typeid(T).name(), nullptr}))
 	{
 		ConnectorDataCollector::connectors[connectorName] = data;
 

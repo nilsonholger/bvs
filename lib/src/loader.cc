@@ -232,7 +232,7 @@ BVS::Loader& BVS::Loader::unloadAll()
 
 
 
-BVS::Loader& BVS::Loader::connectModules()
+BVS::Loader& BVS::Loader::connectModules(bool connectorTypeMatching)
 {
 	/* algorithm:
 	 * FOR EACH module
@@ -340,9 +340,11 @@ BVS::Loader& BVS::Loader::connectModules()
 			}
 
 			// check input typeid hash == output typeid hash
-			if (it.second->connectors[input]->hash != modules[module]->connectors[output]->hash)
+			if (connectorTypeMatching && it.second->connectors[input]->typeIDHash != modules[module]->connectors[output]->typeIDHash)
 			{
-				LOG(0, "selected input and output template instantiations are of different type: " << it.second->id << "." << selection);
+				LOG(0, "selected input and output connector template instantiations are of different type: " \
+						<< it.second->id << "." << selection << " -> " \
+						<< it.second->connectors[input]->typeIDName << "!=" << modules[module]->connectors[output]->typeIDName);
 				exit(1);
 			}
 

@@ -3,6 +3,17 @@
 
 
 
+/** Enable/disable matching of connector types.
+ * If enabled, the system tries to check if associated connectors are of
+ * the same type, although it is completely type agnostic to that regard.
+ * While it uses C++11's std::type_info::hash_code for that, it might
+ * eventually be necessary to disable this if you are trying to use
+ * modules that were compiled by a different compiler or on a different
+ * architecture than your own.
+ * Possible Values: true, false
+ */
+#define BVS_CONNECTOR_TYPE_MATCHING true
+
 /** Enable/disable the builtin logging system.
  * Also, all LOG(*) calls will be removed if disabled.
  * Possible Values: true, false

@@ -65,9 +65,11 @@ namespace BVS
 			 * Connects all modules by checking desired configuration options and
 			 * processing them one by one. This functions actually connects 2
 			 * connectors created by modules.
+			 * @param[in] connectorTypeMatching Whether to try to match associated
+			 * connectors.
 			 * @return Reference to object.
 			 */
-			Loader& connectModules();
+			Loader& connectModules(bool connectorTypeMatching = true);
 
 		private:
 			/** Map of registered modules and their metadata. */
