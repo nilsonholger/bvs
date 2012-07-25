@@ -28,6 +28,7 @@ namespace BVS
 		size_t typeIDHash; /**< Hash code of templated type. */
 		std::string typeIDName; /**< Type of template instantiation. */
 		std::mutex* mutex; /**< Mutex to lock resource. */
+		bool locked; /** If connection is locked. */
 	};
 
 

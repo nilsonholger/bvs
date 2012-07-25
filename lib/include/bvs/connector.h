@@ -34,20 +34,32 @@ namespace BVS
 			~Connector();
 
 			/** Write to output.
-			 * @return Reference to connection object.
+			 * @param[in] t The object you want to send.
 			 */
-			T& set();
+			void send(const T& t);
 
 			/** Read from input.
-			 * @return Constant reference to connection object.
+			 * @param[out] t Object to receive into.
+			 * @return True if successfull, otherwise false.
 			 */
-			const T& get();
+			bool receive(T& t);
 
 			/** Access operator*.
 			 * Use this operator to write/read data to/from the connection.
-			 * TODO read/write explanation
+			 * This is especially usefull if you have more complicated objects
+			 * that you want to build incrementally or set some flags or
+			 * metadata on because you have direct access.
+			 * Caution in multithreaded scenarios, you have to lock the
+			 * object while using it, or another thread could pick up an
+			 * incomplete object at any time.
 			 */
 			T& operator*();
+
+			/** Locks the connection object. */
+			void lockConnection();
+
+			/** Unlocks the connection object. */
+			void unlockConnection();
 
 		private:
 			/** Pointer to the actual object. */
@@ -66,7 +78,7 @@ namespace BVS
 
 	template<typename T> Connector<T>::Connector(const std::string& connectorName, ConnectorType connectorType)
 		: connection(nullptr)
-		, data(std::shared_ptr<ConnectorData>(new ConnectorData{connectorName, connectorType, false, nullptr, typeid(T).hash_code(), typeid(T).name(), nullptr}))
+		, data(std::shared_ptr<ConnectorData>(new ConnectorData{connectorName, connectorType, false, nullptr, typeid(T).hash_code(), typeid(T).name(), nullptr, false}))
 	{
 		ConnectorDataCollector::connectors[connectorName] = data;
 
@@ -86,21 +98,23 @@ namespace BVS
 
 
 
-	template<typename T> T& Connector<T>::set()
+	template<typename T> void Connector<T>::send(const T& t)
 	{
-		// allow set only for output
+		// allow send only for output
 		if (data->type != ConnectorType::OUTPUT)
 		{
 			std::cerr << "[0|Connector] trying to read from connector of type != OUTPUT!" << std::endl;
 			exit(1);
 		}
 
-		return *connection;
+		if (!data->locked) data->mutex->lock();
+		*connection = t;
+		if (!data->locked) data->mutex->unlock();
 	}
 
 
 
-	template<typename T> const T& Connector<T>::get()
+	template<typename T> bool Connector<T>::receive(T& t)
 	{
 		// allow get only for output (maybe compiler catches const before, check)
 		if (data->type != ConnectorType::INPUT)
@@ -109,6 +123,28 @@ namespace BVS
 			exit(1);
 		}
 
+		// check status
+		if (!data->active) return false;
+
+		// check initilization
+		if (connection == nullptr && data->pointer != nullptr && data->active)
+		{
+			connection = static_cast<T*>(data->pointer);
+			data->active = true;
+		}
+
+		if (!data->locked) data->mutex->lock();
+		t = *connection;
+		if (!data->locked) data->mutex->unlock();
+
+		return true;
+	}
+
+
+
+	template<typename T> T& Connector<T>::operator*()
+	{
+		// check initiliziation
 		if (connection == nullptr && data->pointer != nullptr && data->active)
 		{
 			connection = static_cast<T*>(data->pointer);
@@ -120,18 +156,18 @@ namespace BVS
 
 
 
-	template<typename T> T& Connector<T>::operator*()
+	template<typename T> void Connector<T>::lockConnection()
 	{
-		std::lock_guard<std::mutex> lock(*data->mutex);
+		data->mutex->lock();
+		data->locked = true;
+	}
 
-		// check initiliziation
-		if (connection == nullptr && data->pointer != nullptr && data->active)
-		{
-			connection = static_cast<T*>(data->pointer);
-			data->active = true;
-		}
 
-		return *connection;
+
+	template<typename T> void Connector<T>::unlockConnection()
+	{
+		data->mutex->unlock();
+		data->locked = false;
 	}
 } // namespace BVS
 
