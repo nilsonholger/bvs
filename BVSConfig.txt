@@ -1,15 +1,15 @@
 # settings for BVS library -- vim:ft=config:
 [BVS]
-logSystem = true
-logConsole = true
-#logFile = BVSLog.txt
-# logFile = +BVSLog.txt # append to log file
+# TODO more comments
+connectorTypeMatching = ON
+
+logSystem = ON
+logConsole = ON
+#logFile = BVSLog.txt # use '+BVSLog.txt' to append to log file
 logVerbosity = 3
 
 moduleThreads = ON
-forceModuleThreads = false
-
-
+forceModuleThreads = OFF
 
 # list of modules, '+' prefix starts module in own thread (if permitted)
 modules = +input(input)
