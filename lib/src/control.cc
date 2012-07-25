@@ -76,10 +76,9 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 				threadCond.notify_all();
 
 				// iterate through modules executed by master
-				for (auto& it: Loader::modules)
+				for (auto& it: Loader::masterModules)
 				{
-					if (it.second->asThread) continue;
-					moduleController(*(it.second.get()));
+					moduleController(*(it.get()));
 				}
 
 				if (flag == SystemFlag::STEP) flag = SystemFlag::PAUSE;

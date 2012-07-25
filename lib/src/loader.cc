@@ -8,6 +8,10 @@ BVS::ModuleMap BVS::Loader::modules;
 
 
 
+BVS::ModuleVector BVS::Loader::masterModules;
+
+
+
 BVS::Loader::Loader(Control& control, Config& config)
 	: control(control)
 	, logger("Loader")
@@ -126,8 +130,9 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 	}
 	else
 	{
-		LOG(3, id << " will be controlled by Control!");
+		LOG(3, id << " will be executed by Control!");
 		modules[id]->asThread = false;
+		masterModules.push_back(modules[id]);
 	}
 
 	return *this;

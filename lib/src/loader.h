@@ -3,6 +3,7 @@
 
 #include<string>
 #include<thread>
+#include<vector>
 
 #include "bvs/config.h"
 #include "bvs/logger.h"
@@ -22,6 +23,8 @@ namespace BVS
 	/** Module Map. */
 	typedef std::map<std::string, std::shared_ptr<ModuleData>, std::less<std::string>> ModuleMap;
 
+	/** Module Vector.*/
+	typedef std::vector<std::shared_ptr<ModuleData>> ModuleVector;
 
 
 	/** The system loader: loads, unloads and controls modules. */
@@ -74,6 +77,9 @@ namespace BVS
 		private:
 			/** Map of registered modules and their metadata. */
 			static ModuleMap modules;
+
+			/** Vector of modules executed by master. */
+			static ModuleVector masterModules;
 
 			/** Reference to control mechanism, needed to load und unload threaded modules. */
 			Control& control;
