@@ -38,8 +38,6 @@ BVS::Status blur::execute()
 
 	if (!input.receive(frame)) return BVS::Status::NOINPUT;
 
-	//LOG(0, frame.total());
-	//if (frame.total() == 0) return BVS::Status::OK;
 	cv::GaussianBlur(frame, frame, cv::Size(7,7), 1.5, 1.5);
 	cv::imshow("blur", frame);
 	//cv::imwrite("foo.bmp", frame);

@@ -38,9 +38,8 @@ BVS::Status grey::execute()
 {
 	LOG(2, "Execution of " << id << "!");
 
-	input.receive(frame);
-	//LOG(0, frame.total());
-	if (frame.total() == 0) return BVS::Status::OK;
+	if (!input.receive(frame)) return BVS::Status::NOINPUT;
+
 	cv::cvtColor(frame, frame, CV_BGR2GRAY);
 	cv::imshow("grey", frame);
 	//cv::imwrite("foo.bmp", frame);

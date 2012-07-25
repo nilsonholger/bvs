@@ -38,9 +38,8 @@ BVS::Status canny::execute()
 {
 	LOG(2, "Execution of " << id << "!");
 
-	input.receive(frame);
-	//LOG(0, frame.total());
-	if (frame.total() == 0) return BVS::Status::OK;
+	if (!input.receive(frame)) return BVS::Status::NOINPUT;
+
 	cv::Canny(frame, frame, 0, 30, 3);
 	cv::imshow("canny", frame);
 	//cv::imwrite("foo.bmp", frame);
@@ -52,7 +51,7 @@ BVS::Status canny::execute()
 	if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-start).count() > 1000)
 	{
 		LOG(0, "fps: " << counter);
-		start = std::chrono::high_resolution_clock::now();
+		start += std::chrono::milliseconds(1000);
 		counter = 0;
 	}
 
