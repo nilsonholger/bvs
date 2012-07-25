@@ -42,7 +42,9 @@ BVS::Status input::execute()
 {
 	LOG(2, "Execution of " << id << "!");
 
+	output.lockConnection();
 	capture >> *output;
+	output.unlockConnection();
 
 	return BVS::Status::OK;
 }

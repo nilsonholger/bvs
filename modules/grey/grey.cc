@@ -19,7 +19,7 @@ grey::grey(const std::string id, const BVS::Config& config)
 	, frame()
 {
 
-	//cv::namedWindow("grey", 1);
+	cv::namedWindow("grey", 1);
 }
 
 
@@ -38,15 +38,15 @@ BVS::Status grey::execute()
 {
 	LOG(2, "Execution of " << id << "!");
 
-	frame = *input;
+	input.receive(frame);
 	//LOG(0, frame.total());
 	if (frame.total() == 0) return BVS::Status::OK;
 	cv::cvtColor(frame, frame, CV_BGR2GRAY);
-	//cv::imshow("grey", frame);
+	cv::imshow("grey", frame);
 	//cv::imwrite("foo.bmp", frame);
 	//cv::waitKey(1);
 
-	*output = frame;
+	output.send(frame);
 
 	return BVS::Status::OK;
 }

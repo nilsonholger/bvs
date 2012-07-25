@@ -17,7 +17,7 @@ blur::blur(const std::string id, const BVS::Config& config)
 	, frame()
 {
 
-	//cv::namedWindow("blur", 1);
+	cv::namedWindow("blur", 1);
 }
 
 
@@ -36,15 +36,16 @@ BVS::Status blur::execute()
 {
 	LOG(2, "Execution of " << id << "!");
 
-	frame = *input;
+	if (!input.receive(frame)) return BVS::Status::NOINPUT;
+
 	//LOG(0, frame.total());
-	if (frame.total() == 0) return BVS::Status::OK;
+	//if (frame.total() == 0) return BVS::Status::OK;
 	cv::GaussianBlur(frame, frame, cv::Size(7,7), 1.5, 1.5);
-	//cv::imshow("blur", frame);
+	cv::imshow("blur", frame);
 	//cv::imwrite("foo.bmp", frame);
 	//cv::waitKey(1);
 	
-	*output = frame;
+	output.send(frame);
 
 	return BVS::Status::OK;
 }
