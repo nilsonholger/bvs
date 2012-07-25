@@ -26,6 +26,8 @@ int main(int argc, char** argv)
 	LOG(2, "starting!");
 	bvs->start();
 
+	bvs->run();
+
 	std::string input;
 	while (input != "q" && input != "quit")
 	{
