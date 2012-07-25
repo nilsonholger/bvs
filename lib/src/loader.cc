@@ -24,17 +24,17 @@ BVS::Loader::Loader(Control& control, Config& config)
 
 void BVS::Loader::registerModule(const std::string& id, Module* module)
 {
-	modules[id] = std::shared_ptr<ModuleData>(new ModuleData{ \
-			id, \
-			std::string(), \
-			std::string(), \
-			module, \
-			nullptr, \
-			std::thread(), \
-			false, \
-			ModuleFlag::WAIT, \
-			Status::NONE, \
-			ConnectorMap()});
+	modules[id] = std::shared_ptr<ModuleData>(new ModuleData{
+			  id
+			, std::string()
+			, std::string()
+			, module
+			, nullptr
+			, std::thread()
+			, false
+			, ModuleFlag::WAIT
+			, Status::NONE
+			, ConnectorMap()});
 }
 
 
@@ -348,8 +348,8 @@ BVS::Loader& BVS::Loader::connectModules(bool connectorTypeMatching)
 			// check input typeid hash == output typeid hash
 			if (connectorTypeMatching && it.second->connectors[input]->typeIDHash != modules[module]->connectors[output]->typeIDHash)
 			{
-				LOG(0, "selected input and output connector template instantiations are of different type: " \
-						<< it.second->id << "." << selection << " -> " \
+				LOG(0, "selected input and output connector template instantiations are of different type: "
+						<< it.second->id << "." << selection << " -> "
 						<< it.second->connectors[input]->typeIDName << "!=" << modules[module]->connectors[output]->typeIDName);
 				exit(1);
 			}

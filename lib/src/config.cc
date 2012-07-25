@@ -280,9 +280,9 @@ template<> BVS::Config& BVS::Config::convertStringTo<std::string>(const std::str
 template<> BVS::Config& BVS::Config::convertStringTo<bool>(const std::string& input, bool& b)
 {
 	// check for possible matches to various versions meaning true
-	if (input=="1" \
-			|| input=="true" || input=="True" || input=="TRUE" \
-			|| input=="on" || input=="On" || input=="ON" \
+	if (input=="1"
+			|| input=="true" || input=="True" || input=="TRUE"
+			|| input=="on" || input=="On" || input=="ON"
 			|| input=="yes" || input=="Yes" || input=="YES")
 	{
 		b = true;

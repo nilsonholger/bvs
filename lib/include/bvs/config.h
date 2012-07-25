@@ -143,7 +143,7 @@ namespace BVS
 			/** Loads the given arguments into the system.
 			 * This checks argv for occurences of --bvs.config and --bvs.options.
 			 * If found, they are added to the internal option-value storage.
-			 * \param[in] argc Size of argv.
+			 * @param[in] argc Size of argv.
 			 * @param[in] argv Array of arguments.
 			 * @return Reference to object.
 			 */
