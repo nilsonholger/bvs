@@ -178,6 +178,7 @@ BVS::Loader& BVS::Loader::unload(const std::string& id, const bool eraseFromMap)
 					{
 						modCon.second->pointer = nullptr;
 						modCon.second->active = false;
+						modCon.second->mutex = nullptr;
 					}
 				}
 
