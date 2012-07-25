@@ -61,6 +61,7 @@ class blur : public BVS::Module
 		BVS::Connector<cv::Mat> output;
 
 		cv::Mat frame;
+		cv::Mat imgBlur;
 
 		blur(const blur&) = delete; /**< -Weffc++ */
 		blur& operator=(const blur&) = delete; /**< -Weffc++ */

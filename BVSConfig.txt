@@ -6,7 +6,7 @@ connectorTypeMatching = ON
 logSystem = ON
 logConsole = ON
 #logFile = BVSLog.txt # use '+BVSLog.txt' to append to log file
-logVerbosity = 3
+logVerbosity = 1
 
 moduleThreads = ON
 forceModuleThreads = OFF
