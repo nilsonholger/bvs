@@ -1,4 +1,1 @@
-add_subdirectory(input)
-add_subdirectory(grey)
-add_subdirectory(blur)
-add_subdirectory(canny)
+# enable/disable to be compiled modules here (entries will be created by './run --new-module $MODULE'
