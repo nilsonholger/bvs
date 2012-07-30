@@ -29,8 +29,34 @@ namespace BVS
 
 	/** The BVS framework base.
 	 * This is the BVS base, use this to interact with the framework.
+	 *
+	 * Usage:
+	 * @li Create BVS object passing argc and argv if you want to use it.
+	 * @li Call desired settings, e.g. enableLogFile(), enableLogConsole() etc.
+	 * @li Call loadModules() to load all modules specified in settings or on command line.
+	 * @li Call connectAllModules() to connect loaded modules.
+	 * @li Call start() to prepare the controller (e.g. fork it).
+	 * @li Call desired control functions, e.g. run(), step(), pause() etc.
+	 * @li Call quit() to shutdown system.
+	 *
+	 * Config options (must belong to section [BVS], see example config/traits header for more information):
+	 * @li \c connectorTypeMatching warns about connector type mismatch (ON/OFF).
+	 * @li \c logSystem enables the logging system (ON/OFF).
+	 * @li \c logConsole enables console output (ON/OFF).
+	 * @li \c logFile enables logging to file (""/$FILE/+$FILE, '+' appends).
+	 * @li \c logVerbosity sets the overall log verbosity (0/1/2/3...).
+	 * @li \c moduleThreads allows modules to run in dedicated threads (ON/OFF).
+	 * @li \c forceModuleThreads forces modules to run in dedicated threads (ON/OFF).
+	 * @li \c modules lists modules to load and their options.
+	 *
+	 * To set the verbosity level of different/any logger instance (belongs to section [Logger]):
+	 * @code
+	 * BVS = 0
+	 * Daemon = 0
+	 * Master = 0
+	 * YourLogger = ...
+	 * @endcode
 	 */
-	// TODO document settings/traits and config stuff
 	class BVS
 	{
 		public:
