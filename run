@@ -85,11 +85,12 @@ echo "Created Module $MOD! Please modify modules/CMakeLists.txt to add it to com
 
 # setup
 function bvs_setup {
-#TODO copy BVSExampleConfig to BVSConfig.txt
-mkdir bin
-#TODO symlink BVSConfig.txt to bin
+git remote rename origin bvs-origin
 git submodule update --init --recursive
 git submodule foreach git checkout master
+
+mkdir bin
+cp libbvs/BVSConfig.txt ./bin/BVSConfig.txt
 }
 
 
