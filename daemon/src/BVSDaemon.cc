@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 	bvs->loadModules();
 
 	LOG(2, "connecting modules!");
-	bvs->connectModules();
+	bvs->connectAllModules();
 
 	LOG(2, "starting!");
 	bvs->start();
