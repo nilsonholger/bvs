@@ -272,6 +272,7 @@ std::string BVS::Config::searchOption(std::string option)
 template<> BVS::Config& BVS::Config::convertStringTo<std::string>(const std::string& input, std::string& output)
 {
 	output = input;
+
 	return *this;
 }
 
@@ -291,4 +292,3 @@ template<> BVS::Config& BVS::Config::convertStringTo<bool>(const std::string& in
 
 	return *this;
 }
-

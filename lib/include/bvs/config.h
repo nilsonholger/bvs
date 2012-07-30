@@ -238,7 +238,7 @@ namespace BVS
 	}
 
 
-
+	/** IGNORE, this function does not belong here, doxygen is being weird. */
 	template<> Config& Config::convertStringTo<std::string>(const std::string& input, std::string& output);
 	template<> Config& Config::convertStringTo<bool>(const std::string& input, bool& b);
 } // namespace BVS

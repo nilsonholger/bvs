@@ -12,6 +12,12 @@
 
 
 
+/** @mainpage The BVS framework.
+ * Here be dragons ;-)
+ */
+
+
+
 /** BVS namespace, contains all library stuff. */
 namespace BVS
 {
