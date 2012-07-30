@@ -1,0 +1,51 @@
+# This is an example config file.
+#
+# For more information:
+# TOPIC        FILE                              DOXYGEN
+# syntax       'libbvs/include/bvs/config.h'     'Classes->BVS::Config'
+# bvs options  'libbvs/include/bvs/bvs.h'        'Classes->BVS::BVS'
+# bvs defaults 'libbvs/include/bvs/traits.h'     'Files->include/bvs/traits.h'
+
+# Settings for the BVS framework.
+[BVS]
+# warn about connector type mismatch
+connectorTypeMatching = ON
+
+# enable logging system
+logSystem = ON
+
+# log to console
+logConsole = ON
+
+# log to file (empty disables, +FILE appends)
+#logFile = BVSLog.txt
+
+# overall system log verbosity
+logVerbosity = 3
+
+# allow modules to run in dedicated threads
+moduleThreads = ON
+
+# force modules to run in dedicated threads
+forceModuleThreads = OFF
+
+# list of modules to load
+# format: uniqueID(moduleLibrary)
+# this allows to load modules more than once
+# format: uniqueID(moduleLibrary).input(test.output)
+# this connects uniqueID's Connector named 'input' with 'test' module's
+# connector named 'output'
+#modules = id(library)
+#+modules = +id2(library2).input(id.output)
+#+modules = ...
+
+
+
+# Logger level settings.
+[Logger]
+#BVS = 0
+#BVSDaemon = 0
+#BVSMaster = 0
+#YourLogger = ...
+
+# This line tells vim something about the file type. -- vim:ft=config:
