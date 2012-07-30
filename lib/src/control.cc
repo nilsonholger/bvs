@@ -32,7 +32,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 {
 	if (forkMasterController)
 	{
-		LOG(2, "master controller forking, now running in its own thread!");
+		LOG(2, "Master controller forking, now running in dedicated thread!");
 		//create thread with this function and this object
 		controlThread = std::thread(&Control::masterController, this, false);
 		return *this;
@@ -57,13 +57,13 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 			case SystemFlag::PAUSE:
 				// if not running inside own thread, return
 				if (!controlThread.joinable()) return *this;
-				LOG(3, "master pausing...");
+				LOG(3, "Pausing...");
 				masterCond.wait(masterLock, [&](){ return flag != SystemFlag::PAUSE; });
-				LOG(3, "master continuing...");
+				LOG(3, "Continuing...");
 				break;
 			case SystemFlag::RUN:
 			case SystemFlag::STEP:
-				LOG(3, "starting next round, notifying threads and executing modules!");
+				LOG(3, "Starting next round, notifying threads and executing modules!");
 				LOG(2, "ROUND: " << round++);
 
 				// set RUN flag for all modules and signal threads
@@ -86,7 +86,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 			case SystemFlag::STEP_BACK:
 				break;
 		}
-		LOG(3, "waiting for threads to finish!");
+		LOG(3, "Waiting for threads to finish!");
 
 		// return if not control thread
 		if (!controlThread.joinable() && flag != SystemFlag::RUN) return *this;
@@ -99,18 +99,18 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 
 BVS::Control& BVS::Control::sendCommand(const SystemFlag controlFlag)
 {
-	LOG(3, "control() called with flag: " << (int)controlFlag);
+	LOG(3, "Control() called with flag: " << (int)controlFlag);
 	flag = controlFlag;
 
 	// check if controlThread is running and notify it, otherwise call control function each time
 	if (controlThread.joinable())
 	{
-		LOG(3, "control() notifying master!");
+		LOG(3, "Control() notifying master!");
 		masterCond.notify_one();
 	}
 	else
 	{
-		LOG(3, "control() calling master control directly!");
+		LOG(3, "Control() calling master control directly!");
 		masterController(false);
 	}
 
@@ -119,7 +119,7 @@ BVS::Control& BVS::Control::sendCommand(const SystemFlag controlFlag)
 	{
 		if (controlThread.joinable())
 		{
-			LOG(2, "waiting for master control thread to join!");
+			LOG(2, "Waiting for master control thread to join!");
 			controlThread.join();
 		}
 	}
@@ -162,7 +162,7 @@ BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
 	while (bool(data->flag))
 	{
 		// wait for master to announce next round
-		LOG(3, data->id << " waiting for next round!");
+		LOG(3, data->id << " Waiting for next round!");
 		masterCond.notify_one();
 		threadCond.wait(threadLock, [&](){ return data->flag != ModuleFlag::WAIT; });
 

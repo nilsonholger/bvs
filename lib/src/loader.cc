@@ -78,20 +78,20 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 	// search for duplicate id in modules
 	if (modules.find(id)!=modules.end())
 	{
-		LOG(0, "Duplicate id: " << id);
+		LOG(0, "Duplicate id for module: " << id);
 		LOG(0, "If you try to load a module more than once, use unique ids and the id(library).options syntax!");
 		exit(-1);
 	}
 
 	// prepare path and load the lib
 	std::string modulePath = "./lib" + library + ".so";
-	LOG(3, id << " will be loaded from " << modulePath);
+	LOG(3, "Loading " << id << " from " << modulePath << "!");
 	void* dlib = dlopen(modulePath.c_str(), RTLD_NOW);
 
 	// check for errors
 	if (dlib == NULL)
 	{
-		LOG(0, "While loading " << modulePath << ", following error occured: " << dlerror());
+		LOG(0, "Loading " << modulePath << ", resulted in: " << dlerror());
 		exit(-1);
 	}
 
@@ -110,7 +110,7 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 
 	// register
 	bvsRegisterModule(id, config);
-	LOG(2, id << " loaded and registered!");
+	LOG(2, "Loading " << id << "successfull!");
 
 	// save handle,library name and option string for later use
 	modules[id]->dlib = dlib;
@@ -123,14 +123,14 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 	// set metadata and start as thread if needed
 	if (asThread==true)
 	{
-		LOG(3, id << " will be started in own thread!");
+		LOG(3, id << " executed by dedicated thread!");
 		modules[id]->asThread = true;
 		modules[id]->thread = std::thread(&Control::threadController, &control, modules[id]);
 		Control::threadedModules++;
 	}
 	else
 	{
-		LOG(3, id << " will be executed by Control!");
+		LOG(3, id << " executed by controller!");
 		modules[id]->asThread = false;
 		masterModules.push_back(modules[id]);
 	}
@@ -157,7 +157,7 @@ BVS::Loader& BVS::Loader::unload(const std::string& id, const bool eraseFromMap)
 		{
 			modules[id]->flag = ModuleFlag::QUIT;
 			control.threadCond.notify_all();
-			LOG(3, "joining: " << id);
+			LOG(3, "Waiting for " << id << " to join!");
 			modules[id]->thread.join();
 		}
 	}
@@ -193,7 +193,7 @@ BVS::Loader& BVS::Loader::unload(const std::string& id, const bool eraseFromMap)
 
 	// close lib and check for errors
 	std::string modulePath = "./lib" + modules[id]->library + ".so";
-	LOG(3, id << " will be closed using " << modulePath);
+	LOG(3, id << " unloading from " << modulePath << "!");
 
 	// get handle from internals
 	void* dlib = modules[id]->dlib;
@@ -213,12 +213,11 @@ BVS::Loader& BVS::Loader::unload(const std::string& id, const bool eraseFromMap)
 		LOG(0, "While closing " << modulePath << " following error occured: " << dlerror());
 		exit(-1);
 	}
-	LOG(2, id << " unloaded and deregistered!");
+	LOG(2, id << " unloaded!");
 
 	if (eraseFromMap)
 	{
 		modules.erase(id);
-		LOG(2, id << " erased from map!");
 	}
 
 	return *this;

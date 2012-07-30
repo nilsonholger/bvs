@@ -27,7 +27,7 @@ BVS::BVS& BVS::BVS::loadModules()
 	// check length
 	if (moduleList.size()==0)
 	{
-		LOG(1, "no modules specified, nothing to load!");
+		LOG(1, "No modules specified, nothing to load!");
 		return *this;
 	}
 
