@@ -57,7 +57,13 @@ namespace BVS
 			 * list of known modules and scanning their supplied options.
 			 * @return Reference to object.
 			 */
-			BVS& connectModules();
+			BVS& connectAllModules();
+
+			/** Connects selected module.
+			 * This connects the selected module.
+			 * @return Reference to object.
+			 */
+			BVS& connectModule(const std::string id);
 
 			/** Loads a config File and updates the system.
 			 * @param[in] configFile Name of or path to config file.

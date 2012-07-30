@@ -64,15 +64,22 @@ namespace BVS
 			 */
 			Loader& unloadAll();
 
-			/** Connect modules.
-			 * Connects all modules by checking desired configuration options and
-			 * processing them one by one. This functions actually connects 2
-			 * connectors created by modules.
+			/** Connect all modules.
 			 * @param[in] connectorTypeMatching Whether to try to match associated
 			 * connectors.
 			 * @return Reference to object.
 			 */
-			Loader& connectModules(bool connectorTypeMatching = true);
+			Loader& connectAllModules(const bool connectorTypeMatching = true);
+
+			/** Connect selected module.
+			 * Connects the selected module by checking its desired configuration
+			 * options and processing them piece by piece.
+			 * @param[in] id Module id.
+			 * @param[in] connectorTypeMatching Whether to try to match associated
+			 * connectors.
+			 * @return Reference to object.
+			 */
+			Loader& connectModule(const std::string& id, const bool connectorTypeMatching = true);
 
 		private:
 			/** Map of registered modules and their metadata. */

@@ -20,7 +20,7 @@ BVS::BVS::BVS(int argc, char** argv)
 
 BVS::BVS& BVS::BVS::loadModules()
 {
-	// get module list and thread settings from config
+	// get module list from config
 	std::vector<std::string> moduleList;
 	config.getValue("BVS.modules", moduleList);
 
@@ -133,9 +133,18 @@ BVS::BVS& BVS::BVS::disableLogConsole()
 
 
 
-BVS::BVS& BVS::BVS::connectModules()
+BVS::BVS& BVS::BVS::connectAllModules()
 {
-	loader->connectModules(config.getValue<bool>("BVS.connectorTypeMatching", BVS_CONNECTOR_TYPE_MATCHING));
+	loader->connectAllModules();
+
+	return *this;
+}
+
+
+
+BVS::BVS& BVS::BVS::connectModule(const std::string id)
+{
+	loader->connectModule(id, config.getValue<bool>("BVS.connectorTypeMatching", BVS_CONNECTOR_TYPE_MATCHING));
 
 	return *this;
 }

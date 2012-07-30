@@ -110,7 +110,7 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 
 	// register
 	bvsRegisterModule(id, config);
-	LOG(2, "Loading " << id << "successfull!");
+	LOG(2, "Loading " << id << " successfull!");
 
 	// save handle,library name and option string for later use
 	modules[id]->dlib = dlib;
@@ -237,140 +237,138 @@ BVS::Loader& BVS::Loader::unloadAll()
 
 
 
-BVS::Loader& BVS::Loader::connectModules(bool connectorTypeMatching)
+BVS::Loader& BVS::Loader::connectAllModules(const bool connectorTypeMatching)
+{
+	for (auto& it: modules) connectModule(it.second->id, connectorTypeMatching);
+
+	return *this;
+}
+
+
+
+BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connectorTypeMatching)
 {
 	/* algorithm:
-	 * FOR EACH module
-	 * DO
-	 *		SEPARATE input and remove parsed part
-	 *		CHECK input exists
-	 *		CHECK input type
-	 *		SEPARATE module and output
-	 *		CHECK module exists and self reference
-	 *		CHECK output exists
-	 *		CHECK output type
-	 *		CHECK input typeid hash == output typeid hash
-	 *		CHECK input already connected
-	 *		CONNECT
-	 * DONE
+	 * SEPARATE input and remove parsed part
+	 * CHECK input exists
+	 * CHECK input type
+	 * SEPARATE module and output
+	 * CHECK module exists and self reference
+	 * CHECK output exists
+	 * CHECK output type
+	 * CHECK input typeid hash == output typeid hash
+	 * CHECK input already connected
+	 * CONNECT
 	 */
 
-	std::string options;
+	ModuleData* module = modules[id].get();
+	std::string options = module->options;
 	std::string selection;
 	std::string input;
-	std::string module;
-	std::string output;
+	std::string targetModule;
+	std::string targetOutput;
 	size_t separator;
 	size_t separator2;
 
-	// check options for each module
-	for (auto& it: modules)
+	while (!options.empty())
 	{
-		options = it.second->options;
-
-		while (!options.empty())
+		// get input name and selection
+		separator = options.find_first_of('(');
+		separator2 = options.find_first_of(')');
+		selection = options.substr(0, separator2+1);
+		if (separator!=std::string::npos)
 		{
-			// get input name and selection
-			separator = options.find_first_of('(');
-			separator2 = options.find_first_of(')');
-			selection = options.substr(0, separator2+1);
-			if (separator!=std::string::npos)
-			{
-				module= options.substr(separator+1, separator2-separator-1);
-				input = options.substr(0, separator);
-			}
-			else
-			{
-				LOG(0, "no input selection found: " << selection);
-				exit(1);
-			}
-
-			// remove parsed part
-			options.erase(0, separator2+1);
-			if (options[0] == '.') options.erase(options.begin());
-
-			// check if desired input exists
-			if (it.second->connectors.find(input) == it.second->connectors.end())
-			{
-				LOG(0, "selected input does not exist: " << selection);
-				exit(1);
-			}
-
-			// check input type
-			if (it.second->connectors[input]->type != ConnectorType::INPUT)
-			{
-				LOG(0, "selected input is not of input type: " << it.second->id << "." << selection);
-				exit(1);
-			}
-
-			// search for '.' in selection and separate module and output
-			separator = module.find_first_of('.');
-			if (separator!=std::string::npos)
-			{
-				output = module.substr(separator+1, std::string::npos);
-				module = module.substr(0, separator);
-			}
-			else
-			{
-				LOG(0, "no module output selected: " << selection);
-				exit(1);
-			}
-
-			// check if desired module exists
-			if (modules.find(module) == modules.end())
-			{
-				LOG(0, "could not find module: " << module);
-				exit(1);
-			}
-
-			// check for sending data to oneself...
-			if (module == it.second->id)
-			{
-				LOG(0, "can not request data from self: " << selection);
-				exit(1);
-			}
-
-			// check if desired output exists
-			if (modules[module]->connectors.find(output) == modules[module]->connectors.end())
-			{
-				LOG(0, "selected output does not exist: " << selection);
-				exit(1);
-			}
-
-			// check output type
-			if (modules[module]->connectors[output]->type != ConnectorType::OUTPUT)
-			{
-				LOG(0, "selected output is not of output type: " << selection);
-				exit(1);
-			}
-
-			// check input typeid hash == output typeid hash
-			if (connectorTypeMatching && it.second->connectors[input]->typeIDHash != modules[module]->connectors[output]->typeIDHash)
-			{
-				LOG(0, "selected input and output connector template instantiations are of different type: "
-						<< it.second->id << "." << selection << " -> "
-						<< it.second->connectors[input]->typeIDName << "!=" << modules[module]->connectors[output]->typeIDName);
-				exit(1);
-			}
-
-			// check if input is already connected
-			if (it.second->connectors[input]->active)
-			{
-				LOG(0, "selected input is alreade connected to another output: " << selection);
-				exit(1);
-			}
-
-			// connect
-			it.second->connectors[input]->pointer = modules[module]->connectors[output]->pointer;
-			it.second->connectors[input]->active = true;
-			it.second->connectors[input]->mutex = modules[module]->connectors[output]->mutex;
-			LOG(3, "connected: " << it.second->id << "." << it.second->connectors[input]->id << " <- " << modules[module]->id << "." << modules[module]->connectors[output]->id);
+			input = options.substr(0, separator);
+			targetModule= options.substr(separator+1, separator2-separator-1);
 		}
+		else
+		{
+			LOG(0, "No input selection found: " << selection);
+			exit(1);
+		}
+
+		// remove parsed part
+		options.erase(0, separator2+1);
+		if (options[0] == '.') options.erase(options.begin());
+
+		// check if desired input exists
+		if (module->connectors.find(input) == module->connectors.end())
+		{
+			LOG(0, "Selected input does not exist: " << module->id << "." << selection);
+			exit(1);
+		}
+
+		// check input type
+		if (module->connectors[input]->type != ConnectorType::INPUT)
+		{
+			LOG(0, "Selected input is not of input type: " << module->id << "." << selection);
+			exit(1);
+		}
+
+		// search for '.' in selection and separate module and output
+		separator = targetModule.find_first_of('.');
+		if (separator!=std::string::npos)
+		{
+			targetOutput = targetModule.substr(separator+1, std::string::npos);
+			targetModule = targetModule.substr(0, separator);
+		}
+		else
+		{
+			LOG(0, "No module output selected: " << module->id << "." << selection);
+			exit(1);
+		}
+
+		// check if desired module exists
+		if (modules.find(targetModule) == modules.end())
+		{
+			LOG(0, "Could not find module: " << targetModule << " in " << module->id << "." << selection);
+			exit(1);
+		}
+
+		// check for sending data to oneself...
+		if (targetModule == module->id)
+		{
+			LOG(0, "Cannot connect module to itself: " << module->id << "." << selection);
+			exit(1);
+		}
+
+		// check if desired output exists
+		if (modules[targetModule]->connectors.find(targetOutput) == modules[targetModule]->connectors.end())
+		{
+			LOG(0, "Selected output does not exist: " << module->id << "." << selection);
+			exit(1);
+		}
+
+		// check output type
+		if (modules[targetModule]->connectors[targetOutput]->type != ConnectorType::OUTPUT)
+		{
+			LOG(0, "Selected output is not of output type: " << module->id << "." << selection);
+			exit(1);
+		}
+
+		// check input typeid hash == output typeid hash
+		if (connectorTypeMatching && module->connectors[input]->typeIDHash != modules[targetModule]->connectors[targetOutput]->typeIDHash)
+		{
+			LOG(0, "Selected input and output connector template instantiations are of different type: "
+					<< module->id << "." << selection << " -> "
+					<< module->connectors[input]->typeIDName << "!=" << modules[targetModule]->connectors[targetOutput]->typeIDName);
+			exit(1);
+		}
+
+		// check if input is already connected
+		if (module->connectors[input]->active)
+		{
+			LOG(0, "Selected input is already connected to another output: " << module->id << "." << selection);
+			exit(1);
+		}
+
+		// connect
+		module->connectors[input]->pointer = modules[targetModule]->connectors[targetOutput]->pointer;
+		module->connectors[input]->active = true;
+		module->connectors[input]->mutex = modules[targetModule]->connectors[targetOutput]->mutex;
+		LOG(3, "Connected: " << module->id << "." << module->connectors[input]->id << " <- " << modules[targetModule]->id << "." << modules[targetModule]->connectors[targetOutput]->id);
 	}
 
-
-
-	// do maintenance for load/unload, e.g. remove all connections for unloaded module...
 	return *this;
 }
 
