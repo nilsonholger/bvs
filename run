@@ -6,6 +6,7 @@ BASE="ssh://git.hyve.org:119"
 
 
 
+# cleanup
 function bvs_clean {
 echo ">>> make clean"
 [ -r Makefile ] && make clean
@@ -17,7 +18,7 @@ DIRS="./"
 [ -r modules ] && DIRS+=" modules/"
 for i in `ls -d modules/*/`
 do
-    [ $i != "modules/CMakeFiles/" ] && DIRS+=" $i"
+	[ $i != "modules/CMakeFiles/" ] && DIRS+=" $i"
 done
 
 echo ">>> cmake cleanup: $DIRS"
@@ -25,39 +26,41 @@ echo ">>> cmake cleanup: $DIRS"
 eval "DIRS=($DIRS)"
 for i in $DIRS
 do
-    [ -r $i/Makefile ] && rm $i/Makefile
-    [ -r $i/cmake_install.cmake ] && rm $i/cmake_install.cmake
-    [ -r $i/CMakeFiles ] && rm -r $i/CMakeFiles
+	[ -r $i/Makefile ] && rm $i/Makefile
+	[ -r $i/cmake_install.cmake ] && rm $i/cmake_install.cmake
+	[ -r $i/CMakeFiles ] && rm -r $i/CMakeFiles
 done
 
 [ ! -r libbvs ] && return
 echo ">>> documentation cleanup"
 for i in $DIRS
 do
-    [ -r $i/doc ] && rm -r $i/doc
+	[ -r $i/doc ] && rm -r $i/doc
 done
 }
 
 
 
+# help
 function bvs_help {
 cat << EOF
-usage: $0 [command [\$arg]]
+usage: $0 [command [\$arg]] [config]
 
 maintenance:
-  clean             run make clean and remove all CMake generated content
-  help              displays this text
-  new-module \$arg  creates new module blank/frame with given name
-  setup             this adds libbvs and bvsd
+  -c|--clean                 run make clean and remove all CMake generated content
+  -h|-?|--help               displays this text
+  -n|--new-module \$arg      creates new module blank/frame with given name
+  -s|--setup                 this adds libbvs and bvsd
 
 targets:
-  run (default)         runs the system
-  debug                 runs bvsd in gdb session
+  [config]                   runs the system with the given config (default:BVSConfig.txt)
+  -d|--debug                 runs bvsd in gdb session
 EOF
 }
 
 
 
+# create new module
 function bvs_new_module {
 [ -z $1 ] && echo "No module name given!" && exit 1
 [ -z ${1/*(.|\(|\))*} ] && echo "Module name cannot contain '.','(' or ')' due to internal processing reasons! Please choose a different name!" && exit 1
@@ -80,6 +83,7 @@ echo "Created Module $MOD! Please modify modules/CMakeLists.txt to add it to com
 
 
 
+# setup
 function bvs_setup {
 #TODO copy BVSExampleConfig to BVSConfig.txt
 mkdir bin
@@ -91,18 +95,25 @@ git submodule foreach git checkout master
 
 
 function bvs_run {
+if [ "$1" = "-d" -o "$1" = "--debug" ]
+then
+	GDB="gdb"
+	GDBOPTS="--args"
+	shift
+	$# = $#-1;
+fi
 [ -n "$GDB" -a -r /usr/local/bin/gdb ] && GDB="/usr/local/bin/gdb"
 [ ! -r bin/bvsd ] && echo "bvsd executable not found, run make first..." && exit
-[ $# != 0 ] && (cd bin && $GDB $GDBOPTS ./bvsd "$@") || (cd bin && $GDB $GDBOPTS ./bvsd --bvs.config=BVSConfig.txt)
+[ $# = 0 ] && CONFIG="BVSConfig.txt" || CONFIG=$@
+(cd bin && $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)
 }
 
 
 
 case $1 in
-    clean) bvs_clean;;
-    debug) GDB="gdb"; GDBOPTS="--args"; bvs_run;;
-    help|--help|-h|-?) bvs_help;;
-    new-module) bvs_new_module $2;;
-    setup) bvs_setup;;
-    ""|*) bvs_run "$@";;
+	'-c'|'--clean') bvs_clean;;
+	'-h'|'-?'|'--help') bvs_help;;
+	'-n'|'--new-module') bvs_new_module $2;;
+	'-s'|'--setup') bvs_setup;;
+	""|*) bvs_run "$@";;
 esac
