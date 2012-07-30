@@ -2,7 +2,9 @@ This is the BVS framework.
 
 
 
-LICENSE: to be decided...
+LICENSE:
+to be decided...
+by dk@hyve.org
 
 
 
@@ -25,11 +27,11 @@ type './run --clean'.
 
 
 USAGE:
+A config example was copied to './bin/BVSConfig.txt'.
 To start the system with the (default) config, type './run [config]' after
 building the system (type 'make'). If you need to debug, type './run -d ...'
-A config example was copied to './bin/BVSConfig.txt'.
 If you want to create a new module, type './run --new-module $MODULE_NAME'
-and follow the instructions display by that script.
+and follow the instructions displayed by that script.
 
 
 
@@ -38,19 +40,24 @@ This is the bvs base repository. Your checkout will, upon running
 './run --setup', rename its remote from 'origin' to 'bvs-origin'. This allows
 you to create your own remote 'origin' for delevopment whilst still being able
 to pull updates to the base repository from bvs' main development repository.
-Furthermore you can create dedicated git repositories for each created module,
-or you can collect your modules in a single git repository and either symlink
-them to './modules/...' or modify './modules/CMakeLists.txt' accordingly.
+Furthermore you can create dedicated git repositories for each created module
+and add them as git submodules to the base repository, or you can collect
+your modules in a single git repository and either symlink them to
+'./modules/...' or modify './modules/CMakeLists.txt' accordingly.
+
 
 
 
 FILES AND DIRECTORIES:
 '.'
- |- bin: directory where all libs/settings will be collected.
- |- bvsd: contains an interactive daemon
- |- libbvs: contains the actual library
- |- modules: module directory
- |- run: the run script
- |- CMakeLists.txt: cmake's build file
- \- Readme.txt: this readme
-
+ |- bin: directory where all your modules/executables/settings will be
+ |       collected.
+ |- bvsd: contains an interactive daemon (undocumented so far, just look
+ |        at its source for more info)
+ |- libbvs: contains the actual library, to get eventual updates, just
+ |          update the git submodule
+ |- modules: module directory, create git submodules here (do not forget
+ |           to enable used modules in './modules/CMakeLists.txt')
+ |- run
+ |- CMakeLists.txt
+ \- Readme.txt
