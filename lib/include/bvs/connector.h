@@ -40,7 +40,7 @@ namespace BVS
 
 			/** Read from input.
 			 * @param[out] t Object to receive into.
-			 * @return True if successfull, otherwise false.
+			 * @return True if successfully retrieved an object, false otherwise.
 			 */
 			bool receive(T& t);
 
