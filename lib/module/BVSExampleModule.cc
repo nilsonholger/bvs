@@ -34,6 +34,29 @@ BVS::Status BVSExampleModule::execute()
 {
 	LOG(2, "Execution of " << id << "!");
 
+	// Simple Connector Example
+	//int incoming;
+	//std::string message;
+	//if (input.receive(incoming))
+	//{
+	//	message = "received" + std::to_string(incoming);
+	//}
+	//else
+	//{
+	//	message = "no input received!";
+	//}
+	//output.send(message);
+
+	// Advanced Connector Example (do not forget to unlock the connection or
+	// you will cause deadlocks)
+	//std::string s2 = "This";
+	//output.lockConnection();
+	//*output = s2;
+	//*output = *output + " is an";
+	//s2 = " example!";
+	//*output += s2;
+	//output.unlockConnection();
+
 	return BVS::Status::OK;
 }
 

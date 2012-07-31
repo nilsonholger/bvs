@@ -48,12 +48,12 @@ class BVSExampleModule : public BVS::Module
 		 */
 		BVS::Logger logger;
 
-		/** Your config instance.
+		/** Your Config instance.
 		 * @see Config
 		 */
 		const BVS::Config& config;
 
-		/** Example connector used to retrieve/send data from/to other modules.
+		/** Example Connector used to retrieve/send data from/to other modules.
 		 * @see Connector
 		 */
 		BVS::Connector<int> input;
