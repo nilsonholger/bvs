@@ -21,7 +21,7 @@ logConsole = ON
 #logFile = BVSLog.txt
 
 # overall system log verbosity
-logVerbosity = 3
+logVerbosity = 1
 
 # allow modules to run in dedicated threads
 moduleThreads = ON
