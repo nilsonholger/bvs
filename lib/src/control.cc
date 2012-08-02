@@ -23,7 +23,7 @@ BVS::Control::Control()
 	, controlThread()
 	, round(0)
 {
-
+	runningThreads.store(0);
 }
 
 
@@ -47,7 +47,8 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 	while (flag != SystemFlag::QUIT)
 	{
 		// wait until all threads are synchronized
-		masterCond.wait_for(masterLock, std::chrono::milliseconds(10), [&](){ return runningThreads.load() == 0; });
+		masterCond.wait(masterLock, [&](){ return runningThreads.load() == 0; });
+		//masterCond.wait_for(masterLock, std::chrono::milliseconds(10), [&](){ return runningThreads.load() == 0; });
 
 		// act on system flag
 		switch (flag)
@@ -71,7 +72,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 				{
 					it.second->flag = ModuleFlag::RUN;
 					if (it.second->asThread)
-						runningThreads.fetch_add(1);
+						runningThreads.fetch_add(1, std::memory_order_seq_cst);
 				}
 				threadCond.notify_all();
 
@@ -157,7 +158,7 @@ BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
 	std::unique_lock<std::mutex> threadLock(threadMutex);
 
 	// tell system that thread has started
-	runningThreads.fetch_add(1);
+	runningThreads.fetch_add(1, std::memory_order_seq_cst);
 
 	while (bool(data->flag))
 	{
@@ -170,7 +171,7 @@ BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
 		moduleController(*(data.get()));
 
 		// tell master that thread has finished this round
-		runningThreads.fetch_sub(1);
+		runningThreads.fetch_sub(1, std::memory_order_seq_cst);
 	}
 
 	return *this;
