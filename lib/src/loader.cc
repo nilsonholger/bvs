@@ -253,7 +253,6 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 	 *	SEPARATE selection
 	 * 	CHECK input and output
 	 * 	CHECK input typeid hash == output typeid hash
-	 * 	CHECK input already connected
 	 * 	CONNECT
 	 * DONE
 	 */
@@ -314,13 +313,6 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 			exit(1);
 		}
 
-		// check if input is already connected
-		if (module->connectors[input]->active)
-		{
-			LOG(0, "Selected input is already connected to another output: " << module->id << "." << selection);
-			exit(1);
-		}
-
 		// connect
 		module->connectors[input]->pointer = modules[targetModule]->connectors[targetOutput]->pointer;
 		module->connectors[input]->active = true;
@@ -352,6 +344,13 @@ BVS::Loader& BVS::Loader::checkModuleInput(const ModuleData* module, const std::
 	{
 		LOG(0, "Input not found: " << module->id << "." << inputName);
 		printModuleConnectors(module);
+		exit(1);
+	}
+
+	// check if input is already connected
+	if (input->second->active)
+	{
+		LOG(0, "Input already connected: " << module->id << "." << inputName);
 		exit(1);
 	}
 
