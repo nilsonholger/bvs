@@ -2,6 +2,7 @@
 #define BV__CONNECTORDATA_H
 
 #include<mutex>
+#include<iostream>
 #include<string>
 
 
@@ -15,6 +16,25 @@ namespace BVS
 	 * OUTPUTPUT  - used for output
 	 */
 	enum class ConnectorType { NOOP, INPUT, OUTPUT};
+
+
+
+	/** Ostream operator for ConnectorType. */
+	inline std::ostream& operator<< (std::ostream& os, const ConnectorType type)
+	{
+		switch (type)
+		{
+			case ConnectorType::INPUT:
+				os << "INPUT";
+				break;
+			case ConnectorType::OUTPUT:
+				os << "OUTPUT";
+				break;
+			default:
+				os << "UNDEFINED";
+		}
+		return os;
+	}
 
 
 
