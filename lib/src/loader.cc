@@ -249,16 +249,13 @@ BVS::Loader& BVS::Loader::connectAllModules(const bool connectorTypeMatching)
 BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connectorTypeMatching)
 {
 	/* algorithm:
-	 * SEPARATE input and remove parsed part
-	 * CHECK input exists
-	 * CHECK input type
-	 * SEPARATE module and output
-	 * CHECK module exists and self reference
-	 * CHECK output exists
-	 * CHECK output type
-	 * CHECK input typeid hash == output typeid hash
-	 * CHECK input already connected
-	 * CONNECT
+	 * WHILE option string not empty
+	 *	SEPARATE selection
+	 * 	CHECK input and output
+	 * 	CHECK input typeid hash == output typeid hash
+	 * 	CHECK input already connected
+	 * 	CONNECT
+	 * DONE
 	 */
 
 	ModuleData* module = modules[id].get();
@@ -291,20 +288,6 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 		options.erase(0, separator2+1);
 		if (options[0] == '.') options.erase(options.begin());
 
-		// check if desired input exists
-		if (module->connectors.find(input) == module->connectors.end())
-		{
-			LOG(0, "Selected input does not exist: " << module->id << "." << selection);
-			exit(1);
-		}
-
-		// check input type
-		if (module->connectors[input]->type != ConnectorType::INPUT)
-		{
-			LOG(0, "Selected input is not of input type: " << module->id << "." << selection);
-			exit(1);
-		}
-
 		// search for '.' in selection and separate module and output
 		separator = targetModule.find_first_of('.');
 		if (separator!=std::string::npos)
@@ -318,33 +301,9 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 			exit(1);
 		}
 
-		// check if desired module exists
-		if (modules.find(targetModule) == modules.end())
-		{
-			LOG(0, "Could not find module: " << targetModule << " in " << module->id << "." << selection);
-			exit(1);
-		}
-
-		// check for sending data to oneself...
-		if (targetModule == module->id)
-		{
-			LOG(0, "Cannot connect module to itself: " << module->id << "." << selection);
-			exit(1);
-		}
-
-		// check if desired output exists
-		if (modules[targetModule]->connectors.find(targetOutput) == modules[targetModule]->connectors.end())
-		{
-			LOG(0, "Selected output does not exist: " << module->id << "." << selection);
-			exit(1);
-		}
-
-		// check output type
-		if (modules[targetModule]->connectors[targetOutput]->type != ConnectorType::OUTPUT)
-		{
-			LOG(0, "Selected output is not of output type: " << module->id << "." << selection);
-			exit(1);
-		}
+		// check input and output
+		checkModuleInput(module, input);
+		checkModuleOutput(module, targetModule, targetOutput);
 
 		// check input typeid hash == output typeid hash
 		if (connectorTypeMatching && module->connectors[input]->typeIDHash != modules[targetModule]->connectors[targetOutput]->typeIDHash)
@@ -367,6 +326,59 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 		module->connectors[input]->active = true;
 		module->connectors[input]->mutex = modules[targetModule]->connectors[targetOutput]->mutex;
 		LOG(3, "Connected: " << module->id << "." << module->connectors[input]->id << " <- " << modules[targetModule]->id << "." << modules[targetModule]->connectors[targetOutput]->id);
+	}
+
+	return *this;
+}
+
+
+
+BVS::Loader& BVS::Loader::printModuleConnectors(const ModuleData* module)
+{
+	LOG(0, "Module " << module->id << " defines the following connectors: ");
+	for (auto& it: module->connectors) LOG(0, it.second->type << ": " << it.second->id);
+
+	return *this;
+}
+
+
+
+BVS::Loader& BVS::Loader::checkModuleInput(const ModuleData* module, const std::string& inputName)
+{
+	auto input = module->connectors.find(inputName);
+
+	// check existence and type
+	if (input == module->connectors.end() || input->second->type != ConnectorType::INPUT)
+	{
+		LOG(0, "Input not found: " << module->id << "." << inputName);
+		printModuleConnectors(module);
+		exit(1);
+	}
+
+	return *this;
+}
+
+
+
+BVS::Loader& BVS::Loader::checkModuleOutput(const ModuleData* module, const std::string& targetModule, const std::string& targetOutput)
+{
+	auto target = modules.find(targetModule);
+
+	// check if desired module exists
+	if (target == modules.end())
+	{
+		LOG(0, "Module not found: " << targetModule << " in " << module->id << "." << module->options);
+		exit(1);
+	}
+
+	auto output = target->second->connectors.find(targetOutput);
+
+	// check output existence and type
+	if (output == target->second->connectors.end() || output->second->type != ConnectorType::OUTPUT)
+	{
+		LOG(0, "Output not found: " << targetOutput << " in " << module->id << "." << module->options);
+		printModuleConnectors(target->second.get());
+		exit(1);
 	}
 
 	return *this;
