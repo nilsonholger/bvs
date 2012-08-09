@@ -41,6 +41,28 @@ namespace BVS
 	/** Connector meta data store. */
 	struct ConnectorData
 	{
+		/** Creates Connector MetaData.
+		 * @param[in] id Identifier.
+		 * @param[in] type Type.
+		 * @param[in] active If connector is active/assigned.
+		 * @param[in] pointer Void pointer to contained object.
+		 * @param[in] typeIDHash Hash code of templated type.
+		 * @param[in] typeIDName Type of template instantiation.
+		 * @param[in] mutex Mutex to lock resource.
+		 * @param[in] bool locked If connection is locked.
+		 */
+		ConnectorData(std::string id, ConnectorType type, bool active, void* pointer,
+				size_t typeIDHash, std::string typeIDName, std::mutex* mutex, bool locked)
+			: id(id)
+			, type(type)
+			, active(active)
+			, pointer(pointer)
+			, typeIDHash(typeIDHash)
+			, typeIDName(typeIDName)
+			, mutex(mutex)
+			, locked(locked)
+		{ }
+
 		std::string id; /**< Identifier. */
 		ConnectorType type; /**< Type. @see ConnectorType */
 		bool active; /**< If connector is active/assigned. */
@@ -49,6 +71,9 @@ namespace BVS
 		std::string typeIDName; /**< Type of template instantiation. */
 		std::mutex* mutex; /**< Mutex to lock resource. */
 		bool locked; /** If connection is locked. */
+
+		ConnectorData(const ConnectorData&) = delete; /**< -Weffc++ */
+		ConnectorData& operator=(const ConnectorData&) = delete; /**< -Weffc++ */
 	};
 
 

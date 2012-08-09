@@ -24,6 +24,33 @@ namespace BVS
 	/** Module metadata. */
 	struct ModuleData
 	{
+		/** Creates Module MetaData.
+		 * @param[in] id Name of module.
+		 * @param[in] library Library to load module from.
+		 * @param[in] options Module options.
+		 * @param[in] module Pointer to the module.
+		 * @param[in] dlib Dlib handle to module's lib.
+		 * @param[in] thread Thread handle of module.
+		 * @param[in] asThread Determines if module runs in its own thread.
+		 * @param[in] flag System control flag for module.
+		 * @param[in] status Return Status of module functions.
+		 * @param[in] connectors Connector vector.
+		 */
+		ModuleData(std::string id, std::string library, std::string options,
+				Module* module, void* dlib, bool asThread, ModuleFlag flag,
+				Status status, ConnectorMap connectors)
+			: id(id)
+			, library(library)
+			, options(options)
+			, module(module)
+			, dlib(dlib)
+			, thread()
+			, asThread(asThread)
+			, flag(flag)
+			, status(status)
+			, connectors(connectors)
+		{}
+
 		std::string id; /**< Name of module. */
 		std::string library; /**< Library to load module from. */
 		std::string options; /**< Module options. */
@@ -34,6 +61,9 @@ namespace BVS
 		ModuleFlag flag; /**< System control flag for module. */
 		Status status; /**< Return Status of module functions. */
 		ConnectorMap connectors; /**< Connector vector. */
+
+		ModuleData(const ModuleData&) = delete; /**< -Weffc++ */
+		ModuleData& operator=(const ModuleData&) = delete; /**< -Weffc++ */
 	};
 } // namespace BVS
 

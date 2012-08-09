@@ -24,17 +24,16 @@ BVS::Loader::Loader(Control& control, Config& config)
 
 void BVS::Loader::registerModule(const std::string& id, Module* module)
 {
-	modules[id] = std::shared_ptr<ModuleData>(new ModuleData{
+	modules[id] = std::shared_ptr<ModuleData>(new ModuleData(
 			  id
 			, std::string()
 			, std::string()
 			, module
 			, nullptr
-			, std::thread()
 			, false
 			, ModuleFlag::WAIT
 			, Status::NONE
-			, ConnectorMap()});
+			, ConnectorMap()));
 }
 
 
