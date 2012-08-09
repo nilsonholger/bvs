@@ -49,7 +49,7 @@ usage: $0 [command [\$arg]] [config]
 maintenance:
   -c|--clean                 run make clean and remove all CMake generated content
   -h|-?|--help               displays this text
-  -n|--new-module \$arg      creates new module blank/frame with given name
+  -n|--new-module \$arg       creates new module blank/frame with given name
   -s|--setup                 this adds libbvs and bvsd
 
 targets:
