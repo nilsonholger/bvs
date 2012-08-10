@@ -114,7 +114,7 @@ namespace BVS
 			 * @tparam T Type argument.
 			 * @return Reference to object.
 			 */
-			template<typename T> Config& getValue(const std::string& sectionOption, T& t, T defaultValue);
+			template<typename T> const Config& getValue(const std::string& sectionOption, T& t, T defaultValue) const;
 
 			/** Template to retrieve value from config by return value.
 			 * Returns default value, if desired option is not found in option store.
@@ -123,7 +123,7 @@ namespace BVS
 			 * @tparam T Type argument.
 			 * @return The desired option's value.
 			 */
-			template<typename T> T getValue(const std::string& sectionOption, T defaultValue);
+			template<typename T> T getValue(const std::string& sectionOption, T defaultValue) const;
 
 			/** Template to retrieve a value list from config as a std::vector of chosen type.
 			 * @tparam T Type used for value list.
@@ -131,11 +131,11 @@ namespace BVS
 			 * @param[out] t This vectore will be used to return the retrieved value list.
 			 * @return Reference to object.
 			 */
-			template<typename T> Config& getValue(const std::string& sectionOption, std::vector<T>& t);
+			template<typename T> const Config& getValue(const std::string& sectionOption, std::vector<T>& t) const;
 
 		private:
 			std::string name; /**< Instance's name. */
-			std::mutex mutex; /**< Mutex for thread safety. */
+			mutable std::mutex mutex; /**< Mutex for thread safety. */
 
 			/** A map of all stored options. */
 			std::map<std::string, std::string, std::less<std::string>> optionStore;
@@ -153,27 +153,27 @@ namespace BVS
 			 * @param[in] option Desired config option.
 			 * @return The option's value if found.
 			 */
-			std::string searchOption(std::string option);
+			std::string searchOption(std::string option) const;
 
 			/** Convert std::string to desired type.
 			 * @param[in] input Input string.
 			 * @param[out] t Converted argument of desired type.
 			 * @return Reference to Object.
 			 */
-			template<typename T> Config& convertStringTo(const std::string& input, T& t);
+			template<typename T> const Config& convertStringTo(const std::string& input, T& t) const;
 
 			/** Convert std::string to desired type.
 			 * @param[in] input Input string.
 			 * @return Converted argument of desired type.
 			 */
-			template<typename T> T convertStringTo(const std::string& input);
+			template<typename T> T convertStringTo(const std::string& input) const;
 
 			friend class BVS;
 	};
 
 
 
-	template<typename T> Config& Config::getValue(const std::string& sectionOption, T& t, T defaultValue)
+	template<typename T> const Config& Config::getValue(const std::string& sectionOption, T& t, T defaultValue) const
 	{
 		t = getValue(sectionOption, defaultValue);
 		return *this;
@@ -181,7 +181,7 @@ namespace BVS
 
 
 
-	template<typename T> T Config::getValue(const std::string& sectionOption, T defaultValue)
+	template<typename T> T Config::getValue(const std::string& sectionOption, T defaultValue) const
 	{
 		(void) defaultValue;
 		std::string tmp = searchOption(sectionOption);
@@ -197,7 +197,7 @@ namespace BVS
 
 
 
-	template<typename T> Config& Config::getValue(const std::string& sectionOption, std::vector<T>& t)
+	template<typename T> const Config& Config::getValue(const std::string& sectionOption, std::vector<T>& t) const
 	{
 		// get list from optionStore and if empty, abort
 		std::string tmp = searchOption(sectionOption);
@@ -221,7 +221,7 @@ namespace BVS
 
 
 
-	template<typename T> Config& Config::convertStringTo(const std::string& input, T& t)
+	template<typename T> const Config& Config::convertStringTo(const std::string& input, T& t) const
 	{
 		std::istringstream stream(input);
 		stream >> t;
@@ -230,7 +230,7 @@ namespace BVS
 
 
 
-	template<typename T> T Config::convertStringTo(const std::string& input)
+	template<typename T> T Config::convertStringTo(const std::string& input) const
 	{
 		T t;
 		convertStringTo(input, t);
@@ -239,8 +239,8 @@ namespace BVS
 
 
 	/** IGNORE, this function does not belong here, doxygen is being weird. */
-	template<> Config& Config::convertStringTo<std::string>(const std::string& input, std::string& output);
-	template<> Config& Config::convertStringTo<bool>(const std::string& input, bool& b);
+	template<> const Config& Config::convertStringTo<std::string>(const std::string& input, std::string& output) const;
+	template<> const Config& Config::convertStringTo<bool>(const std::string& input, bool& b) const;
 } // namespace BVS
 
 

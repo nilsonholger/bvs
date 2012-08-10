@@ -252,7 +252,7 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 
 
 
-std::string BVS::Config::searchOption(std::string option)
+std::string BVS::Config::searchOption(std::string option) const
 {
 	std::transform(option.begin(), option.end(), option.begin(), ::tolower);
 
@@ -261,7 +261,7 @@ std::string BVS::Config::searchOption(std::string option)
 	// search for option in store
 	if(optionStore.find(option)!=optionStore.end())
 	{
-		std::string tmp = optionStore[option];
+		std::string tmp = optionStore.find(option)->second;
 		return tmp;
 	}
 	else return std::string();
@@ -269,7 +269,7 @@ std::string BVS::Config::searchOption(std::string option)
 
 
 
-template<> BVS::Config& BVS::Config::convertStringTo<std::string>(const std::string& input, std::string& output)
+template<> const BVS::Config& BVS::Config::convertStringTo<std::string>(const std::string& input, std::string& output) const
 {
 	output = input;
 
@@ -278,7 +278,7 @@ template<> BVS::Config& BVS::Config::convertStringTo<std::string>(const std::str
 
 
 
-template<> BVS::Config& BVS::Config::convertStringTo<bool>(const std::string& input, bool& b)
+template<> const BVS::Config& BVS::Config::convertStringTo<bool>(const std::string& input, bool& b) const
 {
 	// check for possible matches to various versions meaning true
 	if (input=="1"
@@ -292,3 +292,4 @@ template<> BVS::Config& BVS::Config::convertStringTo<bool>(const std::string& in
 
 	return *this;
 }
+
