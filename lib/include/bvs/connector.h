@@ -23,7 +23,7 @@ namespace BVS
 	template<typename T> class Connector
 	{
 		public:
-			/** Constructs a connector.
+			/** Constructs a Connector.
 			 * @param[in] connectorName The connector's name.
 			 * @param[in] connectorType The connector's type.
 			 * @see ConnectorType
@@ -68,8 +68,8 @@ namespace BVS
 			/** This connectors metadata. */
 			std::shared_ptr<ConnectorData> data;
 
-			Connector(const Connector&); /**< -Weffc++ */
-			Connector operator=(const Connector&); /**< -Weffc++ */
+			Connector(const Connector&) = delete; /**< -Weffc++ */
+			Connector operator=(const Connector&) = delete; /**< -Weffc++ */
 
 			friend class Loader;
 	};
@@ -78,7 +78,9 @@ namespace BVS
 
 	template<typename T> Connector<T>::Connector(const std::string& connectorName, ConnectorType connectorType)
 		: connection(nullptr)
-		, data(std::shared_ptr<ConnectorData>(new ConnectorData{connectorName, connectorType, false, nullptr, typeid(T).hash_code(), typeid(T).name(), nullptr, false}))
+		, data(std::shared_ptr<ConnectorData>(new ConnectorData(connectorName,
+						connectorType, false, nullptr, typeid(T).hash_code(),
+						typeid(T).name(), nullptr, false)))
 	{
 		ConnectorDataCollector::connectors[connectorName] = data;
 
@@ -90,6 +92,8 @@ namespace BVS
 			data->mutex = new std::mutex();
 		}
 	}
+
+
 
 	template<typename T> Connector<T>::~Connector()
 	{
