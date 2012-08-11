@@ -11,9 +11,9 @@
 namespace BVS
 {
 	/** Connector Types.
-	 * NOOP - not assigned
-	 * INPUTPUT   - used for input
-	 * OUTPUTPUT  - used for output
+	 * NOOP   - not assigned
+	 * INPUT  - used for input
+	 * OUTPUT - used for output
 	 */
 	enum class ConnectorType { NOOP, INPUT, OUTPUT};
 
