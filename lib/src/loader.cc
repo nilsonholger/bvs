@@ -308,7 +308,7 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 		{
 			LOG(0, "Selected input and output connector template instantiations are of different type: "
 					<< module->id << "." << selection << " -> "
-					<< module->connectors[input]->typeIDName << "!=" << modules[targetModule]->connectors[targetOutput]->typeIDName);
+					<< module->connectors[input]->typeIDName << " != " << modules[targetModule]->connectors[targetOutput]->typeIDName);
 			exit(1);
 		}
 
