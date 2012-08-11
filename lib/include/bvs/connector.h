@@ -1,6 +1,7 @@
 #ifndef BVS_CONNECTOR_H
 #define BVS_CONNECTOR_H
 
+#include<atomic>
 #include<iostream>
 #include<map>
 #include<memory>
@@ -30,6 +31,11 @@ namespace BVS
 			 */
 			Connector(const std::string& connectorName, ConnectorType connectorType);
 
+			/** Copy constructor.
+			 * @param[in] t Original.
+			 */
+			Connector(const Connector& t);
+
 			/** Connector destructor. */
 			~Connector();
 
@@ -40,7 +46,7 @@ namespace BVS
 
 			/** Read from input.
 			 * @param[out] t Object to receive into.
-			 * @return True if successfully retrieved an object, false otherwise.
+			 * @return True if input is connected to an output, false otherwise.
 			 */
 			bool receive(T& t);
 
@@ -65,10 +71,12 @@ namespace BVS
 			/** Pointer to the actual object. */
 			T* connection;
 
+			/** Internal reference count. */
+			std::shared_ptr<std::atomic<unsigned int>> refCount;
+
 			/** This connectors metadata. */
 			std::shared_ptr<ConnectorData> data;
 
-			Connector(const Connector&) = delete; /**< -Weffc++ */
 			Connector operator=(const Connector&) = delete; /**< -Weffc++ */
 
 			friend class Loader;
@@ -78,6 +86,7 @@ namespace BVS
 
 	template<typename T> Connector<T>::Connector(const std::string& connectorName, ConnectorType connectorType)
 		: connection(nullptr)
+		, refCount(std::make_shared<std::atomic<unsigned int>>(0))
 		, data(std::shared_ptr<ConnectorData>(new ConnectorData(connectorName,
 						connectorType, false, nullptr, typeid(T).hash_code(),
 						typeid(T).name(), nullptr, false)))
@@ -87,6 +96,7 @@ namespace BVS
 		if (data->type == ConnectorType::OUTPUT)
 		{
 			connection = new T();
+			++(*refCount);
 			data->pointer = connection;
 			data->active = true;
 			data->mutex = new std::mutex();
@@ -95,9 +105,20 @@ namespace BVS
 
 
 
+	template<typename T> Connector<T>::Connector(const Connector& t)
+		: connection(t.connection)
+		, refCount(t.refCount)
+		, data(t.data)
+	{
+		++*(refCount);
+	}
+
+
+
 	template<typename T> Connector<T>::~Connector()
 	{
-		if (data->type == ConnectorType::OUTPUT) delete connection;
+		--(*refCount);
+		if (*refCount==0 && data->type == ConnectorType::OUTPUT) delete connection;
 	}
 
 
@@ -127,15 +148,13 @@ namespace BVS
 			exit(1);
 		}
 
-		// check status
-		if (!data->active) return false;
-
 		// check initilization
-		if (connection == nullptr && data->pointer != nullptr && data->active)
+		if (connection == nullptr && data->pointer != nullptr && !data->active)
 		{
 			connection = static_cast<T*>(data->pointer);
 			data->active = true;
 		}
+		else return false;
 
 		if (!data->locked) data->mutex->lock();
 		t = *connection;
@@ -149,7 +168,7 @@ namespace BVS
 	template<typename T> T& Connector<T>::operator*()
 	{
 		// check initiliziation
-		if (connection == nullptr && data->pointer != nullptr && data->active)
+		if (data->pointer != nullptr && !data->active)
 		{
 			connection = static_cast<T*>(data->pointer);
 			data->active = true;

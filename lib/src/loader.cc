@@ -314,7 +314,6 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 
 		// connect
 		module->connectors[input]->pointer = modules[targetModule]->connectors[targetOutput]->pointer;
-		module->connectors[input]->active = true;
 		module->connectors[input]->mutex = modules[targetModule]->connectors[targetOutput]->mutex;
 		LOG(3, "Connected: " << module->id << "." << module->connectors[input]->id << " <- " << modules[targetModule]->id << "." << modules[targetModule]->connectors[targetOutput]->id);
 	}
