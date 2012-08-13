@@ -101,11 +101,10 @@ then
 	GDB="gdb"
 	GDBOPTS="--args"
 	shift
-	$# = $#-1;
 fi
 [ -n "$GDB" -a -r /usr/local/bin/gdb ] && GDB="/usr/local/bin/gdb"
 [ ! -r bin/bvsd ] && echo "bvsd executable not found, run make first..." && exit
-[ $# = 0 ] && CONFIG="BVSConfig.txt" || CONFIG=$@
+[ $# = 0 ] && CONFIG="BVSConfig.txt" || CONFIG=$1
 (cd bin && $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)
 }
 
