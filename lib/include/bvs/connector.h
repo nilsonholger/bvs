@@ -25,6 +25,7 @@ namespace BVS
 	{
 		public:
 			/** Constructs a Connector.
+			 * Dependencies: any used type must provide default constructor T()
 			 * @param[in] connectorName The connector's name.
 			 * @param[in] connectorType The connector's type.
 			 * @see ConnectorType
@@ -61,6 +62,11 @@ namespace BVS
 			 */
 			T& operator*();
 
+			/** Access operator->.
+			 * @see operator*()
+			 */
+			T* operator->();
+
 			/** Locks the connection object. */
 			void lockConnection();
 
@@ -68,11 +74,15 @@ namespace BVS
 			void unlockConnection();
 
 		private:
-			/** Pointer to the actual object. */
-			T* connection;
+			/** Activate connector.
+			 * This means that an input is actually connected to an output enabling
+			 * data to be retrieved. Before this executes, the connector will only
+			 * contain a T() object and not the actual data from an output.
+			 */
+			void activate();
 
-			/** Internal reference count. */
-			std::shared_ptr<std::atomic<unsigned int>> refCount;
+			/** Pointer to the actual object. */
+			std::shared_ptr<T> connection;
 
 			/** This connectors metadata. */
 			std::shared_ptr<ConnectorData> data;
@@ -86,17 +96,21 @@ namespace BVS
 
 	template<typename T> Connector<T>::Connector(const std::string& connectorName, ConnectorType connectorType)
 		: connection(nullptr)
-		, refCount(std::make_shared<std::atomic<unsigned int>>(0))
-		, data(std::shared_ptr<ConnectorData>(new ConnectorData(connectorName,
-						connectorType, false, nullptr, typeid(T).hash_code(),
-						typeid(T).name(), nullptr, false)))
+		, data(std::shared_ptr<ConnectorData>(new ConnectorData(
+						connectorName,
+						connectorType,
+						false,
+						nullptr,
+						typeid(T).hash_code(),
+						typeid(T).name(),
+						nullptr,
+						false)))
 	{
 		ConnectorDataCollector::connectors[connectorName] = data;
 
 		if (data->type == ConnectorType::OUTPUT)
 		{
-			connection = new T();
-			++(*refCount);
+			connection = std::make_shared<T>();
 			data->pointer = connection;
 			data->active = true;
 			data->mutex = new std::mutex();
@@ -107,19 +121,13 @@ namespace BVS
 
 	template<typename T> Connector<T>::Connector(const Connector& t)
 		: connection(t.connection)
-		, refCount(t.refCount)
 		, data(t.data)
-	{
-		++*(refCount);
-	}
+	{ }
 
 
 
 	template<typename T> Connector<T>::~Connector()
-	{
-		--(*refCount);
-		if (*refCount==0 && data->type == ConnectorType::OUTPUT) delete connection;
-	}
+	{ }
 
 
 
@@ -148,13 +156,7 @@ namespace BVS
 			exit(1);
 		}
 
-		// check initilization
-		if (connection == nullptr && data->pointer != nullptr && !data->active)
-		{
-			connection = static_cast<T*>(data->pointer);
-			data->active = true;
-		}
-		else return false;
+		if (!data->active) activate();
 
 		if (!data->locked) data->mutex->lock();
 		t = *connection;
@@ -167,14 +169,18 @@ namespace BVS
 
 	template<typename T> T& Connector<T>::operator*()
 	{
-		// check initiliziation
-		if (data->pointer != nullptr && !data->active)
-		{
-			connection = static_cast<T*>(data->pointer);
-			data->active = true;
-		}
+		if (!data->active) activate();
 
 		return *connection;
+	}
+
+
+
+	template<typename T> T* Connector<T>::operator->()
+	{
+		if (!data->active) activate();
+
+		return &(*connection);
 	}
 
 
@@ -191,6 +197,17 @@ namespace BVS
 	{
 		data->mutex->unlock();
 		data->locked = false;
+	}
+
+
+
+	template<typename T> void Connector<T>::activate()
+	{
+		if (connection == nullptr && data->pointer != nullptr)
+		{
+			connection = *reinterpret_cast<std::shared_ptr<T>*>(&data->pointer);
+			data->active = true;
+		}
 	}
 } // namespace BVS
 

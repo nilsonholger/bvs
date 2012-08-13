@@ -3,6 +3,7 @@
 
 #include<mutex>
 #include<iostream>
+#include<memory>
 #include<string>
 
 
@@ -51,7 +52,7 @@ namespace BVS
 		 * @param[in] mutex Mutex to lock resource.
 		 * @param[in] bool locked If connection is locked.
 		 */
-		ConnectorData(std::string id, ConnectorType type, bool active, void* pointer,
+		ConnectorData(std::string id, ConnectorType type, bool active, std::shared_ptr<void> pointer,
 				size_t typeIDHash, std::string typeIDName, std::mutex* mutex, bool locked)
 			: id(id)
 			, type(type)
@@ -66,7 +67,7 @@ namespace BVS
 		std::string id; /**< Identifier. */
 		ConnectorType type; /**< Type. @see ConnectorType */
 		bool active; /**< If connector is active/assigned. */
-		void* pointer; /**< Void pointer to contained object. */
+		std::shared_ptr<void> pointer; /**< Void pointer to contained object. */
 		size_t typeIDHash; /**< Hash code of templated type. */
 		std::string typeIDName; /**< Type of template instantiation. */
 		std::mutex* mutex; /**< Mutex to lock resource. */
