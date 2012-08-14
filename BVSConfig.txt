@@ -21,7 +21,7 @@ logConsole = ON
 #logFile = BVSLog.txt
 
 # overall system log verbosity
-logVerbosity = 1
+logVerbosity = 3
 
 # allow modules to run in dedicated threads
 moduleThreads = ON
@@ -36,7 +36,7 @@ forceModuleThreads = OFF
 # this connects uniqueID's Connector named 'input' with 'test' module's
 # connector named 'output'
 modules = +capture(bvsCapture)
-+modules = +calibration(bvsCalibration).inL(capture.outL).inR(capture.outR)
++modules = +calibration(bvsCalibration).input0(capture.outL).input1(capture.outR)
 #+modules = +id2(library2).input(id.output)
 #+modules = ...
 
@@ -48,5 +48,18 @@ modules = +capture(bvsCapture)
 #BVSDaemon = 0
 #BVSMaster = 0
 #YourLogger = ...
+
+[calibration]
+numInputs = 2
+numImages = 30
+circleSize = 2.42
+autoShotMode = true
+autoShotDelay = 2
+savePath = calibrationData
+saveImages = false
+useSavedImages = false
+loadCalibration = true
+saveCalibration = true
+calibrationFile = stereoCalibration.xml
 
 # This line tells vim something about the file type. -- vim:ft=config:
