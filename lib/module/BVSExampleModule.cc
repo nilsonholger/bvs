@@ -7,11 +7,11 @@
 // framework actually creates your module) and the framework assigns the unique
 // identifier and gives you access to its config.
 // However, you should use it to create your data structures etc.
-BVSExampleModule::BVSExampleModule(const std::string id, const BVS::Info& info)
+BVSExampleModule::BVSExampleModule(const std::string id, const BVS::Info& bvs)
 	: BVS::Module()
 	, id(id)
 	, logger(id)
-	, info(info)
+	, bvs(bvs)
 	, input("testIn", BVS::ConnectorType::INPUT)
 	, output("testOut", BVS::ConnectorType::OUTPUT)
 {
@@ -33,6 +33,15 @@ BVSExampleModule::~BVSExampleModule()
 BVS::Status BVSExampleModule::execute()
 {
 	LOG(2, "Execution of " << id << "!");
+
+	// Various settings and information
+	// in some config:
+	// [thisModuleId]
+	// foo = 42
+	//int foo = bvs.getValue<int>(id + ".myInteger, 23);
+	//unsigned long long round = bvs.round;
+	//int lastRoundModuleDuration = bvs.moduleDurations.find(id)->second.count();
+	//int lastRoundDuration = bvs.lastRoundDuration.count();
 
 	// Simple Connector Example
 	//int incoming;
@@ -74,9 +83,9 @@ BVS::Status BVSExampleModule::debugDisplay()
 // this class. It creates the module and registers it within the framework.
 // DO NOT CHANGE OR DELETE
 extern "C" {
-	int bvsRegisterModule(std::string id, BVS::Info& info)
+	int bvsRegisterModule(std::string id, BVS::Info& bvs)
 	{
-		registerModule(id, new BVSExampleModule(id, info));
+		registerModule(id, new BVSExampleModule(id, bvs));
 
 		return 0;
 	}

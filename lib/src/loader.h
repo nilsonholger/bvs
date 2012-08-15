@@ -34,9 +34,8 @@ namespace BVS
 		public:
 			/** Constructor for loader.
 			 * @param[in] control Reference to control mechanism.
-			 * @param[in] config Reference to config system.
+			 * @param[in] info Reference to info struct.
 			 */
-			//TODO fix comment
 			Loader(Control& control, const Info& info);
 
 			/** Registers a module.
@@ -117,7 +116,7 @@ namespace BVS
 			Control& control;
 
 			Logger logger; /**< Logger metadata. */
-			const Info& info; //TODO //Config& config; /**< Config reference. */
+			const Info& info; /**< Info reference. */
 
 			Loader(const Loader&) = delete; /**< -Weffc++ */
 			Loader& operator=(const Loader&) = delete; /**< -Weffc++ */

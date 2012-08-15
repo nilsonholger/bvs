@@ -2,10 +2,12 @@
 #define BVS_CONTROL_H
 
 #include<atomic>
+#include<chrono>
 #include<condition_variable>
 #include<mutex>
 #include<thread>
 
+#include "bvs/bvsinfo.h"
 #include "bvs/config.h"
 #include "bvs/logger.h"
 #include "loader.h"
@@ -27,7 +29,7 @@ namespace BVS
 		public:
 			/** Constructor for control.
 			*/
-			Control();
+			Control(Info& info);
 
 			/** The master control function.
 			 * This is the master control function, it forks if desired and can be controlled
@@ -72,6 +74,9 @@ namespace BVS
 			/** The number of modules running in threads. */
 			static int threadedModules;
 
+			/** Info reference. */
+			Info& info;
+
 			/** The active system flag used by master. */
 			SystemFlag flag;
 
@@ -86,7 +91,13 @@ namespace BVS
 
 			std::thread controlThread; /**< Thread (if active) of masterController. */
 
-			long long round; /**< System round counter. */
+			unsigned long long round; /**< System round counter. */
+
+			/** Timer keeping the start time for a round. */
+			std::chrono::time_point<std::chrono::high_resolution_clock> timer;
+
+			/** Timer for master controlled modules. */
+			std::chrono::time_point<std::chrono::high_resolution_clock> timer2;
 
 			Control(const Control&) = delete; /**< -Weffc++ */
 			Control& operator=(const Control&) = delete; /**< -Weffc++ */

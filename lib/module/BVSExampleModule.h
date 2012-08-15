@@ -21,9 +21,9 @@ class BVSExampleModule : public BVS::Module
 		 * framework.
 		 * You can use the constructor/destructor pair to create/destroy your data.
 		 * @param[in] id Your modules unique identifier, will be set by framework.
-		 * @param[in] info Reference to framework info to enable e.g. config option retrieval.
+		 * @param[in] bvs Reference to framework info for e.g. config option retrieval.
 		 */
-		BVSExampleModule(const std::string id, const BVS::Info& info);
+		BVSExampleModule(const std::string id, const BVS::Info& bvs);
 
 		/** Your module destructor. */
 		~BVSExampleModule();
@@ -48,10 +48,10 @@ class BVSExampleModule : public BVS::Module
 		 */
 		BVS::Logger logger;
 
-		/** Your Config instance.
-		 * @see Config
+		/** Your Info recerence;
+		 * @see Info
 		 */
-		const BVS::Info& info;
+		const BVS::Info& bvs;
 
 		/** Example Connector used to retrieve/send data from/to other modules.
 		 * @see Connector

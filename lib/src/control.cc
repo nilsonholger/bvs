@@ -12,8 +12,9 @@ int BVS::Control::threadedModules = 0;
 
 
 
-BVS::Control::Control()
-	: flag(SystemFlag::PAUSE)
+BVS::Control::Control(Info& info)
+	: info(info)
+	, flag(SystemFlag::PAUSE)
 	, logger("Control")
 	, masterMutex()
 	, masterLock(masterMutex)
@@ -22,6 +23,8 @@ BVS::Control::Control()
 	, threadCond()
 	, controlThread()
 	, round(0)
+	, timer(std::chrono::high_resolution_clock::now())
+	, timer2(std::chrono::high_resolution_clock::now())
 {
 	runningThreads.store(0);
 }
@@ -33,30 +36,24 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 	if (forkMasterController)
 	{
 		LOG(2, "Master controller forking, now running in dedicated thread!");
-		//create thread with this function and this object
 		controlThread = std::thread(&Control::masterController, this, false);
 		return *this;
 	}
 
-	// wait until all started threads have reached their control loop
 	masterCond.notify_one();
 	masterCond.wait(masterLock, [&](){ return threadedModules == runningThreads.load(); });
 	runningThreads.store(0);
 
-	// main loop, repeat until SystemFlag::QUIT is set
 	while (flag != SystemFlag::QUIT)
 	{
-		// wait until all threads are synchronized
+		// synchronize
 		masterCond.wait(masterLock, [&](){ return runningThreads.load() == 0; });
-		//masterCond.wait_for(masterLock, std::chrono::milliseconds(10), [&](){ return runningThreads.load() == 0; });
 
-		// act on system flag
 		switch (flag)
 		{
 			case SystemFlag::QUIT:
 				break;
 			case SystemFlag::PAUSE:
-				// if not running inside own thread, return
 				if (!controlThread.joinable()) return *this;
 				LOG(3, "Pausing...");
 				masterCond.wait(masterLock, [&](){ return flag != SystemFlag::PAUSE; });
@@ -67,19 +64,27 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 				LOG(3, "Starting next round, notifying threads and executing modules!");
 				LOG(2, "ROUND: " << round++);
 
-				// set RUN flag for all modules and signal threads
 				for (auto& it: Loader::modules)
 				{
 					it.second->flag = ModuleFlag::RUN;
 					if (it.second->asThread)
 						runningThreads.fetch_add(1, std::memory_order_seq_cst);
 				}
+
+				timer2 = std::chrono::high_resolution_clock::now();
+				info.lastRoundDuration  =
+					std::chrono::duration_cast<std::chrono::milliseconds>(timer2 - timer);
+				timer = timer2;
 				threadCond.notify_all();
 
-				// iterate through modules executed by master
+
 				for (auto& it: Loader::masterModules)
 				{
+					timer2 = std::chrono::high_resolution_clock::now();
 					moduleController(*(it.get()));
+					info.moduleDurations[it.get()->id] =
+						std::chrono::duration_cast<std::chrono::milliseconds>
+						(std::chrono::high_resolution_clock::now() - timer2);
 				}
 
 				if (flag == SystemFlag::STEP) flag = SystemFlag::PAUSE;
@@ -89,7 +94,6 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 		}
 		LOG(3, "Waiting for threads to finish!");
 
-		// return if not control thread
 		if (!controlThread.joinable() && flag != SystemFlag::RUN) return *this;
 	}
 
@@ -115,7 +119,6 @@ BVS::Control& BVS::Control::sendCommand(const SystemFlag controlFlag)
 		masterController(false);
 	}
 
-	// on quitting, wait for control thread if necessary
 	if (controlFlag == SystemFlag::QUIT)
 	{
 		if (controlThread.joinable())
@@ -139,10 +142,8 @@ BVS::Control& BVS::Control::moduleController(ModuleData& data)
 		case ModuleFlag::WAIT:
 			break;
 		case ModuleFlag::RUN:
-			// call execution functions
 			data.status = data.module->execute();
 
-			// reset module flag
 			data.flag = ModuleFlag::WAIT;
 			break;
 	}
@@ -154,24 +155,22 @@ BVS::Control& BVS::Control::moduleController(ModuleData& data)
 
 BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
 {
-	// acquire lock needed for conditional variable
 	std::unique_lock<std::mutex> threadLock(threadMutex);
 
-	// tell system that thread has started
 	runningThreads.fetch_add(1, std::memory_order_seq_cst);
 
 	while (bool(data->flag))
 	{
-		// wait for master to announce next round
 		LOG(3, data->id << " Waiting for next round!");
 		masterCond.notify_one();
 		threadCond.wait(threadLock, [&](){ return data->flag != ModuleFlag::WAIT; });
 
-		// call module control
 		moduleController(*(data.get()));
 
-		// tell master that thread has finished this round
 		runningThreads.fetch_sub(1, std::memory_order_seq_cst);
+		info.moduleDurations[data.get()->id] =
+			std::chrono::duration_cast<std::chrono::milliseconds>
+			(std::chrono::high_resolution_clock::now() - timer);
 	}
 
 	return *this;

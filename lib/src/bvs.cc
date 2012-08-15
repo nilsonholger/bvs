@@ -7,10 +7,14 @@
 
 BVS::BVS::BVS(int argc, char** argv)
 	: config("BVS", argc, argv)
-	, info(Info{config, 0, 0})
+	, info(Info{
+			config,
+			0,
+			std::chrono::duration<unsigned int, std::milli>(),
+			std::map<std::string, std::chrono::duration<unsigned int, std::milli>>()})
 	, logSystem(LogSystem::connectToLogSystem())
 	, logger("BVS")
-	, control(new Control())
+	, control(new Control(info))
 	, loader(new Loader(*control, info))
 {
 	logSystem->updateSettings(config);

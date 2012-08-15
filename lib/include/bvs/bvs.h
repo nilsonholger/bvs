@@ -67,7 +67,8 @@ namespace BVS
 			 */
 			BVS(int argc, char** argv);
 
-			//TODO
+			/** Destructor.
+			 */
 			~BVS();
 
 			/** Load modules selected by config variable [BVS]modules.
@@ -188,7 +189,7 @@ namespace BVS
 			Config config; /**< BVS' config system. */
 
 		private:
-			Info info; //TODO
+			Info info; //**< BVS' information object. */
 			std::shared_ptr<LogSystem> logSystem; /**< Internal log system backend. */
 			Logger logger; /**< BVS' logging instance. */
 			Control* control; /**< BVS' module controller. */
