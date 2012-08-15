@@ -21,7 +21,7 @@ logConsole = ON
 #logFile = BVSLog.txt
 
 # overall system log verbosity
-logVerbosity = 3
+logVerbosity = 1
 
 # allow modules to run in dedicated threads
 moduleThreads = ON
@@ -50,14 +50,13 @@ modules = +capture(bvsCapture)
 #YourLogger = ...
 
 [calibration]
-numInputs = 2
+numNodes = 2
 numImages = 30
 circleSize = 2.42
 autoShotMode = true
 autoShotDelay = 2
 savePath = calibrationData
 saveImages = false
-useSavedImages = false
 loadCalibration = true
 saveCalibration = true
 calibrationFile = stereoCalibration.xml
