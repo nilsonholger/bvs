@@ -5,6 +5,7 @@
 #include<iostream>
 #include<string>
 
+#include "bvs/bvsinfo.h"
 #include "bvs/config.h"
 #include "bvs/connector.h"
 #include "bvs/logger.h"
@@ -65,6 +66,9 @@ namespace BVS
 			 * @param[in] argv Main's argv, used to pass config options to BVS, see BVSConfig.
 			 */
 			BVS(int argc, char** argv);
+
+			//TODO
+			~BVS();
 
 			/** Load modules selected by config variable [BVS]modules.
 			 * @return Reference to object.
@@ -184,6 +188,7 @@ namespace BVS
 			Config config; /**< BVS' config system. */
 
 		private:
+			Info info; //TODO
 			std::shared_ptr<LogSystem> logSystem; /**< Internal log system backend. */
 			Logger logger; /**< BVS' logging instance. */
 			Control* control; /**< BVS' module controller. */

@@ -7,13 +7,22 @@
 
 BVS::BVS::BVS(int argc, char** argv)
 	: config("BVS", argc, argv)
+	, info(Info{config, 0, 0})
 	, logSystem(LogSystem::connectToLogSystem())
 	, logger("BVS")
 	, control(new Control())
-	, loader(new Loader(*control, config))
+	, loader(new Loader(*control, info))
 {
 	logSystem->updateSettings(config);
 	logSystem->updateLoggerLevels(config);
+}
+
+
+
+BVS::BVS::~BVS()
+{
+	delete loader;
+	delete control;
 }
 
 

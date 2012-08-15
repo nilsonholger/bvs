@@ -12,10 +12,10 @@ BVS::ModuleVector BVS::Loader::masterModules;
 
 
 
-BVS::Loader::Loader(Control& control, Config& config)
+BVS::Loader::Loader(Control& control, const Info& info)
 	: control(control)
 	, logger("Loader")
-	, config(config)
+	, info(info)
 {
 
 }
@@ -95,7 +95,7 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 	}
 
 	// look for bvsRegisterModule in loaded lib, check for errors and execute register function
-	typedef void (*bvsRegisterModule_t)(const std::string& id, const Config& config);
+	typedef void (*bvsRegisterModule_t)(const std::string& id, const Info& info);
 	bvsRegisterModule_t bvsRegisterModule;
 	*reinterpret_cast<void**>(&bvsRegisterModule)=dlsym(dlib, "bvsRegisterModule");
 
@@ -108,7 +108,7 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 	}
 
 	// register
-	bvsRegisterModule(id, config);
+	bvsRegisterModule(id, info);
 	LOG(2, "Loading " << id << " successfull!");
 
 	// save handle,library name and option string for later use

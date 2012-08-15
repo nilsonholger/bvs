@@ -5,6 +5,7 @@
 #include<thread>
 #include<vector>
 
+#include "bvs/bvsinfo.h"
 #include "bvs/config.h"
 #include "bvs/logger.h"
 #include "control.h"
@@ -35,7 +36,8 @@ namespace BVS
 			 * @param[in] control Reference to control mechanism.
 			 * @param[in] config Reference to config system.
 			 */
-			Loader(Control& control, Config& config);
+			//TODO fix comment
+			Loader(Control& control, const Info& info);
 
 			/** Registers a module.
 			 * @param[in] id Name of module.
@@ -115,7 +117,7 @@ namespace BVS
 			Control& control;
 
 			Logger logger; /**< Logger metadata. */
-			Config& config; /**< Config reference. */
+			const Info& info; //TODO //Config& config; /**< Config reference. */
 
 			Loader(const Loader&) = delete; /**< -Weffc++ */
 			Loader& operator=(const Loader&) = delete; /**< -Weffc++ */
