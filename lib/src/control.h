@@ -8,7 +8,6 @@
 #include<thread>
 
 #include "bvs/bvsinfo.h"
-#include "bvs/config.h"
 #include "bvs/logger.h"
 #include "loader.h"
 #include "moduledata.h"
