@@ -60,5 +60,7 @@ loadCalibration = ON
 saveCalibration = ON
 directory = "calibrationData"
 calibrationFile = "stereoCalibration.xml"
+createRectifiedOutput = ON
+addGridOverlay = OFF
 
 # This line tells vim something about the file type. -- vim:ft=config:
