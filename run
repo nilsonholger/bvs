@@ -3,6 +3,7 @@
 
 # settings
 BASE="ssh://git.hyve.org:119"
+BASE_DIR=`dirname $0`
 
 
 
@@ -103,9 +104,9 @@ then
 	shift
 fi
 [ -n "$GDB" -a -r /usr/local/bin/gdb ] && GDB="/usr/local/bin/gdb"
-[ ! -r bin/bvsd ] && echo "bvsd executable not found, run make first..." && exit
+[ ! -r $BASE_DIR/bin/bvsd ] && echo "bvsd executable not found, run make first..." && exit
 [ $# = 0 ] && CONFIG="BVSConfig.txt" || CONFIG=$1
-(cd bin && $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)
+(cd $BASE_DIR/bin && $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)
 }
 
 
