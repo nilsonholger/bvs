@@ -4,9 +4,6 @@
 [submodule "bvsd"]
 	path = bvsd
 	url = ssh://git.hyve.org:119/bvsd.git
-[submodule "modules/bvsCapture"]
-	path = modules/bvsCapture
-	url = ssh://git.hyve.org/bvsCapture.git
-[submodule "modules/bvsCalibration"]
-	path = modules/bvsCalibration
-	url = ssh://git.hyve.org/bvsCalibration.git
+[submodule "modules/bvsModules"]
+	path = modules/bvsModules
+	url = ssh://git.hyve.org/bvsModules.git
