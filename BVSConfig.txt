@@ -51,7 +51,7 @@ modules = +capture(bvsCapture)
 
 [calibration]
 numNodes = 2
-numImages = 30
+numImages = 50
 circleSize = 2.42
 autoShotMode = ON
 autoShotDelay = 1
