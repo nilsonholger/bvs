@@ -5,6 +5,7 @@
 .DS_Store
 
 bin/*
+build/
 doc/
 
 cmake_install.cmake

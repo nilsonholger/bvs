@@ -48,7 +48,7 @@ cat << EOF
 usage: $0 [command [\$arg]] [config]
 
 maintenance:
-  -c|--clean                 run make clean and remove all CMake generated content
+-c|--clean                   run make clean and remove all CMake generated content (for in source builds)
   -h|-?|--help               displays this text
   -n|--new-module \$arg       creates new module blank/frame with given name
   -s|--setup                 this adds libbvs and bvsd
@@ -104,9 +104,11 @@ then
 	shift
 fi
 [ -n "$GDB" -a -r /usr/local/bin/gdb ] && GDB="/usr/local/bin/gdb"
-[ ! -r $BASE_DIR/bin/bvsd ] && echo "bvsd executable not found, run make first..." && exit
+[ -r $BASE_DIR/bin/bvsd ] && BIN_DIR="bin"
+[ -r $BASE_DIR/build/bin/bvsd ] && BIN_DIR="build/bin"
+[ -z $BIN_DIR ] && echo "bvsd executable not found, run make first..." && exit
 [ $# = 0 ] && CONFIG="BVSConfig.txt" || CONFIG=$1
-(cd $BASE_DIR/bin && $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)
+(cd $BASE_DIR/$BIN_DIR && $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)
 }
 
 
