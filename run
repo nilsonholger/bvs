@@ -89,9 +89,6 @@ function bvs_setup {
 git remote rename origin bvs-origin
 git submodule update --init --recursive
 git submodule foreach git checkout master
-
-mkdir bin
-cp libbvs/BVSConfig.txt ./bin/BVSConfig.txt
 }
 
 
