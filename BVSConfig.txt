@@ -60,8 +60,12 @@ useSavedImages = OFF
 loadCalibration = ON
 saveCalibration = ON
 directory = "calibrationData"
-calibrationFile = "stereoCalibration.xml"
+calibrationFile = "stereoCalibration.yml"
 createRectifiedOutput = ON
 addGridOverlay = ON
+useCalibrationGuide = ON
+centerScale = 0.5
+centerDetections = 10
+sectorDetections = 5
 
 # This line tells vim something about the file type. -- vim:ft=config:
