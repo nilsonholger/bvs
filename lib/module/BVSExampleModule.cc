@@ -32,7 +32,8 @@ BVSExampleModule::~BVSExampleModule()
 // Put all your work here.
 BVS::Status BVSExampleModule::execute()
 {
-	LOG(2, "Execution of " << id << "!");
+	// to log messages to console or file, use the LOG(...) macro
+	//LOG(3, "Execution of " << id << "!");
 
 	// Various settings and information
 	// in some config:
