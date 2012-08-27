@@ -9,7 +9,9 @@ BASE_DIR=`dirname $0`
 
 # cleanup
 function bvs_clean {
+_PWD=$PWD
 echo ">>> make clean"
+[ -r build/Makefile ] && cd build
 [ -r Makefile ] && make clean
 [ -r libbvs/doc ] && rm -rf libbvs/doc
 
@@ -38,6 +40,7 @@ for i in $DIRS
 do
 	[ -r $i/doc ] && rm -r $i/doc
 done
+cd $_PWD
 }
 
 

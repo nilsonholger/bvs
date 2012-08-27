@@ -23,6 +23,8 @@ the html documentation, point your browser to 'libbvs/doc/html/index.html' or
 just read through the header/source files.
 If you need/want to delete all cmake generated files and the documentation,
 type './run --clean'.
+For out of source builds, if you use the directory 'build', the run script will
+still work.
 
 
 
