@@ -167,8 +167,6 @@ namespace BVS
 			 * @return Converted argument of desired type.
 			 */
 			template<typename T> T convertStringTo(const std::string& input) const;
-
-			friend class BVS;
 	};
 
 

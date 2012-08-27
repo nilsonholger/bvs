@@ -101,6 +101,7 @@ namespace BVS
 			Control(const Control&) = delete; /**< -Weffc++ */
 			Control& operator=(const Control&) = delete; /**< -Weffc++ */
 
+			/** The Loader needs to start and notify module threads. */
 			friend class Loader;
 	};
 } // namespace BVS

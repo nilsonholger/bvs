@@ -28,6 +28,7 @@ namespace BVS
 	typedef std::vector<std::shared_ptr<ModuleData>> ModuleVector;
 
 
+
 	/** The system loader: loads, unloads and controls modules. */
 	class Loader
 	{
@@ -121,6 +122,7 @@ namespace BVS
 			Loader(const Loader&) = delete; /**< -Weffc++ */
 			Loader& operator=(const Loader&) = delete; /**< -Weffc++ */
 
+			/** Control needs access to modules and masterModules. */
 			friend class Control;
 	};
 } // namespace BVS

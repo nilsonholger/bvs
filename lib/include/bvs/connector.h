@@ -89,6 +89,7 @@ namespace BVS
 
 			Connector operator=(const Connector&) = delete; /**< -Weffc++ */
 
+			/** The Loader needs metadata access. */
 			friend class Loader;
 	};
 
