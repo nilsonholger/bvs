@@ -37,6 +37,7 @@ forceModuleThreads = OFF
 # connector named 'output'
 modules = +capture(bvsCapture)
 +modules = +calibration(bvsCalibration).input0(capture.outL).input1(capture.outR)
+#modules = calibration(bvsCalibration)
 #+modules = +id2(library2).input(id.output)
 #+modules = ...
 
@@ -51,7 +52,7 @@ modules = +capture(bvsCapture)
 
 [calibration]
 numNodes = 2
-numImages = 50
+numImages = 100
 circleSize = 2.42
 autoShotMode = ON
 autoShotDelay = 1
@@ -65,7 +66,7 @@ createRectifiedOutput = ON
 addGridOverlay = ON
 useCalibrationGuide = ON
 centerScale = 0.5
-centerDetections = 10
+centerDetections = 60
 sectorDetections = 5
 
 # This line tells vim something about the file type. -- vim:ft=config:
