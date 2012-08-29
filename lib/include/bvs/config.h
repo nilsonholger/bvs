@@ -83,8 +83,9 @@ namespace BVS
 			 * @param[in] name A unique name for this config system.
 			 * @param[in] argc Number of arguments.
 			 * @param[in] argv Array of arguments.
+			 * @param[in] file Name of config file to load immediately.
 			 */
-			Config(std::string name, int argc = 0, char** argv = nullptr);
+			Config(std::string name, int argc = 0, char** argv = nullptr, std::string file = std::string());
 
 			/** Gets the system name.
 			 * @param[out] name Return object containing name.

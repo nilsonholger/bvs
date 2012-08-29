@@ -6,12 +6,14 @@
 
 
 
-BVS::Config::Config(std::string name, int argc, char** argv)
+BVS::Config::Config(std::string name, int argc, char** argv, std::string file)
 	: name(name)
 	, mutex()
 	, optionStore()
 {
 	if (argc!=0 && argv!=nullptr) loadCommandLine(argc, argv);
+
+	if (file!=std::string()) loadConfigFile(file);
 }
 
 
