@@ -10,29 +10,35 @@ BASE_DIR=`dirname $0`
 # cleanup
 function bvs_clean {
 _PWD=$PWD
+[ -r build/Makefile ] && cd build && echo ">>> chdir -> 'build'"
 echo ">>> make clean"
-[ -r build/Makefile ] && cd build
 [ -r Makefile ] && make clean
-[ -r libbvs/doc ] && rm -rf libbvs/doc
 
 DIRS="./"
 [ -r bvsd ] && DIRS+=" bvsd/"
 [ -r libbvs ] && DIRS+=" libbvs/"
 [ -r modules ] && DIRS+=" modules/"
-for i in `ls -d modules/*/`
+for i in `ls -d modules/*/ modules/*/*/`
 do
 	[ $i != "modules/CMakeFiles/" ] && DIRS+=" $i"
 done
 
 echo ">>> cmake cleanup: $DIRS"
-[ -r CMakeCache.txt ] && rm CMakeCache.txt
 eval "DIRS=($DIRS)"
 for i in $DIRS
 do
+	[ -r $i/CMakeCache.txt ] && rm $i/CMakeCache.txt
 	[ -r $i/Makefile ] && rm $i/Makefile
 	[ -r $i/cmake_install.cmake ] && rm $i/cmake_install.cmake
 	[ -r $i/CMakeFiles ] && rm -r $i/CMakeFiles
+	#rmdir $i
 done
+
+for i in {${#DIRS}..2}
+do
+	rmdir --ignore-fail-on-non-empty $DIRS[i]
+done
+
 
 [ ! -r libbvs ] && return
 echo ">>> documentation cleanup"
@@ -89,7 +95,6 @@ echo "Created Module $MOD! Please modify modules/CMakeLists.txt to add it to com
 
 # setup
 function bvs_setup {
-git remote rename origin bvs-origin
 git submodule update --init --recursive
 git submodule foreach git checkout master
 }
