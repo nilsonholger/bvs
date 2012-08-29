@@ -34,18 +34,18 @@ do
 	#rmdir $i
 done
 
-for i in {${#DIRS}..2}
-do
-	rmdir --ignore-fail-on-non-empty $DIRS[i]
-done
-
-
-[ ! -r libbvs ] && return
 echo ">>> documentation cleanup"
 for i in $DIRS
 do
 	[ -r $i/doc ] && rm -r $i/doc
 done
+
+echo ">>> directory cleanup"
+for i in {${#DIRS}..2}
+do
+	rmdir --ignore-fail-on-non-empty $DIRS[i]
+done
+
 cd $_PWD
 }
 
