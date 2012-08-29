@@ -1,7 +1,8 @@
-# This is an example config file.
+# This is an example config file. Please copy it to
+# [build/]bin/BVSConfig.txt to get started right away.
 #
 # For more information:
-# TOPIC        FILE                              DOXYGEN
+# TOPIC        FILE                              DOXYGEN (see Readme.txt)
 # syntax       'libbvs/include/bvs/config.h'     'Classes->BVS::Config'
 # bvs options  'libbvs/include/bvs/bvs.h'        'Classes->BVS::BVS'
 # bvs defaults 'libbvs/include/bvs/traits.h'     'Files->include/bvs/traits.h'
@@ -21,7 +22,7 @@ logConsole = ON
 #logFile = BVSLog.txt
 
 # overall system log verbosity
-logVerbosity = 1
+logVerbosity = 3
 
 # allow modules to run in dedicated threads
 moduleThreads = ON
@@ -30,18 +31,22 @@ moduleThreads = ON
 forceModuleThreads = OFF
 
 # list of modules to load
+#
 # format: uniqueID(moduleLibrary)
-# this allows to load modules more than once
+# this allows to load modules more than once using unique identifiers
+#
 # format: uniqueID(moduleLibrary).input(test.output)
 # this connects uniqueID's Connector named 'input' with 'test' module's
 # connector named 'output'
-modules = +capture(bvsCapture)
-+modules = +calibration(bvsCalibration).input0(capture.outL).input1(capture.outR)
+#
+# format: +modules = +id(...)
+# this expands the modules variable (the first + prefix) as well as runs
+# the id module in its own thread (the second + prefix)
+#
 #modules = calibration(bvsCalibration)
+#modules = id(library)
 #+modules = +id2(library2).input(id.output)
 #+modules = ...
-
-
 
 # Logger level settings.
 [Logger]
@@ -49,24 +54,5 @@ modules = +capture(bvsCapture)
 #BVSDaemon = 0
 #BVSMaster = 0
 #YourLogger = ...
-
-[calibration]
-numNodes = 2
-numImages = 100
-circleSize = 2.42
-autoShotMode = ON
-autoShotDelay = 1
-saveImages = ON
-useSavedImages = OFF
-loadCalibration = ON
-saveCalibration = ON
-directory = "calibrationData"
-calibrationFile = "stereoCalibration.yml"
-createRectifiedOutput = ON
-addGridOverlay = ON
-useCalibrationGuide = ON
-centerScale = 0.5
-centerDetections = 60
-sectorDetections = 5
 
 # This line tells vim something about the file type. -- vim:ft=config:
