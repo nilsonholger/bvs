@@ -12,7 +12,7 @@ std::string BVS::Info::getFPS() const
 	avgFPS = (1000/duration + 4 * avgFPS)/5;
 
 	std::string fps = std::to_string(avgFPS);
-	if (fps.length()>8) fps.resize(fps.length()-5);
+	if (fps.length()>6) fps.resize(fps.length()-5);
 
 	return fps;
 }
