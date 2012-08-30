@@ -1,7 +1,8 @@
-# This is an example config file.
+# This is an example config file. Please copy it to
+# [build/]bin/BVSConfig.txt to get started right away.
 #
 # For more information:
-# TOPIC        FILE                              DOXYGEN
+# TOPIC        FILE                              DOXYGEN (see Readme.txt)
 # syntax       'libbvs/include/bvs/config.h'     'Classes->BVS::Config'
 # bvs options  'libbvs/include/bvs/bvs.h'        'Classes->BVS::BVS'
 # bvs defaults 'libbvs/include/bvs/traits.h'     'Files->include/bvs/traits.h'
@@ -30,16 +31,22 @@ moduleThreads = ON
 forceModuleThreads = OFF
 
 # list of modules to load
+#
 # format: uniqueID(moduleLibrary)
-# this allows to load modules more than once
+# this allows to load modules more than once using unique identifiers
+#
 # format: uniqueID(moduleLibrary).input(test.output)
 # this connects uniqueID's Connector named 'input' with 'test' module's
 # connector named 'output'
+#
+# format: +modules = +id(...)
+# this expands the modules variable (the first + prefix) as well as runs
+# the id module in its own thread (the second + prefix)
+#
+#modules = calibration(bvsCalibration)
 #modules = id(library)
 #+modules = +id2(library2).input(id.output)
 #+modules = ...
-
-
 
 # Logger level settings.
 [Logger]
