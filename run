@@ -83,10 +83,11 @@ cp -r libbvs/module modules/$MOD
 cd modules/$MOD
 mv $ORIG.h $MOD.h
 mv $ORIG.cc $MOD.cc
-FILES=(CMakeLists.txt $MOD.h $MOD.cc)
+mv ${ORIG}Config.txt.sample ${MOD}Config.txt.example
+FILES=(CMakeLists.txt $MOD.h $MOD.cc ${MOD}Config.txt.example)
 sed -i'' -e "s/$ORIG/$MOD/g" $FILES
 sed -i'' -e "s/$ORIGC/$MODC/g" $FILES
-cd ../..
+cd -
 echo "#add_subdirectory($MOD)" >> modules/CMakeLists.txt
 echo "Created Module $MOD! Please modify modules/CMakeLists.txt to add it to compilation!"
 }
