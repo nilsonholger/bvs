@@ -7,3 +7,6 @@
 [submodule "modules/bvsModules"]
 	path = modules/bvsModules
 	url = ssh://git.hyve.org/bvsModules.git
+[submodule "modules/camGrasshopper"]
+	path = modules/camGrasshopper
+	url = ssh://git.hyve.org/camGrasshopper.git
