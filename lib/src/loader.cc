@@ -325,8 +325,13 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 
 BVS::Loader& BVS::Loader::printModuleConnectors(const ModuleData* module)
 {
-	LOG(0, "Module " << module->id << " defines the following connectors: ");
-	for (auto& it: module->connectors) LOG(0, it.second->type << ": " << it.second->id);
+	if (module->connectors.size()==0)
+		LOG(0, "Module " << module->id << " does not define any connector!");
+	else
+	{
+		LOG(0, "Module " << module->id << " defines the following connectors: ");
+		for (auto& it: module->connectors) LOG(0, it.second->type << ": " << it.second->id);
+	}
 
 	return *this;
 }
