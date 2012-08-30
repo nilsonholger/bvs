@@ -31,7 +31,6 @@ do
 	[ -r $i/Makefile ] && rm $i/Makefile
 	[ -r $i/cmake_install.cmake ] && rm $i/cmake_install.cmake
 	[ -r $i/CMakeFiles ] && rm -r $i/CMakeFiles
-	#rmdir $i
 done
 
 echo ">>> documentation cleanup"
@@ -102,6 +101,7 @@ git submodule foreach git checkout master
 
 
 
+# run
 function bvs_run {
 if [ "$1" = "-d" -o "$1" = "--debug" ]
 then
