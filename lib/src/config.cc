@@ -249,6 +249,7 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 		// only add when not already in store, thus command-line options overrides config file
 		if (optionStore.find(option)==optionStore.end()) optionStore[option] = tmp;
 	}
+
 	return *this;
 }
 
@@ -266,7 +267,19 @@ std::string BVS::Config::searchOption(std::string option) const
 		std::string tmp = optionStore.find(option)->second;
 		return tmp;
 	}
-	else return std::string();
+	else
+	{
+		// search if section exists
+		size_t separatorPos = option.find_first_of('.');
+		std::string section = option.substr(0, separatorPos);
+		if (optionStore.find(section)!=optionStore.end())
+		{
+			std::cerr << "[ERROR|Config] section could not be found: " << section;
+			exit(1);
+		}
+	}
+
+	return std::string();
 }
 
 
