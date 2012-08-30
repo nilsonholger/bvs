@@ -1,0 +1,24 @@
+# This is an example config file for BVSExampleModule. Please copy it to
+# [build/]bin/BVSExampleModuleConfig.txt to get started right away.
+#
+# short syntax:
+#
+# [section]
+# option = value
+#
+# Spaces and tabs are ignored (except inside '' and "") and everything is case
+# insensitive. For more information on syntax as well as further capalibities,
+# please see 'libbvs/include/bvs/config.h' or 'DOXYGEN:Classes->BVS::Config'.
+
+# This is a section/configuration header.
+# It can be used to create 'configurations' of your module, simply by creating
+# various sections with different options belonging to them. These are selected
+# by using them as a uniqueID in BVSConfig.txt when adding modules to the
+# system (if you use 'id + ".option"' to retrieve them), e.g.
+# +modules = uniqueID(BVSExampleModule)...
+#
+# [uniqueID]
+# # please comment your settings
+# option = value
+
+# This line tells vim something about the file type. -- vim:ft=config:

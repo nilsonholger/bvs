@@ -48,6 +48,11 @@ class BVSExampleModule : public BVS::Module
 		 */
 		BVS::Logger logger;
 
+		/** Your config system.
+		 * @see Config
+		 */
+		BVS::Config config;
+
 		/** Your Info recerence;
 		 * @see Info
 		 */
