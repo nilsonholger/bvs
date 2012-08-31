@@ -53,7 +53,7 @@ class BVSExampleModule : public BVS::Module
 		 */
 		BVS::Config config;
 
-		/** Your Info recerence;
+		/** Your Info reference;
 		 * @see Info
 		 */
 		const BVS::Info& bvs;
