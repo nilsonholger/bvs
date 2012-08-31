@@ -270,11 +270,28 @@ std::string BVS::Config::searchOption(std::string option) const
 	else
 	{
 		// search if section exists
+		bool found = false;
+		bool foundSection = false;
 		size_t separatorPos = option.find_first_of('.');
 		std::string section = option.substr(0, separatorPos);
-		if (optionStore.find(section)!=optionStore.end())
+		std::string match;
+		std::vector<std::string> sections;
+		for (auto& it: optionStore)
 		{
-			std::cerr << "[ERROR|Config] section could not be found: " << section;
+			separatorPos = it.first.find_first_of('.');
+			match = it.first.substr(0, separatorPos);
+			if (section==match) found = true;
+			for (auto& it2: sections)
+				if (it2==match) foundSection = true;
+			if (!foundSection) sections.push_back(match);
+		}
+		if (!found)
+		{
+			std::cerr << "[ERROR|Config] NOT FOUND: " << section << std::endl;
+			std::cerr << "[ERROR|Config] follwing sections were encountered: ";
+			for (auto& it: sections)
+				std::cerr << it << " ";
+			std::cerr << std::endl;
 			exit(1);
 		}
 	}
