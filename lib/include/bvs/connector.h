@@ -163,7 +163,7 @@ namespace BVS
 		t = *connection;
 		if (!data->locked) data->mutex->unlock();
 
-		return true;
+		return data->active;
 	}
 
 
