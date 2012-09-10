@@ -52,13 +52,13 @@ namespace BVS
 	 * # accessed by using getValue with std::vector<TYPE>, and spaces are
 	 * # allowed inside single or double quotes (otherwise they will be stripped)
 	 *
-	 * # the plus sign can be used to expand existing options, which turns them
-	 * # into a list, thus allowing for faster reordering
+	 * # the plus-equal operatior can be used to expand existing options, which 
+	 * # turns them into a list, thus allowing for faster reordering
 	 * list = one
-	 * +list = two
-	 * +list = three
-	 * #+list = four # commented out
-	 * +list = five
+	 * list += two
+	 * list += three
+	 * #list += four # commented out
+	 * list = +five
 	 * list = six # WARNING: redefiniton, will be ignored, see above
 	 * # the result of this will be: list = one,two,three,five
 	 * @endcode

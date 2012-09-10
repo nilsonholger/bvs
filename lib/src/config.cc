@@ -118,24 +118,6 @@ BVS::Config& BVS::Config::loadCommandLine(int argc, char** argv)
 
 BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 {
-	/* algorithm:
-	 * FOR EACH line in config file
-	 * DO
-	 *      REMOVE all whitespace/tabs, except inside '' and "" pairs
-	 *          CHECK for ' and "
-	 *          CHECK for inside quotation
-	 *          CHECK for whitespace/tabs
-	 *      IGNORE comments and empty lines
-	 *      CHECK for section [...]
-	 *      CHECK for orphaned options (no section)
-	 *      CHECK for +option (appending)
-	 *      FIND delimiter
-	 *      APPEND option if set
-	 *          CHECK if option exists
-	 *      ADD option if not already in store
-	 *  DONE
-	 */
-
 	std::ifstream file(configFile.c_str(), std::ifstream::in);
 
 	// check if file can be read from
@@ -145,17 +127,27 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 		exit(1);
 	}
 
-	std::string line;
-	std::string tmp;
-	std::string option;
-	std::string section;
-	bool insideQuotes;
-	bool append;
+	std::string line, tmp, option, section;
+	bool insideQuotes, append;
 	size_t pos;
-	size_t posComment;
 	int lineNumber = 0;
 
 	std::lock_guard<std::mutex> lock(mutex);
+
+	/* algorithm:
+	 * FOR EACH line in config file
+	 * DO
+	 *      IGNORE comments and empty lines
+	 *      REMOVE all unquoted whitespace/tabs, strip inline comments
+	 *          CHECK for ' and "
+	 *          COPY with/without whitespace/tabs
+	 *      CHECK section existence
+	 *      FIND delimiter, separate
+	 *      APPEND option if set
+	 *          CHECK if option exists
+	 *      ADD option if not already in store
+	 *  DONE
+	 */
 
 	// parse file
 	while(getline(file, line))
@@ -165,39 +157,36 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 		append = false;
 		lineNumber++;
 
-		//remove all whitespace/tabs except inside of '' or ""
+		// REMOVE at some future point in time
+		if (tmp[0]=='+')
+		{
+			std::cerr << "[ERROR|Config] '+option' DEPRECATED, please use the new '+=' operator instead (sorry for the syntax change)" << std::endl;
+			exit(1);
+		}
+
+		// ignore comments and empty lines
+		if (line[0]=='#' || line.length()==0) continue;
+
+		//remove all unquoted whitespace/tabs, strip inline comments
 		for (unsigned int i=0; i<line.length(); i++)
 		{
-			// check quotation status, ignore character
+			if (line[i]=='#') break;
 			if (line[i]=='\'' || line [i]=='"')
 			{
 				insideQuotes = !insideQuotes;
 				continue;
 			}
-
-			// add everything inside quotations
-			if (insideQuotes)
-			{
-				tmp += line[i];
-				continue;
-			}
-
-			// add only if not whitespace/tabs
-			if (!isspace(line[i])) tmp += line[i];
+			if (insideQuotes) tmp += line[i];
+			else if (!isspace(line[i])) tmp += line[i];
 		}
 
-		// ignore comments and empty lines
-		if (tmp[0]=='#' || tmp.length()==0) continue;
-
-		// check for section
+		// check section existence
 		if (tmp[0]=='[')
 		{
 			pos = tmp.find_first_of(']');
 			section = tmp.substr(1, pos-1);
 			continue;
 		}
-
-		// check for orphaned options
 		if (section.empty())
 		{
 			std::cerr << "[ERROR|Config] option without section." << std::endl;
@@ -205,19 +194,16 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 			exit(1);
 		}
 
-		// check for +option (appending)
-		if (tmp[0]=='+')
+		// find '='/'+=' delimiter, prepend section name, separate
+		pos = tmp.find_first_of("=");
+		if (tmp.at(pos-1)=='+')
 		{
 			append = true;
-			tmp.erase(0, 1);
+			tmp.erase(pos-1, 1);
+			pos--;
 		}
-
-		// find '=' delimiter and prepend section name
-		pos = tmp.find_first_of('=');
 		option = section + '.' + tmp.substr(0, pos);
-
-		// to lowercase
-		std::transform(option.begin(), option.end(), option.begin(), ::tolower);
+		tmp.erase(0, pos+1);
 
 		// check for empty option name
 		if (option.length()==section.length()+1 )
@@ -227,9 +213,8 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 			exit(1);
 		}
 
-		// strip inline comment
-		posComment = tmp.find_first_of('#');
-		tmp = tmp.substr(pos+1, posComment-pos-1);
+		// to lowercase
+		std::transform(option.begin(), option.end(), option.begin(), ::tolower);
 
 		// append option if set
 		if (append)

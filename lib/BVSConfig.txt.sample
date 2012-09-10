@@ -39,14 +39,13 @@ forceModuleThreads = OFF
 # this connects uniqueID's Connector named 'input' with 'test' module's
 # connector named 'output'
 #
-# format: +modules = +id(...)
-# this expands the modules variable (the first + prefix) as well as runs
+# format: modules += +id(...)
+# this expands the modules variable (the += operator) as well as runs
 # the id module in its own thread (the second + prefix)
 #
-#modules = calibration(bvsCalibration)
 #modules = id(library)
-#+modules = +id2(library2).input(id.output)
-#+modules = ...
+#modules += +id2(library2).input(id.output)
+#modules += ...
 
 # Logger level settings.
 [Logger]
