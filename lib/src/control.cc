@@ -61,6 +61,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 				break;
 			case SystemFlag::RUN:
 			case SystemFlag::STEP:
+				info.round = round;
 				LOG(3, "Starting next round, notifying threads and executing modules!");
 				LOG(2, "ROUND: " << round++);
 
