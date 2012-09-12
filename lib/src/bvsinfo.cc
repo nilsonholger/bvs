@@ -1,10 +1,12 @@
 #include "bvs/bvsinfo.h"
 
+#include<limits>
 
 
 std::string BVS::Info::getFPS() const
 {
 	static double avgFPS = 15;
+	if (avgFPS==std::numeric_limits<double>::infinity()) avgFPS = 15;
 
 	// apply exponential smoothing with alpha = 0.2
 	double duration = lastRoundDuration.count();
