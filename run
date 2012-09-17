@@ -1,4 +1,4 @@
-#! /usr/bin/env zsh
+#! /usr/bin/env bash
 # dk@hyve.org
 
 # settings
@@ -11,39 +11,40 @@ BASE_DIR=`dirname $0`
 function bvs_clean {
 _PWD=$PWD
 [ -d build ] && cd build && echo ">>> chdir -> 'build'"
+
 echo ">>> make clean"
 [ -r Makefile ] && make clean
 
-DIRS="./"
-[ -r bvsd ] && DIRS+=" bvsd/"
-[ -r libbvs ] && DIRS+=" libbvs/"
-[ -r modules ] && DIRS+=" modules/"
-for i in `ls -d modules/*/ modules/*/*/`
+DIRS=(./ bvsd libbvs modules)
+for i in `ls -d modules/*/ modules/*/*/ 2>/dev/null`
 do
-	[ $i != "modules/CMakeFiles/" ] && DIRS+=" $i"
+	[ $i != "modules/CMakeFiles/" ] && DIRS[${#DIRS[@]}]="$i"
 done
 
-echo ">>> cmake cleanup: $DIRS"
-eval "DIRS=($DIRS)"
-for i in $DIRS
+echo -n ">>> cmake cleanup:"
+for i in ${DIRS[@]}
 do
 	[ -r $i/CMakeCache.txt ] && rm $i/CMakeCache.txt
-	[ -r $i/Makefile ] && rm $i/Makefile
+	[ -r $i/Makefile ] && rm $i/Makefile && echo -n " $i"
 	[ -r $i/cmake_install.cmake ] && rm $i/cmake_install.cmake
 	[ -r $i/CMakeFiles ] && rm -r $i/CMakeFiles
 done
+echo
 
-echo ">>> documentation cleanup"
-for i in $DIRS
+echo -n ">>> documentation cleanup:"
+for i in ${DIRS[@]}
 do
-	[ -r $i/doc ] && rm -r $i/doc
+	[ -r $i/Doxyfile ] && rm $i/Doxyfile
+	[ -r $i/doc ] && rm -r $i/doc && echo -n " $i"
 done
+echo
 
-echo ">>> directory cleanup"
-for i in {${#DIRS}..2}
+echo -n ">>> directory cleanup:"
+for (( i = ${#DIRS[@]}-1; i>0; i-- ))
 do
-	rmdir $DIRS[i] 2>/dev/null
+	[ -d ${DIRS[i]} ] && rmdir ${DIRS[i]} && echo -n " ${DIRS[i]}"
 done
+echo
 
 cd $_PWD
 }
