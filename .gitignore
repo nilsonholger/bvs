@@ -7,6 +7,7 @@
 bin/*
 build/
 doc/
+modules/CMakeLists.txt
 
 cmake_install.cmake
 CMakeCache.txt
@@ -15,4 +16,3 @@ Makefile
 
 Session.vim
 tags
-

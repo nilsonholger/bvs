@@ -87,6 +87,7 @@ FILES=(CMakeLists.txt $MOD.h $MOD.cc ${MOD}Config.txt.example)
 sed -i'' -e "s/$ORIG/$MOD/g" $FILES
 sed -i'' -e "s/$ORIGC/$MODC/g" $FILES
 cd -
+[ ! -r modules/CMakeLists.txt ] && echo "# enable/disable to be compiled modules here (entries will be created by './run --new-module <MODULE>')" > modules/CMakeLists.txt
 echo "#add_subdirectory($MOD)" >> modules/CMakeLists.txt
 echo "Created Module $MOD! Please modify modules/CMakeLists.txt to add it to compilation!"
 }

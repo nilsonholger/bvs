@@ -1,5 +1,0 @@
-# enable/disable to be compiled modules here (entries will be created by './run --new-module $MODULE')
-add_subdirectory(bvsModules/bvsCapture)
-add_subdirectory(bvsModules/bvsCalibration)
-add_subdirectory(bvsModules/bvsStereoCUDA)
-add_subdirectory(camGrasshopper)
