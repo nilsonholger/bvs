@@ -10,7 +10,7 @@ BASE_DIR=`dirname $0`
 # cleanup
 function bvs_clean {
 _PWD=$PWD
-[ -r build/Makefile ] && cd build && echo ">>> chdir -> 'build'"
+[ -d build ] && cd build && echo ">>> chdir -> 'build'"
 echo ">>> make clean"
 [ -r Makefile ] && make clean
 
@@ -42,7 +42,7 @@ done
 echo ">>> directory cleanup"
 for i in {${#DIRS}..2}
 do
-	rmdir --ignore-fail-on-non-empty $DIRS[i]
+	rmdir $DIRS[i] 2>/dev/null
 done
 
 cd $_PWD
