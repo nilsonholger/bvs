@@ -157,16 +157,6 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 		append = false;
 		lineNumber++;
 
-		// REMOVE at some future point in time
-		if (line[0]=='+')
-		{
-			std::cerr << "[ERROR|Config] '+option' DEPRECATED, please use the new '+=' operator instead (sorry for the syntax change)" << std::endl;
-			exit(1);
-		}
-
-		// ignore comments and empty lines
-		if (line[0]=='#' || line.length()==0) continue;
-
 		//remove all unquoted whitespace/tabs, strip inline comments
 		for (unsigned int i=0; i<line.length(); i++)
 		{
@@ -178,6 +168,17 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 			}
 			if (insideQuotes) tmp += line[i];
 			else if (!isspace(line[i])) tmp += line[i];
+		}
+
+		// ignore empty lines and comments
+		if (line.length()==0) continue;
+		if (line[0]=='#') continue;
+
+		// REMOVE at some future point in time
+		if (line[0]=='+')
+		{
+			std::cerr << "[ERROR|Config] '+option' DEPRECATED, please use the new '+=' operator instead (sorry for the syntax change)" << std::endl;
+			exit(1);
 		}
 
 		// check section existence
