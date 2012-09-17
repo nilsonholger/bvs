@@ -158,7 +158,7 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 		lineNumber++;
 
 		// REMOVE at some future point in time
-		if (tmp[0]=='+')
+		if (line[0]=='+')
 		{
 			std::cerr << "[ERROR|Config] '+option' DEPRECATED, please use the new '+=' operator instead (sorry for the syntax change)" << std::endl;
 			exit(1);
