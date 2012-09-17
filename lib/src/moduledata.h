@@ -30,7 +30,6 @@ namespace BVS
 		 * @param[in] options Module options.
 		 * @param[in] module Pointer to the module.
 		 * @param[in] dlib Dlib handle to module's lib.
-		 * @param[in] thread Thread handle of module.
 		 * @param[in] asThread Determines if module runs in its own thread.
 		 * @param[in] flag System control flag for module.
 		 * @param[in] status Return Status of module functions.
