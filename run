@@ -73,7 +73,7 @@ EOF
 # create new module
 function bvs_new_module {
 [ -z $1 ] && echo "No module name given!" && exit 1
-[ -z ${1/*(.|\(|\))*} ] && echo "Module name cannot contain '.','(' or ')' due to internal processing reasons! Please choose a different name!" && exit 1
+[ -z ${1/*[.()]*} ] && echo "Module name cannot contain '.','(' or ')' due to internal processing reasons! Please choose a different name!" && exit 1
 [ -r modules/$1 ] && echo "A module of name $1 already exits! Please choose a different name!" && exit 1
 ORIG=BVSExampleModule
 ORIGC=`echo $ORIG | tr "[:lower:]" "[:upper:]"`
@@ -85,8 +85,8 @@ mv $ORIG.h $MOD.h
 mv $ORIG.cc $MOD.cc
 mv ${ORIG}Config.txt.sample ${MOD}Config.txt.example
 FILES=(CMakeLists.txt $MOD.h $MOD.cc ${MOD}Config.txt.example)
-sed -i'' -e "s/$ORIG/$MOD/g" $FILES
-sed -i'' -e "s/$ORIGC/$MODC/g" $FILES
+sed -i'' -e "s/$ORIG/$MOD/g" ${FILES[@]}
+sed -i'' -e "s/$ORIGC/$MODC/g" ${FILES[@]}
 cd -
 [ ! -r modules/CMakeLists.txt ] && echo "# enable/disable to be compiled modules here (entries will be created by './run --new-module <MODULE>')" > modules/CMakeLists.txt
 echo "#add_subdirectory($MOD)" >> modules/CMakeLists.txt
