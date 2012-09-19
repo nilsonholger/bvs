@@ -122,14 +122,13 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 	// set metadata and start as thread if needed
 	if (asThread==true)
 	{
-		LOG(3, id << " executed by dedicated thread!");
+		LOG(3, id << " -> FORKED!");
 		modules[id]->asThread = true;
 		modules[id]->thread = std::thread(&Control::threadController, &control, modules[id]);
 		Control::threadedModules++;
 	}
 	else
 	{
-		LOG(3, id << " executed by controller!");
 		modules[id]->asThread = false;
 		masterModules.push_back(modules[id]);
 	}
