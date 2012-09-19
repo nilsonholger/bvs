@@ -17,11 +17,21 @@ endif()
 
 
 # WARNINGS
+set(COMPILER_WARNINGS ON CACHE BOOL "Enable all/pedantic/effc++ compiler warnings.")
+if(COMPILER_WARNINGS)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Weffc++ -pedantic -pedantic-errors")
+endif()
 
 
+
+# CPU/ARCH TUNING
+set(COMPILER_TUNING OFF CACHE BOOL "Enable automatic architecture and cpu tuning.")
+if(COMPILER_TUNING)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+endif()
 
 # PROFILING
-if(USE_GPROF)
+set(COMPILER_PROFILING OFF CACHE BOOL "Create profiled build for gprof.")
+if(COMPILER_PROFILING)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
 endif()
