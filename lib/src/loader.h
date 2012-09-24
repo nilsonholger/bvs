@@ -56,10 +56,9 @@ namespace BVS
 
 			/** Unload the given module.
 			 * @param[in] moduleName The name of the module.
-			 * @param[in] eraseFromMap Whether to delete all associated metadata.
 			 * @return Reference to object.
 			 */
-			Loader& unload(const std::string& moduleName, const bool eraseFromMap = true);
+			Loader& unload(const std::string& moduleName);
 
 			/** Unload all modules.
 			 * @return Reference to object.

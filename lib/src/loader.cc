@@ -139,7 +139,7 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 
 
 
-BVS::Loader& BVS::Loader::unload(const std::string& id, const bool eraseFromMap)
+BVS::Loader& BVS::Loader::unload(const std::string& id)
 {
 	/* algorithm:
 	 * CHECK thread, signal exit
@@ -214,10 +214,7 @@ BVS::Loader& BVS::Loader::unload(const std::string& id, const bool eraseFromMap)
 	}
 	LOG(2, id << " unloaded!");
 
-	if (eraseFromMap)
-	{
-		modules.erase(id);
-	}
+	modules.erase(id);
 
 	return *this;
 }
@@ -226,10 +223,7 @@ BVS::Loader& BVS::Loader::unload(const std::string& id, const bool eraseFromMap)
 
 BVS::Loader& BVS::Loader::unloadAll()
 {
-	for (auto& it: modules)
-		unload(it.second->id, false);
-
-	modules.clear();
+	while (!modules.empty()) unload(modules.begin()->first);
 
 	return *this;
 }
