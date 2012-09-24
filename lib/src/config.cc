@@ -273,10 +273,10 @@ std::string BVS::Config::searchOption(std::string option) const
 		}
 		if (!found)
 		{
-			std::cerr << "[ERROR|Config] NOT FOUND: " << section << std::endl;
+			std::cerr << "[ERROR|Config] SECTION NOT FOUND: [" << section << "]" << std::endl;
 			std::cerr << "[ERROR|Config] follwing sections were encountered: ";
 			for (auto& it: sections)
-				std::cerr << it << " ";
+				std::cerr << "[" << it << "] ";
 			std::cerr << std::endl;
 			exit(1);
 		}
