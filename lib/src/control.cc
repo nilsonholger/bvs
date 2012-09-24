@@ -68,7 +68,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 				{
 					it.second->flag = ModuleFlag::RUN;
 					if (it.second->asThread)
-						runningThreads.fetch_add(1, std::memory_order_seq_cst);
+						runningThreads.fetch_add(1);
 				}
 
 				timer2 = std::chrono::high_resolution_clock::now();
@@ -149,7 +149,7 @@ BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
 {
 	std::unique_lock<std::mutex> threadLock(threadMutex);
 
-	runningThreads.fetch_add(1, std::memory_order_seq_cst);
+	runningThreads.fetch_add(1);
 
 	while (bool(data->flag))
 	{
@@ -159,7 +159,7 @@ BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
 
 		moduleController(*(data.get()));
 
-		runningThreads.fetch_sub(1, std::memory_order_seq_cst);
+		runningThreads.fetch_sub(1);
 		info.moduleDurations[data.get()->id] =
 			std::chrono::duration_cast<std::chrono::milliseconds>
 			(std::chrono::high_resolution_clock::now() - timer);
