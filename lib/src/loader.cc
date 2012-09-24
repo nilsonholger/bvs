@@ -126,6 +126,7 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 		modules[id]->asThread = true;
 		modules[id]->thread = std::thread(&Control::threadController, &control, modules[id]);
 		Control::threadedModules++;
+		Control::runningThreads.fetch_add(1);
 	}
 	else
 	{

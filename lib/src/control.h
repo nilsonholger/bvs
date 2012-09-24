@@ -81,12 +81,9 @@ namespace BVS
 
 			Logger logger; /**< Logger metadata. */
 
-			std::mutex masterMutex; /**< Mutex for masterController. */
+			std::mutex mutex; /**< Mutex for condition variable. */
 			std::unique_lock<std::mutex> masterLock; /**< Lock for masterController. */
-			std::condition_variable masterCond; /**< Condition variable for masterController. */
-
-			std::mutex threadMutex; /**< Mutex for threadController. */
-			std::condition_variable threadCond; /**< Condition variable for threadController. */
+			std::condition_variable monitor; /**< Condition variable for masterController. */
 
 			std::thread controlThread; /**< Thread (if active) of masterController. */
 
