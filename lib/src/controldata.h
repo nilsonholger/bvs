@@ -63,7 +63,7 @@ namespace BVS
 		std::shared_ptr<Module> module; /**< Pointer to the module. */
 		LibHandle dlib; /**< Dlib handle to module's lib. */
 		std::string poolName; /** The pool name executing this module (if any). */
-		ControlFlag flag; /**< System control flag for module. */
+		std::atomic<ControlFlag> flag; /**< System control flag for module. */
 		Status status; /**< Return Status of module functions. */
 		ConnectorMap connectors; /**< Connector map. */
 
