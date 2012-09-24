@@ -152,10 +152,10 @@ BVS::Loader& BVS::Loader::unload(const std::string& id)
 	// wait for thread to join, first check if it is still running
 	if (modules[id]->asThread == true)
 	{
-		modules[id]->flag.store(ModuleFlag::QUIT);
-		control.monitor.notify_all();
 		if (modules[id]->thread.joinable())
 		{
+			modules[id]->flag = ModuleFlag::QUIT;
+			control.monitor.notify_all();
 			LOG(3, "Waiting for " << id << " to join!");
 			modules[id]->thread.join();
 		}

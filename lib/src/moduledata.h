@@ -57,7 +57,7 @@ namespace BVS
 		void* dlib; /**< Dlib handle to module's lib. */
 		std::thread thread; /**< Thread handle of module. */
 		bool asThread; /**< Determines if module runs in its own thread. */
-		std::atomic<ModuleFlag> flag; /**< System control flag for module. */
+		ModuleFlag flag; /**< System control flag for module. */
 		Status status; /**< Return Status of module functions. */
 		ConnectorMap connectors; /**< Connector vector. */
 

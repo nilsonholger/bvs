@@ -67,7 +67,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 
 				for (auto& it: Loader::modules)
 				{
-					it.second->flag.store(ModuleFlag::RUN);
+					it.second->flag = ModuleFlag::RUN;
 					if (it.second->asThread)
 						runningThreads.fetch_add(1);
 				}
@@ -130,7 +130,7 @@ BVS::Control& BVS::Control::sendCommand(const SystemFlag controlFlag)
 
 BVS::Control& BVS::Control::moduleController(ModuleData& data)
 {
-	switch (data.flag.load())
+	switch (data.flag)
 	{
 		case ModuleFlag::QUIT:
 			break;
@@ -139,7 +139,7 @@ BVS::Control& BVS::Control::moduleController(ModuleData& data)
 		case ModuleFlag::RUN:
 			data.status = data.module->execute();
 
-			data.flag.store(ModuleFlag::WAIT);
+			data.flag = ModuleFlag::WAIT;
 			break;
 	}
 
@@ -152,12 +152,13 @@ BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
 {
 	std::unique_lock<std::mutex> threadLock(mutex);
 
-	while (data->flag.load()!=ModuleFlag::QUIT)
+	while (bool(data->flag))
 	{
 		runningThreads.fetch_sub(1);
 		monitor.notify_all();
 		LOG(3, data->id << " -> WAIT!");
-		monitor.wait(threadLock, [&](){ return data->flag.load() != ModuleFlag::WAIT; });
+		monitor.notify_all();
+		monitor.wait(threadLock, [&](){ return data->flag != ModuleFlag::WAIT; });
 
 		moduleController(*(data.get()));
 
