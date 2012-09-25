@@ -146,7 +146,7 @@ namespace BVS
 		// allow send only for output
 		if (data->type != ConnectorType::OUTPUT)
 		{
-			std::cerr << "[0|Connector] trying to read from connector of type != OUTPUT!" << std::endl;
+			std::cerr << "[0|Connector] writing to INPUT connector!" << std::endl;
 			exit(1);
 		}
 
@@ -162,7 +162,7 @@ namespace BVS
 		// allow get only for output (maybe compiler catches const before, check)
 		if (data->type != ConnectorType::INPUT)
 		{
-			std::cerr << "trying to write to connector of type != INPUT!" << std::endl;
+			std::cerr << "[0|Connector] reading from OUTPUT connector!" << std::endl;
 			exit(1);
 		}
 
