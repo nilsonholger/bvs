@@ -99,6 +99,7 @@ echo "Created Module $MOD! Please modify modules/CMakeLists.txt to add it to com
 function bvs_setup {
 git submodule update --init --recursive
 git submodule foreach git checkout master
+git submodule foreach git pull
 }
 
 
