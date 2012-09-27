@@ -10,7 +10,7 @@ to be decided...until then, copyright by dk@hyve.org
 INSTALLING:
 To set everything up, type './run --setup'. This will download 'libbvs' and
 'bvsd' and set them up as git submodules. For more information, './run --help'
-will list some of './run's capabilities.
+will list './run's capabilities.
 
 
 
@@ -37,7 +37,7 @@ source build, e.g. 'build').
 To start the system with a config file (default=BVSConfig.txt), type './run' or
 './run $config' after building the system (type 'make').
 
-If you need to debug, type './run -d ...'.
+If you need to debug, type './run --debug ...'.
 
 If you want to create a new module, type './run --new-module $MODULE_NAME' and
 follow the instructions displayed by it.
