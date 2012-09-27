@@ -1,12 +1,16 @@
 [submodule "libbvs"]
 	path = libbvs
-	url = ssh://git.hyve.org:119/libbvs.git
+	#url = ssh://git.hyve.org:119/libbvs.git
+	url = git@i14gitlab.anthropomatik.kit.edu:libbvs.git
 [submodule "bvsd"]
 	path = bvsd
-	url = ssh://git.hyve.org:119/bvsd.git
+	#url = ssh://git.hyve.org:119/bvsd.git
+	url = git@i14gitlab.anthropomatik.kit.edu:bvsd.git
 [submodule "modules/bvsModules"]
 	path = modules/bvsModules
-	url = ssh://git.hyve.org/bvsModules.git
+	#url = ssh://git.hyve.org:119/bvsModules.git
+	url = git@i14gitlab.anthropomatik.kit.edu:bvsmodules.git
 [submodule "modules/camGrasshopper"]
 	path = modules/camGrasshopper
-	url = ssh://git.hyve.org/camGrasshopper.git
+	#url = ssh://git.hyve.org:119/camGrasshopper.git
+	url = git@i14gitlab.anthropomatik.kit.edu:camgrasshopper.git
