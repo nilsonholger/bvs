@@ -60,7 +60,8 @@ maintenance flags:
   -c|--clean                 run make clean and remove all CMake generated content (for in source builds)
   -h|-?|--help               display this text
   -n|--new-module \$name      create new module blank/frame with given name
-  -s|--setup                 system setup
+  -s|--setup                 initialize all submodules
+  -u|--update                pull updates for all submodules
 
 targets:
   [config]                   run 'bvsd' with the given config (default:BVSConfig.txt)
@@ -90,7 +91,7 @@ mv ${ORIG}Config.txt.sample ${MOD}Config.txt.example
 FILES=(CMakeLists.txt $MOD.h $MOD.cc ${MOD}Config.txt.example)
 sed -i'' -e "s/$ORIG/$MOD/g" ${FILES[@]}
 sed -i'' -e "s/$ORIGC/$MODC/g" ${FILES[@]}
-cd -
+cd - > /dev/null
 [ ! -r modules/CMakeLists.txt ] && echo "# enable/disable to be compiled modules here (entries will be created by './run --new-module <MODULE>')" > modules/CMakeLists.txt
 echo "#add_subdirectory($MOD)" >> modules/CMakeLists.txt
 echo ">>> Created Module $MOD! Please modify modules/CMakeLists.txt to add it to compilation!"
@@ -141,10 +142,54 @@ fi
 
 
 
+# update
+function bvs_update {
+BASE=$PWD
+QUIET='--quiet'
+DIRS=(./ `git submodule $QUIET foreach --recursive 'echo -n " $path"'`)
+STASHES=()
+echo DIRS: ${DIRS[@]}
+
+echo ">>> Stashing changes!"
+for i in ${DIRS[@]}
+do
+	cd "$BASE/$i"
+	STATUS=`git status --porcelain`
+	if [ -z "$STATUS" ]
+	then
+		continue
+	else
+		echo ">>> -> $i"
+		STASHES[${#STASHES[@]}]="$i"
+		git stash $QUIET
+	fi
+done
+cd $BASE
+
+echo ">>> Updating!"
+git pull $QUIET --rebase
+git submodule $QUIET foreach --recursive "git pull $QUIET --rebase || :"
+
+echo ">>> Reapplying changes!"
+for i in ${STASHES[@]}
+do
+	echo ">>> -> $i"
+	cd $BASE/$i
+	git stash pop $QUIET
+done
+cd $BASE
+
+echo ">>> Update DONE!"
+echo ">>> Please solve any merge conflicts if necessary!"
+}
+
+
+
 case $1 in
 	'-c'|'--clean') bvs_clean;;
 	'-h'|'-?'|'--help') bvs_help;;
 	'-n'|'--new-module') bvs_new_module $2;;
 	'-s'|'--setup') bvs_setup;;
+	'-u'|'--update') bvs_update;;
 	""|*) bvs_run "$@";;
 esac

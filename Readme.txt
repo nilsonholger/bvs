@@ -14,6 +14,14 @@ will list './run's capabilities.
 
 
 
+UPDATING:
+To update submodules, type './run --update'. This will run 'git stash',
+'git pull' and 'git stash pop' in the base and submodule directories.
+To ensure it is not messing with your own stashes, it will record where it had
+to do a 'git stash' and to a 'git stash pop' in those recorded locations only.
+
+
+
 BUILDING:
 To generate Makefiles, type 'cmake .' or '$ENV_OPTS... cmake $CMAKE_OPTS... .'
 for in source builds, or 'cmake $PATH_TO_BVS' for out of source builds (if you
