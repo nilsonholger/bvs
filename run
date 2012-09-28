@@ -2,7 +2,6 @@
 # dk@hyve.org
 
 # settings
-BASE="ssh://git.hyve.org:119"
 BASE_DIR=`dirname $0`
 
 
@@ -42,7 +41,7 @@ echo
 echo -n ">>> directory cleanup:"
 for (( i = ${#DIRS[@]}-1; i>0; i-- ))
 do
-	[ -d ${DIRS[i]} ] && rmdir ${DIRS[i]} && echo -n " ${DIRS[i]}"
+	[ -d ${DIRS[i]} ] && rmdir ${DIRS[i]} 2>&1 > /dev/null && echo -n " ${DIRS[i]}"
 done
 echo
 
@@ -54,17 +53,18 @@ cd $_PWD
 # help
 function bvs_help {
 cat << EOF
-usage: $0 [command [\$arg]] [config]
+usage: $0 [--flags [\$arg]]
+       $0 [--debug [config]]
 
-maintenance:
--c|--clean                   run make clean and remove all CMake generated content (for in source builds)
-  -h|-?|--help               displays this text
-  -n|--new-module \$arg       creates new module blank/frame with given name
-  -s|--setup                 this adds libbvs and bvsd
+maintenance flags:
+  -c|--clean                 run make clean and remove all CMake generated content (for in source builds)
+  -h|-?|--help               display this text
+  -n|--new-module \$name      create new module blank/frame with given name
+  -s|--setup                 system setup
 
 targets:
-  [config]                   runs the system with the given config (default:BVSConfig.txt)
-  -d|--debug                 runs bvsd in gdb session
+  [config]                   run 'bvsd' with the given config (default:BVSConfig.txt)
+  -d|--debug                 run 'bvsd' in gdb session
 EOF
 }
 
@@ -72,14 +72,17 @@ EOF
 
 # create new module
 function bvs_new_module {
-[ -z $1 ] && echo "No module name given!" && exit 1
-[ -z ${1/*[.()]*} ] && echo "Module name cannot contain '.','(' or ')' due to internal processing reasons! Please choose a different name!" && exit 1
-[ -r modules/$1 ] && echo "A module of name $1 already exits! Please choose a different name!" && exit 1
+echo ">>> Creating new module!"
+[ -z $1 ] && echo ">>> No module name given!" && exit 1
+[ -z ${1/*[.()]*} ] && echo ">>> Module name cannot contain '.','(' or ')' due to internal processing reasons! Please choose a different name!" && exit 1
+[ -r modules/$1 ] && echo ">>> A module of name $1 already exits! Please choose a different name!" && exit 1
 ORIG=BVSExampleModule
 ORIGC=`echo $ORIG | tr "[:lower:]" "[:upper:]"`
 MOD=$1
 MODC=`echo $MOD | tr "[:lower:]" "[:upper:]"`
+echo ">>> Copying template to $MOD!"
 cp -r libbvs/module modules/$MOD
+echo ">>> Modifying template!"
 cd modules/$MOD
 mv $ORIG.h $MOD.h
 mv $ORIG.cc $MOD.cc
@@ -90,16 +93,32 @@ sed -i'' -e "s/$ORIGC/$MODC/g" ${FILES[@]}
 cd -
 [ ! -r modules/CMakeLists.txt ] && echo "# enable/disable to be compiled modules here (entries will be created by './run --new-module <MODULE>')" > modules/CMakeLists.txt
 echo "#add_subdirectory($MOD)" >> modules/CMakeLists.txt
-echo "Created Module $MOD! Please modify modules/CMakeLists.txt to add it to compilation!"
+echo ">>> Created Module $MOD! Please modify modules/CMakeLists.txt to add it to compilation!"
 }
 
 
 
 # setup
 function bvs_setup {
-git submodule update --init --recursive
-git submodule foreach git checkout master
-git submodule foreach git pull
+echo ">>> BVS setup starting!"
+git submodule update --init --recursive --rebase
+git submodule foreach git checkout master > /dev/null
+git submodule --quiet foreach git pull > /dev/null
+echo ">>> BVS setup complete!"
+
+[ ! -r modules/CMakeLists.txt ] && echo "# enable/disable to be compiled modules here (entries will be created by './run --new-module <MODULE>')" > modules/CMakeLists.txt || return
+for i in `ls -d modules/*/ modules/*/*/ 2>/dev/null`
+do
+	i=${i#modules/}
+	i=${i%/}
+	echo "#add_subdirectory($i)" >> modules/CMakeLists.txt
+done
+
+echo ">>> ADVICE: for out of source builds, consider using the directory 'build' (see Readme.txt)"
+echo
+echo ">>> Please modify modules/CMakeLists.txt to enable modules you want to add to compilation!"
+echo ">>> WARNING: modules/CMakeLists.txt is auto generated, so not all entries might actually contain a module!"
+echo
 }
 
 
@@ -115,7 +134,7 @@ fi
 [ -n "$GDB" -a -r /usr/local/bin/gdb ] && GDB="/usr/local/bin/gdb"
 [ -r $BASE_DIR/bin/bvsd ] && BIN_DIR="bin"
 [ -r $BASE_DIR/build/bin/bvsd ] && BIN_DIR="build/bin"
-[ -z $BIN_DIR ] && echo "bvsd executable not found, run make first..." && exit
+[ -z $BIN_DIR ] && echo "bvsd executable not found, run make first... (or use '--help' to show possible usage)" && exit
 [ $# = 0 ] && CONFIG="BVSConfig.txt" || CONFIG=$1
 (cd $BASE_DIR/$BIN_DIR && $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)
 }
