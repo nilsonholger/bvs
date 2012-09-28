@@ -1,0 +1,3 @@
+2012-09-28:
+	- added new --update function to run
+	- changed config usage, please read the Readme.txt:USAGE
