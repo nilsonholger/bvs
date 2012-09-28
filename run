@@ -87,8 +87,8 @@ echo ">>> Modifying template!"
 cd modules/$MOD
 mv $ORIG.h $MOD.h
 mv $ORIG.cc $MOD.cc
-mv ${ORIG}Config.txt.sample ${MOD}Config.txt.example
-FILES=(CMakeLists.txt $MOD.h $MOD.cc ${MOD}Config.txt.example)
+mv ${ORIG}Config.txt ${MOD}Config.txt
+FILES=(CMakeLists.txt $MOD.h $MOD.cc ${MOD}Config.txt)
 sed -i'' -e "s/$ORIG/$MOD/g" ${FILES[@]}
 sed -i'' -e "s/$ORIGC/$MODC/g" ${FILES[@]}
 cd - > /dev/null
