@@ -19,6 +19,11 @@ To update submodules, type './run --update'. This will run 'git stash',
 'git pull' and 'git stash pop' in the base and submodule directories.
 To ensure it is not messing with your own stashes, it will record where it had
 to do a 'git stash' and to a 'git stash pop' in those recorded locations only.
+
+Please consider reading Changelog.txt after doing an update, since it might
+contain hints abount changed things which could cause problems. Even if you
+do not read it after every update, look there first if something breaks.
+
 WARNING: if you do a direct pull in a submodule, be sure you know what you are
 doing, especially since you might loose your own config settings etc.
 
