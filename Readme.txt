@@ -19,6 +19,8 @@ To update submodules, type './run --update'. This will run 'git stash',
 'git pull' and 'git stash pop' in the base and submodule directories.
 To ensure it is not messing with your own stashes, it will record where it had
 to do a 'git stash' and to a 'git stash pop' in those recorded locations only.
+WARNING: if you do a direct pull in a submodule, be sure you know what you are
+doing, especially since you might loose your own config settings etc.
 
 
 
@@ -38,9 +40,11 @@ type './run --clean'.
 
 
 USAGE:
-A config example can be found in './libbvs/BVSConfig.txt.sample'. You will need
-to copy it to your 'bin' directory (either in the source tree or in an out of
-source build, e.g. 'build').
+Upon building the system using 'cmake', the system and all modules' config
+files will be symlinked into the '[build]/bin' directory. You can modify the
+original config files through these symlinks directly. You won't have to worry
+about these changes being lost if you use the provided update function (see
+UPDATING).
 
 To start the system with a config file (default=BVSConfig.txt), type './run' or
 './run $config' after building the system (type 'make').
