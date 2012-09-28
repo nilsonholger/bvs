@@ -8,6 +8,8 @@ include_directories(src)
 add_subdir_lib(src bvs SHARED bvs.cc bvsinfo.cc config.cc connector.cc control.cc loader.cc logger.cc logsystem.cc module.cc)
 target_link_libraries(bvs dl pthread)
 
+execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/BVSConfig.txt ${CMAKE_BINARY_DIR}/bin/BVSConfig.txt)
+
 # add documentation target (using doxygen)
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
