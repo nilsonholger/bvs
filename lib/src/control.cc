@@ -4,15 +4,15 @@
 
 
 
+BVS::ModuleMap BVS::Control::modules;
+
+
+
 std::atomic<int> BVS::Control::runningThreads;
 
 
 
 int BVS::Control::threadedModules = 0;
-
-
-
-BVS::ModuleMap BVS::Control::modules;
 
 
 
@@ -33,6 +33,22 @@ BVS::Control::Control(Info& info)
 	  timer2(std::chrono::high_resolution_clock::now())
 {
 	runningThreads.store(0);
+}
+
+
+
+void BVS::Control::registerModule(const std::string& id, Module* module)
+{
+	modules[id] = std::shared_ptr<ModuleData>(new ModuleData(
+				id,
+				std::string(),
+				std::string(),
+				module,
+				nullptr,
+				false,
+				ModuleFlag::WAIT,
+				Status::NONE,
+				ConnectorMap()));
 }
 
 
@@ -148,7 +164,6 @@ BVS::Control& BVS::Control::notifyThreads()
 	monitor.notify_all();
 	return *this;
 }
-
 
 
 

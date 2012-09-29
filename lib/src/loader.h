@@ -26,12 +26,6 @@ namespace BVS
 			 */
 			Loader(Control& control, const Info& info);
 
-			/** Registers a module.
-			 * @param[in] id Name of module.
-			 * @param[in] module Pointer to module.
-			 */
-			static void registerModule(const std::string& id, Module* module);
-
 			/** Load the given module.
 			 * Executes bvsRegisterModule function in module to register it with the
 			 * system.
@@ -99,7 +93,6 @@ namespace BVS
 			Logger logger; /**< Logger metadata. */
 			const Info& info; /**< Info reference. */
 			ModuleMap& modules; /**< Reference to Control::modules */
-			ModuleVector& masterModules; /**< Reference to Control::masterModules */
 
 			Loader(const Loader&) = delete; /**< -Weffc++ */
 			Loader& operator=(const Loader&) = delete; /**< -Weffc++ */

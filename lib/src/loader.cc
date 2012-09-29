@@ -8,26 +8,9 @@ BVS::Loader::Loader(Control& control, const Info& info)
 	: control(control),
 	  logger("Loader"),
 	  info(info),
-	  modules(Control::modules),
-	  masterModules(Control::masterModules)
+	  modules(Control::modules)
 {
 
-}
-
-
-
-void BVS::Loader::registerModule(const std::string& id, Module* module)
-{
-	Control::modules[id] = std::shared_ptr<ModuleData>(new ModuleData(
-				id,
-				std::string(),
-				std::string(),
-				module,
-				nullptr,
-				false,
-				ModuleFlag::WAIT,
-				Status::NONE,
-				ConnectorMap()));
 }
 
 
@@ -123,7 +106,7 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 	else
 	{
 		modules[id]->asThread = false;
-		masterModules.push_back(modules[id]);
+		Control::masterModules.push_back(modules[id]);
 	}
 
 	return *this;

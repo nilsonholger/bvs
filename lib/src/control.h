@@ -42,6 +42,12 @@ namespace BVS
 			*/
 			Control(Info& info);
 
+			/** Registers a module.
+			 * @param[in] id Name of module.
+			 * @param[in] module Pointer to module.
+			 */
+			static void registerModule(const std::string& id, Module* module);
+
 			/** The master control function.
 			 * This is the master control function, it forks if desired and can
 			 * be controlled by using sendCommand(...).
@@ -86,6 +92,9 @@ namespace BVS
 			 */
 			Control& notifyThreads();
 
+			/** Map of registered modules and their metadata. */
+			static ModuleMap modules;
+
 		private:
 			/** Controls given module.
 			 * @param[in] data Module meta data.
@@ -104,9 +113,6 @@ namespace BVS
 
 			/** The number of modules running in threads. */
 			static int threadedModules;
-
-			/** Map of registered modules and their metadata. */
-			static ModuleMap modules;
 
 			/** Vector of modules executed by master. */
 			static ModuleVector masterModules;
