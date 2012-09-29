@@ -154,7 +154,7 @@ echo ">>> Stashing changes!"
 for i in ${DIRS[@]}
 do
 	cd "$BASE/$i"
-	STATUS=`git status --porcelain`
+	STATUS=`git status --porcelain --ignore-submodules=all`
 	if [ -z "$STATUS" ]
 	then
 		continue
