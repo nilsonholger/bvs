@@ -46,7 +46,8 @@ void BVS::Control::registerModule(const std::string& id, Module* module)
 				module,
 				nullptr,
 				false,
-				ModuleFlag::WAIT,
+				std::string(),
+				ControlFlag::WAIT,
 				Status::NONE,
 				ConnectorMap()));
 }
@@ -88,7 +89,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 
 				for (auto& it: modules)
 				{
-					it.second->flag = ModuleFlag::RUN;
+					it.second->flag = ControlFlag::RUN;
 					if (it.second->asThread)
 						runningThreads.fetch_add(1);
 				}
@@ -171,14 +172,14 @@ BVS::Control& BVS::Control::moduleController(ModuleData& data)
 {
 	switch (data.flag)
 	{
-		case ModuleFlag::QUIT:
+		case ControlFlag::QUIT:
 			break;
-		case ModuleFlag::WAIT:
+		case ControlFlag::WAIT:
 			break;
-		case ModuleFlag::RUN:
+		case ControlFlag::RUN:
 			data.status = data.module->execute();
 
-			data.flag = ModuleFlag::WAIT;
+			data.flag = ControlFlag::WAIT;
 			break;
 	}
 
@@ -196,8 +197,7 @@ BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
 		runningThreads.fetch_sub(1);
 		monitor.notify_all();
 		LOG(3, data->id << " -> WAIT!");
-		monitor.notify_all();
-		monitor.wait(threadLock, [&](){ return data->flag != ModuleFlag::WAIT; });
+		monitor.wait(threadLock, [&](){ return data->flag != ControlFlag::WAIT; });
 
 		moduleController(*(data.get()));
 

@@ -9,7 +9,7 @@
 
 #include "bvs/bvsinfo.h"
 #include "bvs/logger.h"
-#include "moduledata.h"
+#include "controldata.h"
 
 
 
@@ -23,14 +23,6 @@ namespace BVS
 
 	/** Possible commands to send to masterController, see sendCommand(). */
 	enum class SystemFlag { QUIT = 0, PAUSE = 1, RUN = 2, STEP = 3, STEP_BACK = 4 };
-
-
-
-	/** Module Map. */
-	typedef std::map<std::string, std::shared_ptr<ModuleData>, std::less<std::string>> ModuleMap;
-
-	/** Module Vector.*/
-	typedef std::vector<std::shared_ptr<ModuleData>> ModuleVector;
 
 
 

@@ -9,7 +9,6 @@
 #include "bvs/config.h"
 #include "bvs/logger.h"
 #include "control.h"
-#include "moduledata.h"
 
 
 

@@ -129,7 +129,7 @@ BVS::Loader& BVS::Loader::unload(const std::string& id)
 	{
 		if (modules[id]->thread.joinable())
 		{
-			modules[id]->flag = ModuleFlag::QUIT;
+			modules[id]->flag = ControlFlag::QUIT;
 			control.notifyThreads();
 			LOG(3, "Waiting for " << id << " to join!");
 			modules[id]->thread.join();
