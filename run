@@ -75,7 +75,7 @@ EOF
 function bvs_new_module {
 echo ">>> Creating new module!"
 [ -z $1 ] && echo ">>> No module name given!" && exit 1
-[ -z ${1/*[.()]*} ] && echo ">>> Module name cannot contain '.','(' or ')' due to internal processing reasons! Please choose a different name!" && exit 1
+[ -z ${1/*[^[:alnum:]_]*} ] && echo ">>> Module name cannot only contain 'a-z,0-9,_' due to internal processing reasons! Please choose a different name!" && exit 1
 [ -r modules/$1 ] && echo ">>> A module of name $1 already exits! Please choose a different name!" && exit 1
 ORIG=BVSExampleModule
 ORIGC=`echo $ORIG | tr "[:lower:]" "[:upper:]"`
