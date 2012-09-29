@@ -12,20 +12,25 @@ int BVS::Control::threadedModules = 0;
 
 
 
+BVS::ModuleMap BVS::Control::modules;
+
+
+
+BVS::ModuleVector BVS::Control::masterModules;
+
+
+
 BVS::Control::Control(Info& info)
-	: info(info)
-	, flag(SystemFlag::PAUSE)
-	, logger("Control")
-	//, masterMutex()
-	, mutex()
-	, masterLock(mutex)
-	, monitor()
-	//, threadMutex()
-	//, threadCond()
-	, controlThread()
-	, round(0)
-	, timer(std::chrono::high_resolution_clock::now())
-	, timer2(std::chrono::high_resolution_clock::now())
+	: info(info),
+	  flag(SystemFlag::PAUSE),
+	  logger("Control"),
+	  mutex(),
+	  masterLock(mutex),
+	  monitor(),
+	  controlThread(),
+	  round(0),
+	  timer(std::chrono::high_resolution_clock::now()),
+	  timer2(std::chrono::high_resolution_clock::now())
 {
 	runningThreads.store(0);
 }
@@ -65,7 +70,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 				info.round = round;
 				LOG(3, "ANNOUNCE ROUND: " << round++);
 
-				for (auto& it: Loader::modules)
+				for (auto& it: modules)
 				{
 					it.second->flag = ModuleFlag::RUN;
 					if (it.second->asThread)
@@ -79,7 +84,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 				monitor.notify_all();
 
 
-				for (auto& it: Loader::masterModules)
+				for (auto& it: masterModules)
 				{
 					timer2 = std::chrono::high_resolution_clock::now();
 					moduleController(*(it.get()));

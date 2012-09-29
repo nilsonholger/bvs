@@ -9,7 +9,6 @@
 
 #include "bvs/bvsinfo.h"
 #include "bvs/logger.h"
-#include "loader.h"
 #include "moduledata.h"
 
 
@@ -17,8 +16,21 @@
 /** BVS namespace, contains all library stuff. */
 namespace BVS
 {
+	/** Forward declaration. */
+	class Loader;
+
+
+
 	/** Possible commands to send to masterController, see sendCommand(). */
 	enum class SystemFlag { QUIT = 0, PAUSE = 1, RUN = 2, STEP = 3, STEP_BACK = 4 };
+
+
+
+	/** Module Map. */
+	typedef std::map<std::string, std::shared_ptr<ModuleData>, std::less<std::string>> ModuleMap;
+
+	/** Module Vector.*/
+	typedef std::vector<std::shared_ptr<ModuleData>> ModuleVector;
 
 
 
@@ -93,6 +105,12 @@ namespace BVS
 			/** The number of modules running in threads. */
 			static int threadedModules;
 
+			/** Map of registered modules and their metadata. */
+			static ModuleMap modules;
+
+			/** Vector of modules executed by master. */
+			static ModuleVector masterModules;
+
 			/** Info reference. */
 			Info& info;
 
@@ -117,6 +135,9 @@ namespace BVS
 
 			Control(const Control&) = delete; /**< -Weffc++ */
 			Control& operator=(const Control&) = delete; /**< -Weffc++ */
+
+			/** Loader needs access to modules and masterModules. */
+			friend class Loader;
 	};
 } // namespace BVS
 

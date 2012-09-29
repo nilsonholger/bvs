@@ -4,18 +4,12 @@
 
 
 
-BVS::ModuleMap BVS::Loader::modules;
-
-
-
-BVS::ModuleVector BVS::Loader::masterModules;
-
-
-
 BVS::Loader::Loader(Control& control, const Info& info)
-	: control(control)
-	, logger("Loader")
-	, info(info)
+	: control(control),
+	  logger("Loader"),
+	  info(info),
+	  modules(Control::modules),
+	  masterModules(Control::masterModules)
 {
 
 }
@@ -24,16 +18,16 @@ BVS::Loader::Loader(Control& control, const Info& info)
 
 void BVS::Loader::registerModule(const std::string& id, Module* module)
 {
-	modules[id] = std::shared_ptr<ModuleData>(new ModuleData(
-			  id
-			, std::string()
-			, std::string()
-			, module
-			, nullptr
-			, false
-			, ModuleFlag::WAIT
-			, Status::NONE
-			, ConnectorMap()));
+	Control::modules[id] = std::shared_ptr<ModuleData>(new ModuleData(
+				id,
+				std::string(),
+				std::string(),
+				module,
+				nullptr,
+				false,
+				ModuleFlag::WAIT,
+				Status::NONE,
+				ConnectorMap()));
 }
 
 

@@ -16,19 +16,6 @@
 /** BVS namespace, contains all library stuff. */
 namespace BVS
 {
-	// Forward declaration.
-	class Control;
-
-
-
-	/** Module Map. */
-	typedef std::map<std::string, std::shared_ptr<ModuleData>, std::less<std::string>> ModuleMap;
-
-	/** Module Vector.*/
-	typedef std::vector<std::shared_ptr<ModuleData>> ModuleVector;
-
-
-
 	/** The system loader: loads, unloads and controls modules. */
 	class Loader
 	{
@@ -106,17 +93,13 @@ namespace BVS
 			 */
 			Loader& printModuleConnectors(const ModuleData* module);
 
-			/** Map of registered modules and their metadata. */
-			static ModuleMap modules;
-
-			/** Vector of modules executed by master. */
-			static ModuleVector masterModules;
-
 			/** Reference to control mechanism, needed to load und unload threaded modules. */
 			Control& control;
 
 			Logger logger; /**< Logger metadata. */
 			const Info& info; /**< Info reference. */
+			ModuleMap& modules; /**< Reference to Control::modules */
+			ModuleVector& masterModules; /**< Reference to Control::masterModules */
 
 			Loader(const Loader&) = delete; /**< -Weffc++ */
 			Loader& operator=(const Loader&) = delete; /**< -Weffc++ */
