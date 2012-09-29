@@ -128,6 +128,25 @@ BVS::Control& BVS::Control::sendCommand(const SystemFlag controlFlag)
 
 
 
+BVS::Control& BVS::Control::createModuleThread(std::shared_ptr<ModuleData> data)
+{
+	data->thread = std::thread(&Control::threadController, this, data);
+	threadedModules ++;
+	runningThreads.fetch_add(1);
+	return *this;
+}
+
+
+
+BVS::Control& BVS::Control::notifyThreads()
+{
+	monitor.notify_all();
+	return *this;
+}
+
+
+
+
 BVS::Control& BVS::Control::moduleController(ModuleData& data)
 {
 	switch (data.flag)

@@ -124,9 +124,7 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 	{
 		LOG(3, id << " -> FORKED!");
 		modules[id]->asThread = true;
-		modules[id]->thread = std::thread(&Control::threadController, &control, modules[id]);
-		Control::threadedModules++;
-		Control::runningThreads.fetch_add(1);
+		control.createModuleThread(modules[id]);
 	}
 	else
 	{
@@ -155,7 +153,7 @@ BVS::Loader& BVS::Loader::unload(const std::string& id)
 		if (modules[id]->thread.joinable())
 		{
 			modules[id]->flag = ModuleFlag::QUIT;
-			control.monitor.notify_all();
+			control.notifyThreads();
 			LOG(3, "Waiting for " << id << " to join!");
 			modules[id]->thread.join();
 		}

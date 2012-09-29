@@ -31,28 +31,48 @@ namespace BVS
 			Control(Info& info);
 
 			/** The master control function.
-			 * This is the master control function, it forks if desired and can be controlled
-			 * by using sendCommand(...).
+			 * This is the master control function, it forks if desired and can
+			 * be controlled by using sendCommand(...).
 			 * @param[in] forkMasterController To fork or not to fork.
 			 * @return Reference to object.
 			 */
 			Control& masterController(const bool forkMasterController = true);
 
 			/** Send commands to master control.
-			 * This function sends commands to the master control. If the master controller
-			 * has forked, it will return immediately after dropping its flag.
-			 * Beware: if the master has not forked and a RUN flag is send, this function
-			 * will loop *forever* and never return.
+			 * This function sends commands to the master control. If the
+			 * master controller has forked, it will return immediately after
+			 * dropping its flag.
+			 *
+			 * Beware: if the master has not forked and a RUN flag is send,
+			 * this function will loop *forever* and never return.
+			 *
 			 * Possible flags (SystemFlag::...):
-			 * QUIT      - sends quitting signal to all modules.
-			 * PAUSE     - pauses system.
-			 * RUN       - runs system until another command is send.
-			 * STEP      - advances the system by one step/round.
-			 * STEP_BACK (not yet implemented)
+			 * @li \c QUIT      - sends quitting signal to all modules.
+			 * @li \c PAUSE     - pauses system.
+			 * @li \c RUN       - runs system until another command is send.
+			 * @li \c STEP      - advances the system by one step/round.
+			 * @li \c STEP_BACK (not yet implemented)
 			 * @param controlFlag The desired command to be submitted to server.
 			 * @return Reference to object.
 			 */
 			Control& sendCommand(const SystemFlag controlFlag = SystemFlag::PAUSE);
+
+			/** Create new thread for a module.
+			 * This creates a new thread for given module. It will connect the
+			 * created thread to the thread handle inside the supplied
+			 * metadata.
+			 * @param[in] data Shared pointer to module metadata.
+			 * @return Reference to object.
+			 */
+			Control& createModuleThread(std::shared_ptr<ModuleData> data);
+
+			/** Notify all threads.
+			 * Note that this does NOT send any command, it merely notifies
+			 * all threads. This is useful for example if you want to send a
+			 * signal to one thread only, e.g. sending a QUIT.
+			 * @return Reference to object.
+			 */
+			Control& notifyThreads();
 
 		private:
 			/** Controls given module.
@@ -97,9 +117,6 @@ namespace BVS
 
 			Control(const Control&) = delete; /**< -Weffc++ */
 			Control& operator=(const Control&) = delete; /**< -Weffc++ */
-
-			/** The Loader needs to start and notify module threads. */
-			friend class Loader;
 	};
 } // namespace BVS
 
