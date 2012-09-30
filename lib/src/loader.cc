@@ -152,11 +152,6 @@ BVS::Loader& BVS::Loader::unload(const std::string& id)
 		}
 	}
 
-	// delete module and connectors
-	modules[id]->connectors.clear();
-	delete modules[id]->module;
-	modules[id]->module = nullptr;
-
 	// close lib and check for errors
 	std::string modulePath = "./lib" + modules[id]->library + ".so";
 	LOG(3, id << " unloading from " << modulePath << "!");
@@ -181,7 +176,8 @@ BVS::Loader& BVS::Loader::unload(const std::string& id)
 	}
 	LOG(2, id << " unloaded!");
 
-	modules.erase(id);
+	// purge module
+	control.purgeData(id);
 
 	return *this;
 }

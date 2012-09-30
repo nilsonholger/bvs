@@ -1,5 +1,6 @@
 #include "control.h"
 
+#include<algorithm>
 #include<chrono>
 
 
@@ -174,6 +175,38 @@ BVS::Control& BVS::Control::startModule(std::string id)
 BVS::Control& BVS::Control::notifyThreads()
 {
 	monitor.notify_all();
+	return *this;
+}
+
+
+
+BVS::Control& BVS::Control::purgeData(std::string moduleID)
+{
+	if (!pools.empty())
+	{
+		std::string pool = modules[moduleID]->poolName;
+		if (!pool.empty())
+		{
+			ModuleVector& poolModules = pools[pool]->modules;
+			if (!poolModules.empty())
+				poolModules.erase(std::remove_if
+						(poolModules.begin(), poolModules.end(),
+						 [&](std::shared_ptr<ModuleData> data)
+						 { return data->id==moduleID; }));
+		}
+	}
+
+	if (!masterModules.empty())
+		masterModules.erase(std::remove_if
+				(masterModules.begin(), masterModules.end(),
+				 [&](std::shared_ptr<ModuleData> data)
+				 { return data->id==moduleID; }));
+
+	modules[moduleID]->connectors.clear();
+	delete modules[moduleID]->module;
+	modules[moduleID]->module = nullptr;
+	modules.erase(moduleID);
+
 	return *this;
 }
 

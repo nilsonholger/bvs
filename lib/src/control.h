@@ -83,6 +83,12 @@ namespace BVS
 			 */
 			Control& notifyThreads();
 
+			/** Purge module from internal data.
+			 * @param[in] moduleID Name of module to remove from internal data.
+			 * @return Reference to object.
+			 */
+			Control& purgeData(std::string moduleID);
+
 			/** Map of registered modules and their metadata. */
 			static ModuleMap modules;
 
