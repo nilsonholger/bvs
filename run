@@ -89,8 +89,8 @@ mv $ORIG.h $MOD.h
 mv $ORIG.cc $MOD.cc
 mv ${ORIG}Config.txt ${MOD}Config.txt
 FILES=(CMakeLists.txt $MOD.h $MOD.cc ${MOD}Config.txt)
-sed -i'' -e "s/$ORIG/$MOD/g" ${FILES[@]}
-sed -i'' -e "s/$ORIGC/$MODC/g" ${FILES[@]}
+sed -i '' -e "s/$ORIG/$MOD/g" ${FILES[@]}
+sed -i '' -e "s/$ORIGC/$MODC/g" ${FILES[@]}
 cd - > /dev/null
 [ ! -r modules/CMakeLists.txt ] && echo "# enable/disable to be compiled modules here (entries will be created by './run --new-module <MODULE>')" > modules/CMakeLists.txt
 echo "#add_subdirectory($MOD)" >> modules/CMakeLists.txt
