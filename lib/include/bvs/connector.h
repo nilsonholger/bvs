@@ -87,8 +87,9 @@ namespace BVS
 			 * This means that an input is actually connected to an output enabling
 			 * data to be retrieved. Before this executes, the connector will only
 			 * contain a T() object and not the actual data from an output.
+			 * @return Whether the connector was activated.
 			 */
-			void activate();
+			bool activate();
 
 			/** Pointer to the actual object. */
 			std::shared_ptr<T> connection;
@@ -166,7 +167,7 @@ namespace BVS
 			exit(1);
 		}
 
-		if (!data->active) activate();
+		if (!data->active && !activate()) return false;
 
 		if (!data->locked) data->mutex->lock();
 		t = *connection;
@@ -211,13 +212,15 @@ namespace BVS
 
 
 
-	template<typename T> void Connector<T>::activate()
+	template<typename T> bool Connector<T>::activate()
 	{
 		if (connection == nullptr && data->pointer != nullptr)
 		{
 			connection = *reinterpret_cast<std::shared_ptr<T>*>(&data->pointer);
 			data->active = true;
+			return true;
 		}
+		else return false;
 	}
 } // namespace BVS
 
