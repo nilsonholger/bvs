@@ -28,23 +28,33 @@ logVerbosity = 3
 moduleThreads = ON
 
 # force modules to run in dedicated threads
+# NOTE: this also disables module pools.
 forceModuleThreads = OFF
+
+# allow modules to be bundled in pools
+modulePools = ON
 
 # list of modules to load
 #
-# format: uniqueID(moduleLibrary)
+# modules = uniqueID(moduleLibrary)
 # this allows to load modules more than once using unique identifiers
 #
-# format: uniqueID(moduleLibrary).input(test.output)
+# modules = uniqueID(moduleLibrary).input(test.output)
 # this connects uniqueID's Connector named 'input' with 'test' module's
 # connector named 'output'
 #
-# format: modules += +id(...)
+# modules += +id(...)
 # this expands the modules variable (the += operator) as well as runs
 # the id module in its own thread (the second + prefix)
 #
+# modules += [testPool]id(...)
+# modules += [testPool]id2(...)
+# this adds the modules id and id2 to the module pool 'testPool', they
+# are executed by a dedicated pool thread in the specified order
+#
 #modules = id(library)
 #modules += +id2(library2).input(id.output)
+#modules += [pool]id3(..)
 #modules += ...
 
 # Logger level settings.

@@ -48,7 +48,28 @@ namespace BVS
 	 * @li \c logVerbosity sets the overall log verbosity (0/1/2/3...).
 	 * @li \c moduleThreads allows modules to run in dedicated threads (ON/OFF).
 	 * @li \c forceModuleThreads forces modules to run in dedicated threads (ON/OFF).
+	 * @li \c modulePools allows modules to be bundled in a pool thread (ON/OFF).
 	 * @li \c modules lists modules to load and their options.
+	 *
+	 * Module Syntax:
+	 * @code
+	 * modules = uniqueID(moduleLibrary)
+	 * # this allows to load modules more than once using unique identifiers
+	 *
+	 * modules = uniqueID(moduleLibrary).input(test.output)
+	 * # this connects uniqueID's Connector named 'input' with 'test' module's
+	 * # connector named 'output'
+	 *
+	 * modules += +id(...)
+	 * # this expands the modules variable (the += operator) as well as runs
+	 * # the id module in its own thread (the second + prefix)
+	 *
+	 * modules += [testPool]id(...)
+	 * modules += [testPool]id2(...)
+	 * # this adds the modules id and id2 to the module pool 'testPool', they
+	 * # are executed by a dedicated pool thread in the specified order
+	 * @endcode
+	 *
 	 *
 	 * To set the verbosity level of different/any logger instance (belongs to section [Logger]):
 	 * @code
@@ -63,7 +84,7 @@ namespace BVS
 		public:
 			/** Create BVS System.
 			 * @param[in] argc Main's argc.
-			 * @param[in] argv Main's argv, used to pass config options to BVS, see BVSConfig.
+			 * @param[in] argv Main's argv, used to pass config options to BVS, see Config.
 			 */
 			BVS(int argc, char** argv);
 
@@ -77,11 +98,13 @@ namespace BVS
 			BVS& loadModules();
 
 			/** Load selected module given by name.
+			 * If a pool name is given, asThread has no effect.
 			 * @param[in] id The name of the module.
 			 * @param[in] asThread Select, if the module should run in it's own thread.
+			 * @param[in] poolName Select, if desired, the module pool to execute this module.
 			 * @return Reference to object.
 			 */
-			BVS& loadModule(const std::string& id, bool asThread = false);
+			BVS& loadModule(const std::string& id, bool asThread = false, std::string poolName = std::string());
 
 			/** Unload module given by name.
 			 * @param[in] id The name of the module.

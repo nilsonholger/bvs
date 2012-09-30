@@ -2,7 +2,6 @@
 #define BVS_CONTROL_H
 
 #include<atomic>
-#include<chrono>
 #include<condition_variable>
 #include<mutex>
 #include<thread>
@@ -67,14 +66,14 @@ namespace BVS
 			 */
 			Control& sendCommand(const SystemFlag controlFlag = SystemFlag::PAUSE);
 
-			/** Create new thread for a module.
-			 * This creates a new thread for given module. It will connect the
-			 * created thread to the thread handle inside the supplied
-			 * metadata.
-			 * @param[in] data Shared pointer to module metadata.
+			/** Start a module.
+			 * This will start a module. It will act according to its metadata,
+			 * so it will be controlled either by the master, separate as a
+			 * thread or be part of a module pool.
+			 * @param[in] id Module id to start.
 			 * @return Reference to object.
 			 */
-			Control& createModuleThread(std::shared_ptr<ModuleData> data);
+			Control& startModule(std::string id);
 
 			/** Notify all threads.
 			 * Note that this does NOT send any command, it merely notifies
@@ -100,42 +99,33 @@ namespace BVS
 			 */
 			Control& threadController(std::shared_ptr<ModuleData> data);
 
-			/** The number of actively running threads. */
-			static std::atomic<int> runningThreads;
+			/** Control a module pool.
+			 * @param[in] data Pool meta data.
+			 * @return Reference to object.
+			 */
+			Control& poolController(std::shared_ptr<PoolData> data);
 
-			/** The number of modules running in threads. */
-			static int threadedModules;
-
-			/** Vector of modules executed by master. */
-			static ModuleVector masterModules;
-
-			/** Info reference. */
-			Info& info;
-
-			/** The active system flag used by master. */
-			SystemFlag flag;
+			Info& info; /**< Info reference. */
 
 			Logger logger; /**< Logger metadata. */
+
+			std::atomic<int> runningThreads; /**< The number of actively running threads. */
+
+			ModuleVector masterModules; /**< Vector of modules executed by master. */
+
+			PoolMap pools; /**< Map of pools. */
+
+			SystemFlag flag; /**< The active system flag used by master. */
 
 			std::mutex mutex; /**< Mutex for condition variable. */
 			std::unique_lock<std::mutex> masterLock; /**< Lock for masterController. */
 			std::condition_variable monitor; /**< Condition variable for masterController. */
-
 			std::thread controlThread; /**< Thread (if active) of masterController. */
 
 			unsigned long long round; /**< System round counter. */
 
-			/** Timer keeping the start time for a round. */
-			std::chrono::time_point<std::chrono::high_resolution_clock> timer;
-
-			/** Timer for master controlled modules. */
-			std::chrono::time_point<std::chrono::high_resolution_clock> timer2;
-
 			Control(const Control&) = delete; /**< -Weffc++ */
 			Control& operator=(const Control&) = delete; /**< -Weffc++ */
-
-			/** Loader needs access to modules and masterModules. */
-			friend class Loader;
 	};
 } // namespace BVS
 

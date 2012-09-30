@@ -8,32 +8,19 @@ BVS::ModuleMap BVS::Control::modules;
 
 
 
-std::atomic<int> BVS::Control::runningThreads;
-
-
-
-int BVS::Control::threadedModules = 0;
-
-
-
-BVS::ModuleVector BVS::Control::masterModules;
-
-
-
 BVS::Control::Control(Info& info)
 	: info(info),
-	  flag(SystemFlag::PAUSE),
-	  logger("Control"),
-	  mutex(),
-	  masterLock(mutex),
-	  monitor(),
-	  controlThread(),
-	  round(0),
-	  timer(std::chrono::high_resolution_clock::now()),
-	  timer2(std::chrono::high_resolution_clock::now())
-{
-	runningThreads.store(0);
-}
+	logger("Control"),
+	runningThreads(0),
+	masterModules(),
+	pools(),
+	flag(SystemFlag::PAUSE),
+	mutex(),
+	masterLock(mutex),
+	monitor(),
+	controlThread(),
+	round(0)
+{}
 
 
 
@@ -62,15 +49,26 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 		controlThread = std::thread(&Control::masterController, this, false);
 		return *this;
 	}
-
-	monitor.notify_all();
-	monitor.wait(masterLock, [&](){ return runningThreads.load() == 0; });
-	runningThreads.store(0);
-
-	while (flag != SystemFlag::QUIT)
+	else
 	{
-		// synchronize
+		// startup sync
+		monitor.notify_all();
 		monitor.wait(masterLock, [&](){ return runningThreads.load() == 0; });
+		runningThreads.store(0);
+	}
+
+	std::chrono::time_point<std::chrono::high_resolution_clock> timer =
+		std::chrono::high_resolution_clock::now();
+
+	while (flag!=SystemFlag::QUIT)
+	{
+		// round sync
+		monitor.wait(masterLock, [&](){ return runningThreads.load() == 0; });
+
+		info.lastRoundDuration =
+			std::chrono::duration_cast<std::chrono::milliseconds>
+			(std::chrono::high_resolution_clock::now() - timer);
+		timer = std::chrono::high_resolution_clock::now();
 
 		switch (flag)
 		{
@@ -80,44 +78,32 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 				if (!controlThread.joinable()) return *this;
 				LOG(3, "PAUSE...");
 				monitor.wait(masterLock, [&](){ return flag != SystemFlag::PAUSE; });
-				LOG(3, "CONTINUE...");
+				timer = std::chrono::high_resolution_clock::now();
 				break;
 			case SystemFlag::RUN:
 			case SystemFlag::STEP:
-				info.round = round;
-				LOG(3, "ANNOUNCE ROUND: " << round++);
+				LOG(3, "ROUND: " << round);
+				info.round = round++;
 
-				for (auto& it: modules)
+				for (auto& module: modules)
 				{
-					it.second->flag = ControlFlag::RUN;
-					if (it.second->asThread)
-						runningThreads.fetch_add(1);
+					module.second->flag = ControlFlag::RUN;
+					if (module.second->asThread) runningThreads.fetch_add(1);
 				}
+				for (auto& pool: pools) pool.second->flag = ControlFlag::RUN;
+				runningThreads.fetch_add(pools.size());
 
-				timer2 = std::chrono::high_resolution_clock::now();
-				info.lastRoundDuration  =
-					std::chrono::duration_cast<std::chrono::milliseconds>(timer2 - timer);
-				timer = timer2;
 				monitor.notify_all();
+				for (auto& it: masterModules) moduleController(*(it.get()));
 
-
-				for (auto& it: masterModules)
-				{
-					timer2 = std::chrono::high_resolution_clock::now();
-					moduleController(*(it.get()));
-					info.moduleDurations[it.get()->id] =
-						std::chrono::duration_cast<std::chrono::milliseconds>
-						(std::chrono::high_resolution_clock::now() - timer2);
-				}
-
-				if (flag == SystemFlag::STEP) flag = SystemFlag::PAUSE;
+				if (flag==SystemFlag::STEP) flag = SystemFlag::PAUSE;
 				break;
 			case SystemFlag::STEP_BACK:
 				break;
 		}
-		LOG(3, "WAITING FOR MODULES!");
+		LOG(3, "WAIT FOR THREADS AND POOLS!");
 
-		if (!controlThread.joinable() && flag != SystemFlag::RUN) return *this;
+		if (!controlThread.joinable() && flag!=SystemFlag::RUN) return *this;
 	}
 
 	masterLock.unlock();
@@ -132,11 +118,10 @@ BVS::Control& BVS::Control::sendCommand(const SystemFlag controlFlag)
 	LOG(3, "FLAG: " << (int)controlFlag);
 	flag = controlFlag;
 
-	// check if controlThread is running and notify it, otherwise call control function each time
 	if (controlThread.joinable()) monitor.notify_all();
 	else masterController(false);
 
-	if (controlFlag == SystemFlag::QUIT)
+	if (controlFlag==SystemFlag::QUIT)
 	{
 		if (controlThread.joinable())
 		{
@@ -150,11 +135,37 @@ BVS::Control& BVS::Control::sendCommand(const SystemFlag controlFlag)
 
 
 
-BVS::Control& BVS::Control::createModuleThread(std::shared_ptr<ModuleData> data)
+BVS::Control& BVS::Control::startModule(std::string id)
 {
-	data->thread = std::thread(&Control::threadController, this, data);
-	threadedModules ++;
-	runningThreads.fetch_add(1);
+	std::shared_ptr<ModuleData> data = modules[id];
+
+	if (!data->poolName.empty())
+	{
+		LOG(3, id << " -> POOL(" << data->poolName << ")");
+		if (pools.find(data->poolName)==pools.end())
+		{
+			pools[data->poolName] = std::make_shared<PoolData>(data->poolName, ControlFlag::WAIT);
+			pools[data->poolName]->modules.push_back(modules[id]);
+			pools[data->poolName]->thread = std::thread(&Control::poolController, this, pools[data->poolName]);
+			runningThreads.fetch_add(1);
+		}
+		else
+		{
+			pools[data->poolName]->modules.push_back(modules[id]);
+		}
+	}
+	else if (data->asThread)
+	{
+		LOG(3, id << " -> THREAD");
+		runningThreads.fetch_add(1);
+		data->thread = std::thread(&Control::threadController, this, data);
+	}
+	else
+	{
+		LOG(3, id << " -> MASTER");
+		masterModules.push_back(modules[id]);
+	}
+
 	return *this;
 }
 
@@ -170,6 +181,9 @@ BVS::Control& BVS::Control::notifyThreads()
 
 BVS::Control& BVS::Control::moduleController(ModuleData& data)
 {
+	std::chrono::time_point<std::chrono::high_resolution_clock> modTimer =
+		std::chrono::high_resolution_clock::now();
+
 	switch (data.flag)
 	{
 		case ControlFlag::QUIT:
@@ -183,6 +197,10 @@ BVS::Control& BVS::Control::moduleController(ModuleData& data)
 			break;
 	}
 
+	info.moduleDurations[data.id] =
+		std::chrono::duration_cast<std::chrono::milliseconds>
+		(std::chrono::high_resolution_clock::now() - modTimer);
+
 	return *this;
 }
 
@@ -195,16 +213,37 @@ BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
 	while (bool(data->flag))
 	{
 		runningThreads.fetch_sub(1);
-		monitor.notify_all();
 		LOG(3, data->id << " -> WAIT!");
+		monitor.notify_all();
 		monitor.wait(threadLock, [&](){ return data->flag != ControlFlag::WAIT; });
 
 		moduleController(*(data.get()));
-
-		info.moduleDurations[data.get()->id] =
-			std::chrono::duration_cast<std::chrono::milliseconds>
-			(std::chrono::high_resolution_clock::now() - timer);
 	}
 
 	return *this;
 }
+
+
+
+BVS::Control& BVS::Control::poolController(std::shared_ptr<PoolData> data)
+{
+	LOG(3, "POOL(" << data->poolName << ") STARTED!");
+	std::unique_lock<std::mutex> threadLock(mutex);
+
+	while (bool(data->flag) && !data->modules.empty())
+	{
+		data->flag = ControlFlag::WAIT;
+		runningThreads.fetch_sub(1);
+		LOG(3, "POOL(" << data->poolName << ") WAIT!");
+		monitor.notify_all();
+		monitor.wait(threadLock, [&](){ return data->flag != ControlFlag::WAIT; });
+
+		for (auto& module: data->modules) moduleController(*(module.get()));
+	}
+
+	pools.erase(pools.find(data->poolName));
+
+	LOG(3, "POOL(" << data->poolName << ") QUITTING!");
+	return *this;
+}
+

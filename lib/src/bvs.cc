@@ -36,6 +36,7 @@ BVS::BVS& BVS::BVS::loadModules()
 	// get module list from config
 	std::vector<std::string> moduleList;
 	config.getValue("BVS.modules", moduleList);
+	std::string poolName;
 
 	// check length
 	if (moduleList.size()==0)
@@ -49,15 +50,28 @@ BVS::BVS& BVS::BVS::loadModules()
 	for (auto& it : moduleList)
 	{
 		asThread = false;
+		poolName.clear();
 
 		// check for thread selection ('+' prefix) and system settings
 		if (it[0]=='+')
 		{
 			it.erase(0, 1);
+			if (it[0]=='[')
+			{
+				LOG(0, "Cannot start module in thread AND pool!");
+				exit(1);
+			}
 			asThread = true;
 		}
 
-		loadModule(it , asThread);
+		if (it[0]=='[')
+		{
+			size_t pos = it.find_first_of(']');
+			poolName = it.substr(1, pos-1);
+			it.erase(0, pos+1);
+		}
+
+		loadModule(it , asThread, poolName);
 	}
 
 	return *this;
@@ -65,16 +79,23 @@ BVS::BVS& BVS::BVS::loadModules()
 
 
 
-BVS::BVS& BVS::BVS::loadModule(const std::string& id, bool asThread)
+BVS::BVS& BVS::BVS::loadModule(const std::string& id, bool asThread, std::string poolName)
 {
 	bool moduleThreads = config.getValue<bool>("BVS.moduleThreads", BVS_MODULE_THREADS);
 	bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads", BVS_MODULE_FORCE_THREADS);
+	bool modulePools = config.getValue<bool>("BVS.modulePools", BVS_MODULE_POOLS);
 
-	if (forceModuleThreads) asThread = true;
+	if (forceModuleThreads)
+	{
+		asThread = true;
+		poolName.clear();
+	}
 
 	if (!moduleThreads) asThread = false;
 
-	loader->load(id, asThread);
+	if (!modulePools) poolName.clear();
+
+	loader->load(id, asThread, poolName);
 
 	return *this;
 }

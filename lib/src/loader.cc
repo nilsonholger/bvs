@@ -6,16 +6,16 @@
 
 BVS::Loader::Loader(Control& control, const Info& info)
 	: control(control),
-	  logger("Loader"),
-	  info(info),
-	  modules(Control::modules)
+	logger("Loader"),
+	info(info),
+	modules(Control::modules)
 {
 
 }
 
 
 
-BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThread)
+BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThread, const std::string poolName)
 {
 	/* algorithm:
 	 * SEPARATE id(library).options
@@ -96,18 +96,10 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 	// move connectors from temporary to metadata
 	modules[id]->connectors = std::move(ConnectorDataCollector::connectors);
 
-	// set metadata and start as thread if needed
-	if (asThread==true)
-	{
-		LOG(3, id << " -> FORKED!");
-		modules[id]->asThread = true;
-		control.createModuleThread(modules[id]);
-	}
-	else
-	{
-		modules[id]->asThread = false;
-		Control::masterModules.push_back(modules[id]);
-	}
+	// let control handle module start
+	modules[id]->asThread = asThread;
+	modules[id]->poolName = poolName;
+	control.startModule(id);
 
 	return *this;
 }

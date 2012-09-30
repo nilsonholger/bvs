@@ -58,10 +58,17 @@
 #define BVS_MODULE_THREADS true
 
 /** Whether the system ENFORCES modules to run in threads.
+ * NOTE: this also disables module pools.
  *
  * Possible Values: true, false
  */
 #define BVS_MODULE_FORCE_THREADS false
+
+/** Whether the system allows module pools.
+ *
+ * Possible Values: true, false
+ */
+#define BVS_MODULE_POOLS true
 
 
 

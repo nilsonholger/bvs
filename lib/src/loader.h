@@ -28,11 +28,13 @@ namespace BVS
 			/** Load the given module.
 			 * Executes bvsRegisterModule function in module to register it with the
 			 * system.
+			 * If a pool name is given, asThread has no effect.
 			 * @param[in] moduleTraits The name and traits of the module.
 			 * @param[in] asThread Whether to load the module inside a thread or not.
+			 * @param[in] poolName Select, if desired, the module pool to run this module.
 			 * @return Reference to object.
 			 */
-			Loader& load(const std::string& moduleTraits, const bool asThread);
+			Loader& load(const std::string& moduleTraits, const bool asThread, const std::string poolName = std::string());
 
 			/** Unload the given module.
 			 * @param[in] moduleName The name of the module.
@@ -95,9 +97,6 @@ namespace BVS
 
 			Loader(const Loader&) = delete; /**< -Weffc++ */
 			Loader& operator=(const Loader&) = delete; /**< -Weffc++ */
-
-			/** Control needs access to modules and masterModules. */
-			friend class Control;
 	};
 } // namespace BVS
 
