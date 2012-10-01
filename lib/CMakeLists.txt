@@ -16,9 +16,3 @@ if(DOXYGEN_FOUND)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 	add_custom_target(bvs-doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMENT "Generating documentation for libbvs!" VERBATIM)
 endif()
-
-# BVS_THREAD_NAMES
-set(BVS_THREAD_NAMES OFF CACHE BOOL "Enable thread naming (might not show in every version of (h)top, etc, try 'ps -La'). UNIX ONLY!")
-if(BVS_THREAD_NAMES)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBVS_THREAD_NAMES")
-endif()
