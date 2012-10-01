@@ -60,12 +60,25 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 	}
 
 	// prepare path and load the lib
-	std::string modulePath = "./lib" + library + ".so";
-	LOG(3, "Loading " << id << " from " << modulePath << "!");
+	std::string modulePath = "lib" + library + ".so";
 	void* dlib = dlopen(modulePath.c_str(), RTLD_NOW);
+	if (dlib!=NULL)
+	{
+		LOG(3, "Loading " << id << " from " << modulePath << "!");
+	}
+	else
+	{
+#ifdef BVS_OSX_ANOMALIES
+		// additional check for 'dylib' (when compiled under OSX as SHARED instead of MODULE)
+		modulePath.resize(modulePath.size()-2);
+		modulePath += "dylib";
+		dlib = dlopen(modulePath.c_str(), RTLD_NOW);
+		if (dlib!=NULL) LOG(3, "Loading " << id << " from " << modulePath << "!");
+#endif //BVS_OSX_ANOMALIES
+	}
 
 	// check for errors
-	if (dlib == NULL)
+	if (dlib==NULL)
 	{
 		LOG(0, "Loading " << modulePath << ", resulted in: " << dlerror());
 		exit(-1);
@@ -154,7 +167,11 @@ BVS::Loader& BVS::Loader::unload(const std::string& id)
 	}
 
 	// close lib and check for errors
+#ifndef BVS_OSX_ANOMALIES
 	std::string modulePath = "./lib" + modules[id]->library + ".so";
+#else
+	std::string modulePath = "./lib" + modules[id]->library + ".(so|dylib)";
+#endif //BVS_OSX_ANOMALIES
 	LOG(3, id << " unloading from " << modulePath << "!");
 
 	// get handle from internals
