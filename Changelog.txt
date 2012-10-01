@@ -5,7 +5,7 @@
 	NEW: module pools, WARNING: not yet thoroughly tested
 
 2012-09-28:
-	NEW: --update function to run
+	NEW: ./run --update function to update without loosing local changes
 	CHANGED: config usage, please read the Readme.txt:USAGE, to migrate to
 	the new system, please move your configs to a different location, run
 	cmake in your build directory, that will setup the links to the config
