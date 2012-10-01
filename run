@@ -146,10 +146,8 @@ fi
 function bvs_update {
 BASE=$PWD
 QUIET='--quiet'
-DIRS=(./ `git submodule $QUIET foreach --recursive 'echo -n " $path"'`)
+DIRS=(./ `git submodule $QUIET foreach --recursive 'echo " $path\c"'`)
 STASHES=()
-echo DIRS: ${DIRS[@]}
-
 echo ">>> Stashing changes!"
 for i in ${DIRS[@]}
 do
