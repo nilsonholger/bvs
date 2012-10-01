@@ -5,8 +5,7 @@
 
 int BVS::nameThisThread(const char* threadName)
 {
-#ifdef __unix__
-#ifdef BVS_THREAD_NAMES
+#if (defined __unix__ && defined BVS_THREAD_NAMES)
 	prctl(PR_SET_NAME, threadName);
 	if (errno)
 	{
@@ -15,10 +14,8 @@ int BVS::nameThisThread(const char* threadName)
 	}
 
 	return errno;
-#else //BVS_THREAD_NAMES
+#endif //__unix__ && BVS_THREAD_NAMES
 	(void) threadName;
 
 	return 0;
-#endif //BVS_THREAD_NAMES
-#endif //__unix__
 }
