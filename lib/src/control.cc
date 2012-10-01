@@ -1,4 +1,5 @@
 #include "control.h"
+#include "archutils.h"
 
 #include<algorithm>
 #include<chrono>
@@ -52,6 +53,8 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 	}
 	else
 	{
+		nameThisThread("masterControl");
+
 		// startup sync
 		monitor.notify_all();
 		monitor.wait(masterLock, [&](){ return runningThreads.load() == 0; });
@@ -239,6 +242,7 @@ BVS::Control& BVS::Control::moduleController(ModuleData& data)
 
 BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
 {
+	nameThisThread(("[M]"+data->id).c_str());
 	std::unique_lock<std::mutex> threadLock(mutex);
 
 	while (bool(data->flag))
@@ -258,6 +262,7 @@ BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
 
 BVS::Control& BVS::Control::poolController(std::shared_ptr<PoolData> data)
 {
+	nameThisThread(("[P]"+data->poolName).c_str());
 	LOG(3, "POOL(" << data->poolName << ") STARTED!");
 	std::unique_lock<std::mutex> threadLock(mutex);
 

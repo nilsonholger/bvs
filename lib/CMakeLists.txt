@@ -5,7 +5,7 @@ include(cmake/toolbox.cmake)
 
 include_directories(include)
 include_directories(src)
-add_subdir_lib(src bvs SHARED bvs.cc bvsinfo.cc config.cc connector.cc control.cc loader.cc logger.cc logsystem.cc module.cc)
+add_subdir_lib(src bvs SHARED archutils.cc bvs.cc bvsinfo.cc config.cc connector.cc control.cc loader.cc logger.cc logsystem.cc module.cc)
 target_link_libraries(bvs dl pthread)
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/BVSConfig.txt ${CMAKE_BINARY_DIR}/bin/BVSConfig.txt)
@@ -15,4 +15,10 @@ find_package(Doxygen)
 if(DOXYGEN_FOUND)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 	add_custom_target(bvs-doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMENT "Generating documentation for libbvs!" VERBATIM)
+endif()
+
+# BVS_THREAD_NAMES
+set(BVS_THREAD_NAMES OFF CACHE BOOL "Enable thread naming (might not show in every version of (h)top, etc, try 'ps -La'). UNIX ONLY!")
+if(BVS_THREAD_NAMES)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBVS_THREAD_NAMES")
 endif()
