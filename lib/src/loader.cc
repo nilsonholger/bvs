@@ -113,6 +113,7 @@ BVS::Loader& BVS::Loader::unload(const std::string& id)
 	 * DISCONNECT connectors
 	 * DELETE module instance and connectors
 	 * CHECK library handle
+	 * PURGE module and its metadata
 	 * CLOSE library
 	 * CHECK errors
 	 */
@@ -164,6 +165,9 @@ BVS::Loader& BVS::Loader::unload(const std::string& id)
 		exit(-1);
 	}
 
+	// purge module
+	control.purgeData(id);
+
 	// close the module
 	dlclose(dlib);
 
@@ -175,9 +179,6 @@ BVS::Loader& BVS::Loader::unload(const std::string& id)
 		exit(-1);
 	}
 	LOG(2, id << " unloaded!");
-
-	// purge module
-	control.purgeData(id);
 
 	return *this;
 }

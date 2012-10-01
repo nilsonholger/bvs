@@ -55,7 +55,7 @@ namespace BVS
 		std::string id; /**< Name of module. */
 		std::string library; /**< Library to load module from. */
 		std::string options; /**< Module options. */
-		Module* module; /**< Pointer to the module. */
+		std::shared_ptr<Module> module; /**< Pointer to the module. */
 		void* dlib; /**< Dlib handle to module's lib. */
 		std::thread thread; /**< Thread handle of module. */
 		bool asThread; /**< Determines if module runs in its own thread. */

@@ -203,8 +203,6 @@ BVS::Control& BVS::Control::purgeData(std::string moduleID)
 				 { return data->id==moduleID; }));
 
 	modules[moduleID]->connectors.clear();
-	delete modules[moduleID]->module;
-	modules[moduleID]->module = nullptr;
 	modules.erase(moduleID);
 
 	return *this;
