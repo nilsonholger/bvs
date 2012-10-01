@@ -1,3 +1,6 @@
+2012-10-01:
+	NEW: BVS_THREAD_NAMES allows threads to set names (read cmake info)
+
 2012-09-30:
 	NEW: module pools, WARNING: not yet thoroughly tested
 
