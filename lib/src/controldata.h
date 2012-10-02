@@ -84,6 +84,7 @@ namespace BVS
 	{
 		/** Creates pool metadata.
 		 * @param[in] poolName Pool name.
+		 * @param[in] flag Control flag.
 		 */
 		PoolData(std::string poolName, ControlFlag flag)
 			: poolName(poolName),
