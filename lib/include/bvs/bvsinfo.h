@@ -1,9 +1,9 @@
 #ifndef BVS_INFO_H
 #define BVS_INFO_H
 
-
-
 #include "bvs/config.h"
+#include "bvs/traits.h"
+
 #include<chrono>
 #include<map>
 #include<string>
@@ -14,7 +14,7 @@
 namespace BVS
 {
 	/** Info meta data stuff. */
-	struct Info
+	struct BVS_PUBLIC Info
 	{
 		/** Reference to config system. */
 		const Config& config;

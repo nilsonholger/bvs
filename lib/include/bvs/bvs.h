@@ -9,6 +9,7 @@
 #include "bvs/config.h"
 #include "bvs/connector.h"
 #include "bvs/logger.h"
+#include "bvs/traits.h"
 
 
 
@@ -19,7 +20,7 @@
 
 
 /** BVS namespace, contains all library stuff. */
-namespace BVS
+namespace BVS 
 {
 	// Forward declarations
 	class Control;
@@ -78,7 +79,7 @@ namespace BVS
 	 * YourLogger = ...
 	 * @endcode
 	 */
-	class BVS
+	class BVS_PUBLIC BVS
 	{
 		public:
 			/** Create BVS System.

@@ -6,6 +6,7 @@
 #include "bvs/config.h"
 #include "bvs/connector.h"
 #include "bvs/logger.h"
+#include "bvs/traits.h"
 
 
 
@@ -21,7 +22,7 @@ namespace BVS
 	 * This is the base class for Modules.
 	 * Extend this class and implement the functions below.
 	 */
-	class Module
+	class BVS_PUBLIC Module
 	{
 		public:
 			Module(); /**< Base module constructor. */
@@ -46,7 +47,7 @@ namespace BVS
  * @param[in] id The Module's name.
  * @param[in] module A pointer to the module.
  */
-void registerModule(const std::string& id, BVS::Module* module);
+BVS_PUBLIC void registerModule(const std::string& id, BVS::Module* module);
 
 
 

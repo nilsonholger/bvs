@@ -1,6 +1,8 @@
 #ifndef BVS_LOGGER_H
 #define BVS_LOGGER_H
 
+#include "bvs/traits.h"
+
 #include<iostream>
 #include<memory>
 #include<string>
@@ -31,7 +33,7 @@ namespace BVS
 	 * macro can be used (which SHOULD be used, thus allowing for a complete
 	 * disabling of all logging activity requiring zero overhead).
 	 */
-	class Logger
+	class BVS_PUBLIC Logger
 	{
 		public:
 			/** Available logging targets. */

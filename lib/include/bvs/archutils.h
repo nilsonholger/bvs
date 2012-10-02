@@ -1,6 +1,8 @@
 #ifndef BVS_ARCHUTILS_H
 #define BVS_ARCHUTILS_H
 
+#include "bvs/traits.h"
+
 #ifdef __unix__
 #ifdef BVS_THREAD_NAMES
 #include <sys/prctl.h>
@@ -18,7 +20,7 @@ namespace BVS
 	 * @param[in] threadName Name to set (maximum length is 16 chars, this includes '\0')
 	 * @return 'errno' from the prctl(...) syscall.
 	 */
-	int nameThisThread(const char* threadName);
+	BVS_PUBLIC int nameThisThread(const char* threadName);
 
 	/**
 	 * @todo add loader specific stuff (dlfcn.h), appropriate windows version...

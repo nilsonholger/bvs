@@ -1,6 +1,8 @@
 #ifndef BVS_CONFIG_H
 #define BVS_CONFIG_H
 
+#include "bvs/traits.h"
+
 #include<map>
 #include<mutex>
 #include<sstream>
@@ -76,7 +78,7 @@ namespace BVS
 	 * them as an argument delimiter (you have been warned)
 	 * @see loadCommandLine
 	 */
-	class Config
+	class BVS_PUBLIC Config
 	{
 		public:
 			/** Construct config system.
@@ -148,7 +150,7 @@ namespace BVS
 			 * @param[in] argv Array of arguments.
 			 * @return Reference to object.
 			 */
-			Config& loadCommandLine(int argc, char** argv);
+			BVS_PRIVATE Config& loadCommandLine(int argc, char** argv);
 
 			/** Searches optionStore for the given option name.
 			 * @param[in] option Desired config option.

@@ -1,8 +1,11 @@
 #ifndef BVS_CONNECTORDATA_H
 #define BV__CONNECTORDATA_H
 
+#include "bvs/traits.h"
+
 #include<mutex>
 #include<iostream>
+#include<map>
 #include<memory>
 #include<string>
 
@@ -89,7 +92,7 @@ namespace BVS
 	 * for all possible template instatiations of connector that is truly shared
 	 * between all of them.
 	 */
-	struct ConnectorDataCollector
+	struct BVS_PUBLIC ConnectorDataCollector
 	{
 		/** Map of connectors. */
 		static ConnectorMap connectors;
