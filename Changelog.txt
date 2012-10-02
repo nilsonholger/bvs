@@ -1,14 +1,27 @@
+2012-10-02:
+	NEW: cmake->BVS_GCC_VISIBILITY
+		uses gcc's visibility feature for dynamic library symbol exports (read
+		cmake info)
+	NEW: cmake->BVS_LOG_SYSTEM
+		now the log system can be enabled in cmake, if disabled, the log
+		system's backend won't even be compiled and the created logger
+		instances will have no functionality
 2012-10-01:
-	NEW: BVS_THREAD_NAMES allows threads to set names (read cmake info)
+	NEW: cmake->BVS_THREAD_NAMES
+		allows threads to set names (read cmake info)
 
 2012-09-30:
-	NEW: module pools, WARNING: not yet thoroughly tested
+	NEW: module pools
+		allow to setup module pools, meaning that a number of modules are
+		executed by one single thread
+		WARNING: not yet thoroughly tested, but should work fine
 
 2012-09-28:
 	NEW: ./run --update function to update without loosing local changes
-	CHANGED: config usage, please read the Readme.txt:USAGE, to migrate to
-	the new system, please move your configs to a different location, run
-	cmake in your build directory, that will setup the links to the config
-	files from the modules, then you can just move/copy your configs to the
-	existing symlinks, that will override the configs in their original places
-	and your all setup to use the new system
+	CHANGED: config usage
+		please read the Readme.txt:USAGE, to migrate to the new system, please
+		move your configs to a different location, run cmake in your build
+		directory, that will setup the links to the config files from the
+		modules, then you can just move/copy your configs to the existing
+		symlinks, that will override the configs in their original places and
+		your all setup to use the new system
