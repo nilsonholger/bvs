@@ -9,7 +9,7 @@
 
 /** Macro to use with Logger. */
 #ifdef BVS_LOG_SYSTEM
-#define LOG(level, args) { logger.out(level) << args << std::endl; logger.endl(); };
+#define LOG(level, args) { logger.out(level) << args << std::endl; };
 #else
 #define LOG(level, args) { };
 #endif
@@ -56,10 +56,6 @@ namespace BVS
 			 * @return A stream reference your output will be send to.
 			 */
 			std::ostream& out(const int level);
-
-			/* Ends a log line and releases the logSystem mutex, must be called after using out.
-			*/
-			void endl();
 
 			/** Get this logger's name.
 			 * @return This logger's name.
