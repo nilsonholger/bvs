@@ -18,12 +18,7 @@ if(DOXYGEN_FOUND)
 endif()
 
 # BVS_OSX_ANOMALIES
-if(APPLE)
-	set(OSX_ANOMALIES_DEFAULT ON)
-else()
-	set(OSX_ANOMALIES_DEFAULT OFF)
-endif()
-set(BVS_OSX_ANOMALIES ${OSX_ANOMALIES_DEFAULT} CACHE BOOL "Enable OSX anomalies, e.g. 'so->dylib'.")
+set(BVS_OSX_ANOMALIES ${APPLE} CACHE BOOL "Enable OSX anomalies, e.g. 'so->dylib'.")
 if(BVS_OSX_ANOMALIES)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBVS_OSX_ANOMALIES")
 endif()
