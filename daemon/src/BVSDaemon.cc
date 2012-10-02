@@ -114,12 +114,10 @@ int testLogger()
 
 	BVS::Logger file("FILE LOG", 3, BVS::Logger::TO_FILE);
 	file.out(0) << "FILE ONLY" << std::endl;
-	file.endl();
 
 	bvs->enableLogConsole();
 	BVS::Logger cli("CLI LOG", 3, BVS::Logger::TO_CLI);
 	cli.out(0) << "CLI ONLY" << std::endl;
-	cli.endl();
 
 	bvs->disableLogConsole();
 	bvs->disableLogFile();
@@ -135,7 +133,6 @@ int testLogger()
 	bvs->enableLogConsole();
 	BVS::Logger both("to BOTH", 0, BVS::Logger::TO_CLI_AND_FILE);
 	both.out(0) << "to CLI AND FILE" << std::endl;
-	both.endl();
 
 	return 0;
 }
@@ -180,6 +177,8 @@ int testConfig()
 	int count = 0;
 	for (auto& it : list)
 	{
+		(void) it;
+		(void) count;
 		LOG(0, count++ << ": " << it);
 	}
 
