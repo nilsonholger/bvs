@@ -1,6 +1,8 @@
 #ifndef BVS_TRAITS_H
 #define BVS_TRAITS_H
 
+#include <string>
+
 
 
 /** Enable/disable matching of connector types.
@@ -13,27 +15,31 @@
  *
  * Possible Values: true, false
  */
-#define BVS_CONNECTOR_TYPE_MATCHING true
+static const bool bvs_connector_type_matching = true;
 
 /** Enable/disable the builtin logging system.
  * Also, all LOG(*) calls will be removed if disabled.
  *
  * Possible Values: true, false
  */
-#define BVS_LOG_SYSTEM true
+#ifdef BVS_LOG_SYSTEM
+static const bool bvs_log_system = true;
+#else
+static const bool bvs_log_system = false;
+#endif //BVS_LOG_SYSTEM
 
 /** Set the logging system's maximum verbosity.
  * Only message of smaller levels will be logged.
  *
  * Possible (Meaningful) Values: 0, 1, 2, 3
  */
-#define BVS_LOG_SYSTEM_VERBOSITY 3
+static const unsigned int bvs_log_system_verbosity = 3;
 
 /** Whether to log to console or not.
  *
  * Possible Values: true, false
  */
-#define BVS_LOG_TO_CONSOLE true
+static const bool bvs_log_to_console = true;
 
 /** Whether to log to a file or not.
  * If the name is prepended with a '+' sign, instead of overwriting, append
@@ -41,34 +47,34 @@
  *
  * Possible Values: "" (NO log file), "$NAME", "+$NAME"
  */
-#define BVS_LOG_TO_LOGFILE ""
+static const std::string bvs_log_to_logfile = std::string();
 
 /** The logging system clients' default verbosity.
  * This verbosity level will be used for all log clients that have not
  * explicitely set one.
  *
- * Possible Values: see ::BVS_LOG_SYSTEM_VERBOSITY
+ * Possible Values: see bvs_log_system_verbosity
  */
-#define BVS_LOG_CLIENT_DEFAULT_VERBOSITY 3
+static const unsigned int bvs_log_client_default_verbosity = 3;
 
 /** Whether the system allows modules to run in threads.
  *
  * Possible Values: true, false
  */
-#define BVS_MODULE_THREADS true
+static const bool bvs_module_threads = true;
 
 /** Whether the system ENFORCES modules to run in threads.
  * NOTE: this also disables module pools.
  *
  * Possible Values: true, false
  */
-#define BVS_MODULE_FORCE_THREADS false
+static const bool bvs_module_force_threads = false;
 
 /** Whether the system allows module pools.
  *
  * Possible Values: true, false
  */
-#define BVS_MODULE_POOLS true
+static const bool bvs_module_pools = true;
 
 
 

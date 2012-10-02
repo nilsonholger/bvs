@@ -341,6 +341,7 @@ BVS::Loader& BVS::Loader::checkModuleInput(const ModuleData* module, const std::
 
 BVS::Loader& BVS::Loader::checkModuleOutput(const ModuleData* module, const std::string& targetModule, const std::string& targetOutput)
 {
+	(void) module;
 	auto target = modules.find(targetModule);
 
 	// check if desired module exists

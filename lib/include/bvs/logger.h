@@ -5,12 +5,10 @@
 #include<memory>
 #include<string>
 
-#include "bvs/traits.h"
-
 
 
 /** Macro to use with Logger. */
-#if (BVS_LOG_SYSTEM)
+#ifdef BVS_LOG_SYSTEM
 #define LOG(level, args) { logger.out(level) << args << std::endl; logger.endl(); };
 #else
 #define LOG(level, args) { };
@@ -80,7 +78,9 @@ namespace BVS
 			 * */
 			std::string name;
 
+#ifdef BVS_LOG_SYSTEM
 			std::shared_ptr<LogSystem> logSystem; /**< Pointer to the logging backend. */
+#endif
 
 			Logger(const Logger&) = delete; /**< -Weffc++ */
 			Logger& operator=(const Logger&) = delete; /**< -Weffc++ */

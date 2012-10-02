@@ -9,7 +9,6 @@
 #include "bvs/config.h"
 #include "bvs/connector.h"
 #include "bvs/logger.h"
-#include "bvs/traits.h"
 
 
 
@@ -213,8 +212,10 @@ namespace BVS
 
 		private:
 			Info info; //**< BVS' information object. */
+#ifdef BVS_LOG_SYSTEM
 			std::shared_ptr<LogSystem> logSystem; /**< Internal log system backend. */
 			Logger logger; /**< BVS' logging instance. */
+#endif
 			Control* control; /**< BVS' module controller. */
 			Loader* loader; /**< BVS' module loader. */
 

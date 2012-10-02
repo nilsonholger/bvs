@@ -1,7 +1,8 @@
+#include "logsystem.h"
+#include "bvs/traits.h"
+
 #include<algorithm>
 #include<iomanip>
-
-#include "logsystem.h"
 
 
 
@@ -177,7 +178,7 @@ BVS::LogSystem& BVS::LogSystem::disableLogConsole()
 BVS::LogSystem& BVS::LogSystem::updateSettings(Config& config)
 {
 	// disable log system
-	if(config.getValue<bool>("BVS.logSystem", BVS_LOG_SYSTEM)==false && BVS_LOG_SYSTEM)
+	if(config.getValue<bool>("BVS.logSystem", bvs_log_system)==false && bvs_log_system)
 	{
 		systemVerbosity = 0;
 		disableLogConsole();
@@ -187,13 +188,13 @@ BVS::LogSystem& BVS::LogSystem::updateSettings(Config& config)
 	}
 
 	// disable console log output
-	if(config.getValue<bool>("BVS.logConsole", BVS_LOG_TO_CONSOLE)==false)
+	if(config.getValue<bool>("BVS.logConsole", bvs_log_to_console)==false)
 	{
 		disableLogConsole();
 	}
 
 	// enable log file, append if selected
-	std::string configFile = config.getValue<std::string>("BVS.logFile", BVS_LOG_TO_LOGFILE);
+	std::string configFile = config.getValue<std::string>("BVS.logFile", bvs_log_to_logfile);
 	bool append = false;
 	if(!configFile.empty())
 	{
@@ -206,7 +207,7 @@ BVS::LogSystem& BVS::LogSystem::updateSettings(Config& config)
 	}
 
 	// check log system verbosity
-	systemVerbosity = config.getValue<unsigned short>("BVS.logVerbosity", BVS_LOG_SYSTEM_VERBOSITY);
+	systemVerbosity = config.getValue<unsigned short>("BVS.logVerbosity", bvs_log_system_verbosity);
 
 	return *this;
 }
@@ -220,7 +221,7 @@ BVS::LogSystem& BVS::LogSystem::updateLoggerLevels(Config& config)
 	{
 		if (it.first.substr(0, 10)=="logger.")
 		{
-			loggerLevels[it.first.substr(10, std::string::npos)] = config.getValue<unsigned short>(it.first, BVS_LOG_CLIENT_DEFAULT_VERBOSITY);
+			loggerLevels[it.first.substr(10, std::string::npos)] = config.getValue<unsigned short>(it.first, bvs_log_client_default_verbosity);
 		}
 	}
 
