@@ -7,6 +7,8 @@ include(libbvs/cmake/toolbox.cmake)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
+execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/run ${CMAKE_BINARY_DIR}/run)
+
 # add documentation target (using doxygen)
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
