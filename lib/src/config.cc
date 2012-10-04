@@ -6,7 +6,7 @@
 
 
 
-BVS::Config::Config(std::string name, int argc, char** argv, std::string file)
+BVS::Config::Config(const std::string& name, int argc, char** argv, std::string file)
 	: name(name)
 	, mutex()
 	, optionStore()

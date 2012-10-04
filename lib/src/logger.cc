@@ -6,7 +6,7 @@
 
 
 
-BVS::Logger::Logger(std::string name, unsigned short verbosity, LogTarget target)
+BVS::Logger::Logger(const std::string& name, unsigned short verbosity, LogTarget target)
 	: verbosity(verbosity)
 	, target(target)
 	, name(name)

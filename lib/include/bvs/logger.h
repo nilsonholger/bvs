@@ -51,7 +51,7 @@ namespace BVS
 			 * @param[in] verbosity Your selected logging verbosity level (default: 3).
 			 * @param[in] target Selects this loggers output target (default: TO_CLI_AND_FILE)
 			 */
-			Logger(std::string name, unsigned short verbosity = 3, LogTarget target = TO_CLI_AND_FILE);
+			Logger(const std::string& name, unsigned short verbosity = 3, LogTarget target = TO_CLI_AND_FILE);
 
 			/** Log to logging system.
 			 * @param[in] level The messages' desired verbosity level.
@@ -74,7 +74,7 @@ namespace BVS
 			 * Private to prevent changes later on, which would
 			 * mess with the name padding in the logging system.
 			 * */
-			std::string name;
+			const std::string name;
 
 #ifdef BVS_LOG_SYSTEM
 			std::shared_ptr<LogSystem> logSystem; /**< Pointer to the logging backend. */

@@ -87,7 +87,7 @@ namespace BVS
 			 * @param[in] argv Array of arguments.
 			 * @param[in] file Name of config file to load immediately.
 			 */
-			Config(std::string name, int argc = 0, char** argv = nullptr, std::string file = std::string());
+			Config(const std::string& name, int argc = 0, char** argv = nullptr, std::string file = std::string());
 
 			/** Gets the system name.
 			 * @param[out] name Return object containing name.
@@ -137,7 +137,7 @@ namespace BVS
 			template<typename T> const Config& getValue(const std::string& sectionOption, std::vector<T>& t) const;
 
 		private:
-			std::string name; /**< Instance's name. */
+			const std::string name; /**< Instance's name. */
 			mutable std::mutex mutex; /**< Mutex for thread safety. */
 
 			/** A map of all stored options. */
