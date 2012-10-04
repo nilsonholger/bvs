@@ -59,6 +59,9 @@ If you need to debug, type './run --debug ...'.
 If you want to create a new module, type './run --new-module $MODULE_NAME' and
 follow the instructions displayed by it.
 
+If you want to use a different config file, type './run --bvs.config=$CONFIG'
+and you can also append '--bvs.options=...' to override options (see the Config
+documentation for further details).
 
 
 INTENDED TREE STRUCTURE:
