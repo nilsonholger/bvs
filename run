@@ -54,7 +54,7 @@ cd $_PWD
 function bvs_help {
 cat << EOF
 usage: $0 [--flags [\$arg]]
-       $0 [--debug [config]]
+       $0 [--debug] [config]
 
 maintenance flags:
   -c|--clean                 run make clean and remove all CMake generated content (for in source builds)
