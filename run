@@ -148,7 +148,7 @@ BASE=$PWD
 QUIET='--quiet'
 DIRS=(./ `git submodule $QUIET foreach --recursive 'echo " $path\c"'`)
 STASHES=()
-echo ">>> Stashing changes!"
+echo ">>> STASHING CHANGES!"
 for i in ${DIRS[@]}
 do
 	cd "$BASE/$i"
@@ -164,11 +164,12 @@ do
 done
 cd $BASE
 
-echo ">>> Updating!"
+echo ">>> UPDATING!"
+echo -e ">>> -> bvs: \c"
 git pull $QUIET --rebase
-git submodule $QUIET foreach --recursive "git pull $QUIET --rebase || :"
+git submodule $QUIET foreach --recursive 'echo ">>> -> $path: \c"; git pull $QUIET --rebase || :'
 
-echo ">>> Reapplying changes!"
+echo ">>> REAPPLYING CHANGES!"
 for i in ${STASHES[@]}
 do
 	echo ">>> -> $i"
@@ -177,7 +178,7 @@ do
 done
 cd $BASE
 
-echo ">>> Update DONE!"
+echo ">>> UPDATE DONE!"
 echo ">>> Please solve any merge conflicts if necessary!"
 }
 
