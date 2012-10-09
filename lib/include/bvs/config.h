@@ -67,15 +67,16 @@ namespace BVS
 	 * @see loadConfigFile
 	 *
 	 * The function loadCommandLine checks for occurence of
-	 * --bvs.config=$CONFIG and --bvs.options=$OPTIONS.
+	 * --$NAME.config=$CONFIG and --$NAME.options=$OPTIONS ($NAME is the name
+	 * given when constructing a config object).
 	 * Command line syntax is similar to config file syntax:
 	 * @code
-	 * --bvs.options=option1=value1:optionString="value2 with spaces":optionList=elementOne,"element Two",'element Three'
+	 * --$NAME.options=option1=value1:optionString="value2 with spaces":optionList=elementOne,"element Two",'element Three'
 	 * @endcode
-	 * The separator for bvsOptions is a ':' sign, so ':' are not allowed anywhere
+	 * The separator for $OPTIONS is a ':' sign, so ':' are not allowed anywhere
 	 * else, not even inside single or double quotes. Also, be careful with spaces
 	 * when not in single or double quotes, as your $SHELL will most likely use
-	 * them as an argument delimiter (you have been warned)
+	 * them as an argument delimiter (you have been warned).
 	 * @see loadCommandLine
 	 */
 	class BVS_PUBLIC Config
@@ -144,13 +145,14 @@ namespace BVS
 			std::map<std::string, std::string, std::less<std::string>> optionStore;
 
 			/** Loads the given arguments into the system.
-			 * This checks argv for occurences of --bvs.config and --bvs.options.
+			 * This checks argv for occurences of --$NAME.config and
+			 * --$NAME.options.
 			 * If found, they are added to the internal option-value storage.
 			 * @param[in] argc Size of argv.
 			 * @param[in] argv Array of arguments.
 			 * @return Reference to object.
 			 */
-			BVS_PRIVATE Config& loadCommandLine(int argc, char** argv);
+			Config& loadCommandLine(int argc, char** argv);
 
 			/** Searches optionStore for the given option name.
 			 * @param[in] option Desired config option.

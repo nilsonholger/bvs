@@ -42,68 +42,68 @@ BVS::Config& BVS::Config::loadCommandLine(int argc, char** argv)
 	/* algorithm:
 	 *  FOR EACH command line argument
 	 *  DO
-	 *      CASE --bvs.config=...
+	 *      CASE --$name.config=...
 	 *          CHECK missing argument
 	 *          SAVE config path
-	 *      CASE --bvs.options=...
+	 *      CASE --$name.options=...
 	 *          CHECK missing argument
 	 *          SEPARATE option list into option=value pairs and add
 	 *  DONE
 	 */
 
-	// search for --bvs.* command line options
-	std::string option;
+	// search for --$name.* command line options
+	std::string arg;
 	std::string configFile;
 	for (int i=1; i<argc; i++)
 	{
-		option = argv[i];
+		arg = argv[i];
 
 		// check for config
-		if (!option.compare(0, 13, "--bvs.config="))
+		if (!arg.compare(0, 10 + name.length(), "--" + name + ".config="))
 		{
-			option.erase(0, 13);
+			arg.erase(0, 13);
 
 			// check for missing argument
-			if (option.empty())
+			if (arg.empty())
 			{
-				std::cerr << "[ERROR|Config] no argument after --bvs.config=" << std::endl;
+				std::cerr << "[ERROR|Config] no argument after --" + name + ".config=" << std::endl;
 				exit(1);
 			}
 
 			// save config file for later use
-			configFile = option;
+			configFile = arg;
 		}
 
 		// check for additional options
-		if (!option.compare(0, 14, "--bvs.options="))
+		if (!arg.compare(0, 11 + name.length(), "--" + name + ".options="))
 		{
-			option.erase(0,14);
+			arg.erase(0,14);
 
 			// check for missing argument
-			if (option.empty())
+			if (arg.empty())
 			{
-				std::cerr << "[ERROR|Config] no argument after --bvs.options=" << std::endl;
+				std::cerr << "[ERROR|Config] no argument after --" + name + ".options=" << std::endl;
 				exit(1);
 			}
 
-			// separate option string and add to optionStore
-			std::string bvsOption;
+			// separate arg string and add to optionStore
+			std::string option;
 			size_t separatorPos = 0;
 			size_t equalPos;
 			std::lock_guard<std::mutex> lock(mutex);
 			while (separatorPos != std::string::npos)
 			{
-				// search for ':' and '='
-				separatorPos = option.find_first_of(':');
-				bvsOption = option.substr(0, separatorPos);
-				equalPos = bvsOption.find_first_of("=");
+				// separate
+				separatorPos = arg.find_first_of(':');
+				option = arg.substr(0, separatorPos);
 
 				// optionName to lowercase
-				std::transform(bvsOption.begin(), bvsOption.begin()+equalPos, bvsOption.begin(), ::tolower);
+				equalPos = option.find_first_of("=");
+				std::transform(option.begin(), option.begin()+equalPos, option.begin(), ::tolower);
 
 				// add
-				optionStore[bvsOption.substr(0, equalPos)] = bvsOption.substr(equalPos+1, bvsOption.size());
-				option.erase(0, separatorPos+1);
+				optionStore[option.substr(0, equalPos)] = option.substr(equalPos+1, option.size());
+				arg.erase(0, separatorPos+1);
 			}
 		}
 	}

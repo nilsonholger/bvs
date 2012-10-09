@@ -10,7 +10,7 @@
 
 
 BVS::BVS::BVS(int argc, char** argv)
-	: config("BVS", argc, argv)
+	: config("bvs", argc, argv)
 	, info(Info{
 			config,
 			0,
