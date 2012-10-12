@@ -3,6 +3,9 @@
 		setup will now ask which submodules shall be installed, this will
 		create a commit which must NOT be pushed back to the development
 		repository as this will break existing installs for others
+		UPDATE INSTRUCTIONS: please remove the libbvs, bvsd and the
+		overlapping submodule directories so setup can properly add them as
+		git submodules
 
 2012-10-02:
 	NEW: cmake->BVS_GCC_VISIBILITY

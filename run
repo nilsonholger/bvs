@@ -102,8 +102,8 @@ echo ">>> Created Module $MOD! Please modify modules/CMakeLists.txt to add it to
 # setup
 function bvs_setup {
 echo ">>> SETUP library and daemon!"
-[ ! -d libbvs ] && git submodule add git@i14gitlab.anthropomatik.kit.edu:bvs_libbvs.git libbvs
-[ ! -d bvsd ] && git submodule add git@i14gitlab.anthropomatik.kit.edu:bvs_bvsd.git bvsd
+[ ! -d libbvs ] && git submodule add git@i14gitlab.anthropomatik.kit.edu:bvs_libbvs.git libbvs || echo ">>> SKIP libbvs!"
+[ ! -d bvsd ] && git submodule add git@i14gitlab.anthropomatik.kit.edu:bvs_bvsd.git bvsd || echo ">>> SKIP bvsd!"
 
 echo
 echo ">>> SELECT modules to install!"
