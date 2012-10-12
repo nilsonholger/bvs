@@ -1,0 +1,3 @@
+bvsModules git@i14gitlab.anthropomatik.kit.edu:bvs_bvsmodules.git bvsCalibration bvsCapture bvsStereoCUDA bvsStereoElas
+camGrasshopper git@i14gitlab.anthropomatik.kit.edu:bvs_camgrasshopper.git
+ImageSequencePlayer git@i14gitlab.anthropomatik.kit.edu:bvs_imagesequenceplayer.git

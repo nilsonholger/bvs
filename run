@@ -101,24 +101,43 @@ echo ">>> Created Module $MOD! Please modify modules/CMakeLists.txt to add it to
 
 # setup
 function bvs_setup {
-echo ">>> BVS setup starting!"
-git submodule update --init --recursive --rebase
-git submodule foreach git checkout master > /dev/null
-git submodule --quiet foreach git pull > /dev/null
-echo ">>> BVS setup complete!"
+echo ">>> SETUP library and daemon!"
+[ ! -d libbvs ] && git submodule add git@i14gitlab.anthropomatik.kit.edu:bvs_libbvs.git libbvs
+[ ! -d bvsd ] && git submodule add git@i14gitlab.anthropomatik.kit.edu:bvs_bvsd.git bvsd
 
-[ ! -r modules/CMakeLists.txt ] && echo "# enable/disable to be compiled modules here (entries will be created by './run --new-module <MODULE>')" > modules/CMakeLists.txt || return
-for i in `ls -d modules/*/ modules/*/*/ 2>/dev/null`
+echo
+echo ">>> SELECT modules to install!"
+while read LINE; do MODULES[${#MODULES[@]}]=$LINE; done < .bvsmodules
+for MOD in "${MODULES[@]}"
 do
-	i=${i#modules/}
-	i=${i%/}
-	echo "#add_subdirectory($i)" >> modules/CMakeLists.txt
+	eval MOD=($MOD)
+	DIR=${MOD[0]}
+	REPO=${MOD[1]}
+	[ -d modules/$DIR ] && echo ">>> SKIP $DIR!" && continue
+	echo
+	echo -e ">>> INSTALL $DIR ($REPO)? [y|N] \c"
+	read CMD
+	[ "$CMD"x != "yx" ] && echo ">>> SKIP $DIR!" && continue
+	git submodule add $REPO modules/$DIR
+
+	[ ! -r modules/CMakeLists.txt ] && echo "# enable module compilation here (entries created by './run --new-module <MODULE>')" > modules/CMakeLists.txt
+	if [ "${#MOD[@]}" -lt 3 ]
+	then
+		echo "#add_subdirectory(${MOD[0]})" >> modules/CMakeLists.txt
+	else
+		for i in `eval "echo {2..$[${#MOD[@]}-1]}"`
+		do
+			echo "#add_subdirectory(${MOD[0]}/${MOD[$i]})" >> modules/CMakeLists.txt
+		done
+	fi
 done
 
-echo ">>> ADVICE: for out of source builds, consider using the directory 'build' (see Readme.txt)"
+git commit -m "WARNING: DO NOT PUSH THIS COMMIT TO THE DEVELOPMENT REPOSITORY!" &> /dev/null
+
 echo
-echo ">>> Please modify modules/CMakeLists.txt to enable modules you want to add to compilation!"
-echo ">>> WARNING: modules/CMakeLists.txt is auto generated, so not all entries might actually contain a module!"
+echo ">>> SETUP complete!"
+[ ! -d build ] && echo ">>> ADVICE: for out of source builds, consider using the directory 'build' (see Readme.txt)"
+echo ">>> ADVICE: Please modify modules/CMakeLists.txt to enable modules you want to add to compilation!"
 echo
 }
 

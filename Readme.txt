@@ -8,9 +8,16 @@ to be decided...until then, copyright by dk@hyve.org
 
 
 INSTALLING:
-To set everything up, type './run --setup'. This will download 'libbvs' and
-'bvsd' and set them up as git submodules. For more information, './run --help'
-will list './run's capabilities.
+To set everything up, type './run --setup'. This will download the bvs library
+and its clients as well as set them up as git submodules. Furthermore you will
+be asked whether you want to install a list of known modules, which will also
+be added as git submodules.
+
+For more information, './run --help' will list './run's capabilities.
+
+WARNING: setup creates a commit (if new submodules were created), which must
+NEVER be pushed to a development repository, UNLESS you want to share your
+setup with others. This might break things, you have been warned.
 
 
 
@@ -64,6 +71,21 @@ and you can also append '--bvs.options=...' to override options (see the Config
 documentation for further details).
 
 
+
+BVS MODULE LIST:
+The file '.bvsmodules' contains a list of known modules. Upon setup, you will
+be asked whether you want to (individually) install those.
+
+The format of this file is as follows:
+
+	ModuleName PATH_TO_GIT_REPOSITORY
+	RepositoryName PATH_TO_GIT_REPOSITORY Module1 Module2 [...]
+
+These two formats are the ONLY allowed ones, nothing else, no empty lines, no
+comments.
+
+
+
 INTENDED TREE STRUCTURE:
 This is the bvs base repository. It's purpose is to serve as a common base for
 the BVS framework, its clients as well as its modules.
@@ -84,16 +106,17 @@ in a single git repository and either symlink them to './modules/...' or modify
 
 
 
-FILES AND DIRECTORIES:
+DIRECTORIES AND FILES:
 '.'
- |- bin: directory where all your modules/executables/settings will be
- |       collected.
- |- bvsd: contains an interactive daemon (undocumented so far, just look
- |        at its source for more info)
- |- libbvs: contains the actual library, to get eventual updates, just
- |          update the git submodule
+ |- bin: directory where all your modules/executables/settings are
+ |- build: OPTIONAL directory for out of source builds
+ |- bvsd: contains an interactive command line daemon
+ |- libbvs: contains the actual library,
  |- modules: module directory, create git submodules here (do not forget
  |           to enable used modules in './modules/CMakeLists.txt')
- |- run
- |- CMakeLists.txt
- \- Readme.txt
+ |
+ |- run: main script to do various tasks
+ |- Changelog.txt: contains important notes about updates
+ |- CMakeLists.txt: cmake build file
+ |- Doxyfile.in: doxygen config, parsed by cmake
+ \- Readme.txt: this readme file
