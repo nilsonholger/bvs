@@ -1,3 +1,9 @@
+2012-10-12:
+	CHANGED: submodule setup
+		setup will now ask which submodules shall be installed, this will
+		create a commit which must NOT be pushed back to the development
+		repository as this will break existing installs for others
+
 2012-10-02:
 	NEW: cmake->BVS_GCC_VISIBILITY
 		uses gcc's visibility feature for dynamic library symbol exports (read
@@ -6,6 +12,7 @@
 		now the log system can be enabled in cmake, if disabled, the log
 		system's backend won't even be compiled and the created logger
 		instances will have no functionality
+
 2012-10-01:
 	NEW: cmake->BVS_THREAD_NAMES
 		allows threads to set names (read cmake info)
