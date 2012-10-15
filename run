@@ -41,7 +41,7 @@ echo
 echo -n ">>> directory cleanup:"
 for (( i = ${#DIRS[@]}-1; i>0; i-- ))
 do
-	[ -d ${DIRS[i]} ] && rmdir ${DIRS[i]} 2>&1 > /dev/null && echo -n " ${DIRS[i]}"
+	[ -d ${DIRS[i]} ] && rmdir ${DIRS[i]} &> /dev/null && echo -n " ${DIRS[i]}"
 done
 echo
 
