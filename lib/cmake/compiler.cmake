@@ -17,10 +17,13 @@ endif()
 
 
 # WARNINGS
-set(COMPILER_WARNINGS ON CACHE BOOL "Enable all/pedantic/effc++ compiler warnings.")
+set(COMPILER_WARNINGS ON CACHE BOOL "Enable all/pedantic/effc++ compiler errors/warnings.")
 if(COMPILER_WARNINGS)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Weffc++ -pedantic -pedantic-errors")
 endif()
+
+# WARNINGS MACRO
+set(COMPILER_WARNINGS_MACRO ON CACHE BOOL "Macro to allow selective disabling of compiler warnings: disable_compiler_warnings([RECURSE] GLOB_LIST).")
 
 # CPU/ARCH TUNING
 set(COMPILER_TUNING OFF CACHE BOOL "Enable automatic architecture and cpu tuning.")
