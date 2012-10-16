@@ -151,9 +151,9 @@ namespace BVS
 			exit(1);
 		}
 
-		if (!data->locked) data->mutex->lock();
+		if (data->active && !data->locked) data->mutex->lock();
 		*connection = t;
-		if (!data->locked) data->mutex->unlock();
+		if (data->active && !data->locked) data->mutex->unlock();
 	}
 
 
@@ -169,9 +169,9 @@ namespace BVS
 
 		if (!data->active && !activate()) return false;
 
-		if (!data->locked) data->mutex->lock();
+		if (data->active && !data->locked) data->mutex->lock();
 		t = *connection;
-		if (!data->locked) data->mutex->unlock();
+		if (data->active && !data->locked) data->mutex->unlock();
 
 		return data->active;
 	}
@@ -198,16 +198,22 @@ namespace BVS
 
 	template<typename T> void Connector<T>::lockConnection()
 	{
-		data->mutex->lock();
-		data->locked = true;
+		if (data->active)
+		{
+			data->mutex->lock();
+			data->locked = true;
+		}
 	}
 
 
 
 	template<typename T> void Connector<T>::unlockConnection()
 	{
-		data->mutex->unlock();
-		data->locked = false;
+		if (data->active)
+		{
+			data->mutex->unlock();
+			data->locked = false;
+		}
 	}
 
 
