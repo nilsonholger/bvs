@@ -110,6 +110,8 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 		if (!controlThread.joinable() && flag!=SystemFlag::RUN) return *this;
 	}
 
+	for (auto& pool: pools) pool.second->flag = ControlFlag::QUIT;
+
 	masterLock.unlock();
 
 	return *this;
@@ -268,13 +270,13 @@ BVS::Control& BVS::Control::poolController(std::shared_ptr<PoolData> data)
 
 	while (bool(data->flag) && !data->modules.empty())
 	{
+		for (auto& module: data->modules) moduleController(*(module.get()));
+
 		data->flag = ControlFlag::WAIT;
 		runningThreads.fetch_sub(1);
 		LOG(3, "POOL(" << data->poolName << ") WAIT!");
 		monitor.notify_all();
 		monitor.wait(threadLock, [&](){ return data->flag != ControlFlag::WAIT; });
-
-		for (auto& module: data->modules) moduleController(*(module.get()));
 	}
 
 	pools.erase(pools.find(data->poolName));
