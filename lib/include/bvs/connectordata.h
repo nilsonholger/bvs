@@ -73,7 +73,7 @@ namespace BVS
 		std::shared_ptr<void> pointer; /**< Void pointer to contained object. */
 		size_t typeIDHash; /**< Hash code of templated type. */
 		std::string typeIDName; /**< Type of template instantiation. */
-		std::mutex* mutex; /**< Mutex to lock resource. */
+		std::shared_ptr<std::mutex> mutex; /**< Mutex to lock resource. */
 		bool locked; /** If connection is locked. */
 
 		ConnectorData(const ConnectorData&) = delete; /**< -Weffc++ */

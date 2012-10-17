@@ -124,7 +124,7 @@ namespace BVS
 			connection = std::make_shared<T>();
 			data->pointer = connection;
 			data->active = true;
-			data->mutex = new std::mutex();
+			data->mutex = std::make_shared<std::mutex>();
 		}
 	}
 
