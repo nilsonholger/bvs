@@ -93,6 +93,12 @@ namespace BVS
 			modules()
 		{}
 
+		/** Desctructor. */
+		~PoolData()
+		{
+			thread.detach();
+		}
+
 		std::string poolName; /**< Pool name. */
 		ControlFlag flag; /**< System control flag for pool. */
 		std::thread thread; /**< Pool thread handle. */
