@@ -5,7 +5,7 @@
 
 
 
-/** This is the BVSExampleModule class.
+/** This is the BVSExampleModule module.
  * Please add sufficient documentation to enable others to use it.
  * Include information about:
  * - Dependencies
