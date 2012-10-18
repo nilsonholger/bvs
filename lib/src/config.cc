@@ -18,14 +18,6 @@ BVS::Config::Config(const std::string& name, int argc, char** argv, std::string 
 
 
 
-BVS::Config& BVS::Config::getName(std::string& name)
-{
-	name = name;
-	return *this;
-}
-
-
-
 std::map<std::string, std::string> BVS::Config::dumpOptionStore()
 {
 	std::lock_guard<std::mutex> lock(mutex);
