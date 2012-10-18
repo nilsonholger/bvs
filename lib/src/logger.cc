@@ -7,9 +7,9 @@
 
 
 BVS::Logger::Logger(const std::string& name, unsigned short verbosity, LogTarget target)
-	: verbosity(verbosity)
+	: name(name)
+	, verbosity(verbosity)
 	, target(target)
-	, name(name)
 #ifdef BVS_LOG_SYSTEM
 	, logSystem(LogSystem::connectToLogSystem())
 #endif
@@ -28,13 +28,6 @@ std::ostream& BVS::Logger::out(const int level)
 #else
 	return std::clog;
 #endif
-}
-
-
-
-std::string BVS::Logger::getName() const
-{
-	return this->name;
 }
 
 

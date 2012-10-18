@@ -46,7 +46,7 @@ BVS::LogSystem::LogSystem()
 std::ostream& BVS::LogSystem::out(const Logger& logger, int level)
 {
 	// convert name to lowercase
-	tmpName = logger.getName();
+	tmpName = logger.name;
 	std::transform(tmpName.begin(), tmpName.end(), tmpName.begin(), ::tolower);
 
 	// check verbosity of system and logger
@@ -78,7 +78,7 @@ std::ostream& BVS::LogSystem::out(const Logger& logger, int level)
 	}
 
 	// prepare log output
-	*out << "[" << level << "|" << std::setw(namePadding) << std::left << logger.getName() << "] ";
+	*out << "[" << level << "|" << std::setw(namePadding) << std::left << logger.name << "] ";
 
 	// return stream selected by caller given the systems constraints
 	return *out;
@@ -98,13 +98,13 @@ BVS::LogSystem& BVS::LogSystem::setSystemVerbosity(int verbosity)
 BVS::LogSystem& BVS::LogSystem::announce(const Logger& logger)
 {
 	// update padding size for fancy (aligned) output
-	if (logger.getName().length() > namePadding)
+	if (logger.name.length() > namePadding)
 	{
-		namePadding = logger.getName().length();
+		namePadding = logger.name.length();
 	}
 
 	// convert name to lowercase
-	tmpName = logger.getName();
+	tmpName = logger.name;
 	std::transform(tmpName.begin(), tmpName.end(), tmpName.begin(), ::tolower);
 
 	if (loggerLevels.find(tmpName)==loggerLevels.end())

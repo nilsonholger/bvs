@@ -59,23 +59,18 @@ namespace BVS
 			 */
 			std::ostream& out(const int level);
 
-			/** Get this logger's name.
-			 * @return This logger's name.
-			 */
-			std::string getName() const;
-
 			~Logger(); /**< Deconstructor cleaning up. */
+
+			/** This logger instance's name.
+			 * Const to prevent changes later on, which would
+			 * mess with the name padding in the logging system.
+			 * */
+			const std::string name;
 
 			unsigned short verbosity; /**< This logger's verbosity level. */
 			LogTarget target; /**< This logger's output target. */
 
 		private:
-			/** This logger instance's name.
-			 * Private to prevent changes later on, which would
-			 * mess with the name padding in the logging system.
-			 * */
-			const std::string name;
-
 #ifdef BVS_LOG_SYSTEM
 			std::shared_ptr<LogSystem> logSystem; /**< Pointer to the logging backend. */
 #endif
