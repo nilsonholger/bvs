@@ -305,6 +305,9 @@ BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 	//TODO check if id exists
 	modules[id]->module->prepareHotSwap(data);
 
+	//TODO delete using OLD desctructor code
+	modules[id]->module.reset();
+
 	// wait for thread to join, first check if it is still running
 	//if (modules[id]->asThread == true)
 	//{
