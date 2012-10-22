@@ -251,10 +251,13 @@ BVS::BVS& BVS::BVS::pause()
 BVS::BVS& BVS::BVS::hotSwap(const std::string& id)
 {
 	//TODO check if id exists
-	SystemFlag state = control->queryActiveFlag();
-	control->sendCommand(SystemFlag::PAUSE);
-	loader->hotSwapModule(id);
-	control->sendCommand(state);
+	if (control->modules.find(id)!=control->modules.end())
+	{
+		SystemFlag state = control->queryActiveFlag();
+		control->sendCommand(SystemFlag::PAUSE);
+		loader->hotSwapModule(id);
+		control->sendCommand(state);
+	}
 	return *this;
 }
 

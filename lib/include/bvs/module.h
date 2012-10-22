@@ -30,7 +30,6 @@ namespace BVS
 			virtual ~Module(); /**< Base module destructor. */
 			virtual Status execute() = 0; /**< Execute function doing all the work. */
 			virtual Status debugDisplay() = 0; /**< UNUSED */
-			virtual Status prepareHotSwap(void*&); /** TODO */
 
 		private:
 			Module(const Module&) = delete; /**< -Weffc++ */
@@ -47,7 +46,7 @@ namespace BVS
  * by the system's module loader upon loading the module.
  * @param[in] id The Module's name.
  * @param[in] module A pointer to the module.
- * @param[in] TODO
+ * @param[in] hotSwap Whether to use module Hot Swapping instead of creating a new Module (please see BVS::Loader).
  */
 BVS_PUBLIC void registerModule(const std::string& id, BVS::Module* module, bool hotSwap = false);
 

@@ -64,7 +64,20 @@ namespace BVS
 			 */
 			Loader& connectModule(const std::string& id, const bool connectorTypeMatching = true);
 
-			/** TODO comment */
+			/** HotSwap a module.
+			 * This will reload/hotswap an already existing module.
+			 *
+			 * \note Only works if there is only ONE module instance of a
+			 * library present.
+			 *
+			 * \note This has its (fair) limitations. As long as one does not
+			 * change the general layout of a module (add/remove/reorder
+			 * members) it *should* work fine.  Hotswap will be achieved by
+			 * using a 'reinterpret_cast<...>' inside the module. This is
+			 * inherently insafe and can fail due to all kind of reasons. YOU
+			 * HAVE BEEN WARNED!!!
+			 * @param[in] id Module ID to hotswap (if it does not exist, it fails silently).
+			 */
 			Loader& hotSwapModule(const std::string& id);
 
 		private:

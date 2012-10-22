@@ -300,10 +300,11 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 
 BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 {
+	//TODO IMPORTANT: this works for now, but NOT for BVS::Connectors, we probably need a dual approach using reinterpret_cast while storing the BVS::Connectors outside of the module
+	//TODO cleanup, separate load/unload of library (duplicate)
 	//UNLOAD
 	void* data = nullptr;
 	//TODO check if id exists
-	modules[id]->module->prepareHotSwap(data);
 
 	//TODO delete using OLD desctructor code
 	//modules[id]->module.reset();

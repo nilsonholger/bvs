@@ -34,8 +34,10 @@ void BVS::Control::registerModule(const std::string& id, Module* module, bool ho
 {
 	if (hotSwap)
 	{
-		//TODO check id existence, just to be sure
-		//TODO note about hotSwapGraveYard
+		// NOTE: hotSwapGraveYard will only be initialized when the HotSwap
+		// functionality is used. It is intended as a store for unneeded
+		// shared_ptr until the process execution ends, but since it is a
+		// static pointer it will never be explicitly deleted.
 		if (hotSwapGraveYard==nullptr) hotSwapGraveYard = new ModuleVector();
 		hotSwapGraveYard->push_back(std::shared_ptr<Module>(module));
 		modules[id]->module.swap(hotSwapGraveYard->back());
