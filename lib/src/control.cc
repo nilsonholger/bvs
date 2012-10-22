@@ -26,19 +26,28 @@ BVS::Control::Control(Info& info)
 
 
 
-void BVS::Control::registerModule(const std::string& id, Module* module)
+void BVS::Control::registerModule(const std::string& id, Module* module, bool hotSwap)
 {
-	modules[id] = std::shared_ptr<ModuleData>(new ModuleData(
-				id,
-				std::string(),
-				std::string(),
-				module,
-				nullptr,
-				false,
-				std::string(),
-				ControlFlag::WAIT,
-				Status::NONE,
-				ConnectorMap()));
+	if (hotSwap)
+	{
+		//TODO check existence, just to be sure
+		//TODO there is (rare) a segfault in this line
+		modules[id]->module.reset(module);
+	}
+	else
+	{
+		modules[id] = std::shared_ptr<ModuleData>(new ModuleData(
+					id,
+					std::string(),
+					std::string(),
+					module,
+					nullptr,
+					false,
+					std::string(),
+					ControlFlag::WAIT,
+					Status::NONE,
+					ConnectorMap()));
+	}
 }
 
 
@@ -137,6 +146,13 @@ BVS::Control& BVS::Control::sendCommand(const SystemFlag controlFlag)
 	}
 
 	return *this;
+}
+
+
+
+BVS::SystemFlag BVS::Control::queryActiveFlag()
+{
+	return flag;
 }
 
 

@@ -201,6 +201,9 @@ namespace BVS
 			 */
 			BVS& pause();
 
+			/** TODO comment */
+			BVS& hotSwap(const std::string& id);
+
 			/** Tells the system to quit.
 			 * This will signal the system's controller to issue a quit signal to
 			 * all modules after which it will start to shutdown the entire system

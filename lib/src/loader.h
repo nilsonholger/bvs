@@ -64,6 +64,9 @@ namespace BVS
 			 */
 			Loader& connectModule(const std::string& id, const bool connectorTypeMatching = true);
 
+			/** TODO comment */
+			Loader& hotSwapModule(const std::string& id);
+
 		private:
 			/** Check input Connector.
 			 * Checks input connector for existence, type etc.

@@ -298,6 +298,108 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 
 
 
+BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
+{
+	//UNLOAD
+	void* data = nullptr;
+	//TODO check if id exists
+	modules[id]->module->prepareHotSwap(data);
+
+	// wait for thread to join, first check if it is still running
+	//if (modules[id]->asThread == true)
+	//{
+		//if (modules[id]->thread.joinable())
+		//{
+			//modules[id]->flag = ControlFlag::QUIT;
+			//control.notifyThreads();
+			//LOG(3, "Waiting for " << id << " to join!");
+			//modules[id]->thread.join();
+		//}
+	//}
+
+	// close lib and check for errors
+#ifndef BVS_OSX_ANOMALIES
+	std::string modulePath = "./lib" + modules[id]->library + ".so";
+#else
+	std::string modulePath = "./lib" + modules[id]->library + ".(so|dylib)";
+#endif //BVS_OSX_ANOMALIES
+	LOG(3, id << " unloading from " << modulePath << "!");
+
+	// get handle from internals
+	void* dlib = modules[id]->dlib;
+	if (dlib==nullptr)
+	{
+		LOG(0, "Requested module " << id << " not found!");
+		exit(-1);
+	}
+
+	// close the module
+	dlclose(dlib);
+
+	// check for errors
+	char* dlerr = dlerror();
+	if (dlerr)
+	{
+		LOG(0, "While closing " << modulePath << " following error occured: " << dlerror());
+		exit(-1);
+	}
+	LOG(2, id << " unloaded!");
+
+	//HOTSWAP
+
+	// prepare path and load the lib
+	modulePath = "lib" + modules[id]->library + ".so";
+	dlib = dlopen(modulePath.c_str(), RTLD_NOW);
+	if (dlib!=NULL)
+	{
+		LOG(3, "Loading " << id << " from " << modulePath << "!");
+	}
+	else
+	{
+#ifdef BVS_OSX_ANOMALIES
+		// additional check for 'dylib' (when compiled under OSX as SHARED instead of MODULE)
+		modulePath.resize(modulePath.size()-2);
+		modulePath += "dylib";
+		dlib = dlopen(modulePath.c_str(), RTLD_NOW);
+		if (dlib!=NULL) LOG(3, "Loading " << id << " from " << modulePath << "!");
+#endif //BVS_OSX_ANOMALIES
+	}
+
+	// check for errors
+	if (dlib==NULL)
+	{
+		LOG(0, "Loading " << modulePath << ", resulted in: " << dlerror());
+		exit(-1);
+	}
+
+	// look for bvsRegisterModule in loaded lib, check for errors and execute register function
+	// TODO create modified version
+	typedef void (*bvsHotSwapModule_t)(const std::string& id, const Info& info, void* data);
+	bvsHotSwapModule_t bvsHotSwapModule;
+	*reinterpret_cast<void**>(&bvsHotSwapModule)=dlsym(dlib, "bvsHotSwapModule");
+
+	// check for errors
+	dlerr = dlerror();
+	if (dlerr)
+	{
+		LOG(0, "Loading function bvsHotSwapModule() in " << modulePath << " resulted in: " << dlerr);
+		exit(-1);
+	}
+
+	// register
+	// TODO modify to include data
+	bvsHotSwapModule(id, info, data);
+	LOG(2, "Loading " << id << " successfull!");
+
+	modules[id]->dlib = dlib;
+	// let control handle module start
+	//control.startModule(id);
+
+	return *this;
+}
+
+
+
 BVS::Loader& BVS::Loader::printModuleConnectors(const ModuleData* module)
 {
 	if (module->connectors.size()==0)

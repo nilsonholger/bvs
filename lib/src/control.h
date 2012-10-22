@@ -36,8 +36,9 @@ namespace BVS
 			/** Registers a module.
 			 * @param[in] id Name of module.
 			 * @param[in] module Pointer to module.
+			 * @param[in] TODO
 			 */
-			static void registerModule(const std::string& id, Module* module);
+			static void registerModule(const std::string& id, Module* module, bool hotSwap = false);
 
 			/** The master control function.
 			 * This is the master control function, it forks if desired and can
@@ -65,6 +66,9 @@ namespace BVS
 			 * @return Reference to object.
 			 */
 			Control& sendCommand(const SystemFlag controlFlag = SystemFlag::PAUSE);
+
+			/** TODO comment */
+			SystemFlag queryActiveFlag();
 
 			/** Start a module.
 			 * This will start a module. It will act according to its metadata,

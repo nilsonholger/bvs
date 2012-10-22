@@ -15,6 +15,12 @@
  */
 class BVSExampleModule : public BVS::Module
 {
+	//TODO
+	struct HotSwapData {
+		BVS::Connector<int> i;
+		BVS::Connector<string> s;
+	};
+
 	public:
 		/** Your module constructor.
 		 * Please do not change the signature, as it will be called by the
@@ -22,6 +28,7 @@ class BVSExampleModule : public BVS::Module
 		 * You can use the constructor/destructor pair to create/destroy your data.
 		 * @param[in] id Your modules unique identifier, will be set by framework.
 		 * @param[in] bvs Reference to framework info for e.g. config option retrieval.
+		 * @param[in] TODO
 		 */
 		BVSExampleModule(const std::string id, const BVS::Info& bvs);
 
@@ -39,6 +46,9 @@ class BVSExampleModule : public BVS::Module
 		 * @return Module's status.
 		 */
 		BVS::Status debugDisplay();
+
+		//TODO
+		BVS::Status prepareHotSwap(void*& data);
 
 	private:
 		const std::string id; /**< Your unique module id, set by framework. */
@@ -61,8 +71,10 @@ class BVSExampleModule : public BVS::Module
 		/** Example Connector used to retrieve/send data from/to other modules.
 		 * @see Connector
 		 */
-		BVS::Connector<int> input;
-		BVS::Connector<std::string> output;
+		//BVS::Connector<int> input;
+		//BVS::Connector<std::string> output;
+
+		HotSwapData data;
 
 		BVSExampleModule(const BVSExampleModule&) = delete; /**< -Weffc++ */
 		BVSExampleModule& operator=(const BVSExampleModule&) = delete; /**< -Weffc++ */
