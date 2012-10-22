@@ -71,10 +71,10 @@ namespace BVS
 
 
 	/** Module Map. */
-	typedef std::map<std::string, std::shared_ptr<ModuleData>, std::less<std::string>> ModuleMap;
+	typedef std::map<std::string, std::shared_ptr<ModuleData>, std::less<std::string>> ModuleDataMap;
 
-	/** Module Vector.*/
-	typedef std::vector<std::shared_ptr<ModuleData>> ModuleVector;
+	/** Module Data Vector.*/
+	typedef std::vector<std::shared_ptr<ModuleData>> ModuleDataVector;
 
 
 
@@ -102,7 +102,7 @@ namespace BVS
 		std::string poolName; /**< Pool name. */
 		ControlFlag flag; /**< System control flag for pool. */
 		std::thread thread; /**< Pool thread handle. */
-		ModuleVector modules; /**< Pool module vector. */
+		ModuleDataVector modules; /**< Pool module vector. */
 	};
 
 

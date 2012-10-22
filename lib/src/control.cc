@@ -6,7 +6,7 @@
 
 
 
-BVS::ModuleMap BVS::Control::modules;
+BVS::ModuleDataMap BVS::Control::modules;
 
 
 
@@ -192,7 +192,7 @@ BVS::Control& BVS::Control::purgeData(std::string moduleID)
 		std::string pool = modules[moduleID]->poolName;
 		if (!pool.empty())
 		{
-			ModuleVector& poolModules = pools[pool]->modules;
+			ModuleDataVector& poolModules = pools[pool]->modules;
 			if (!poolModules.empty())
 				poolModules.erase(std::remove_if
 						(poolModules.begin(), poolModules.end(),

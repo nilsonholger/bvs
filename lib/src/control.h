@@ -91,7 +91,7 @@ namespace BVS
 			Control& purgeData(std::string moduleID);
 
 			/** Map of registered modules and their metadata. */
-			static ModuleMap modules;
+			static ModuleDataMap modules;
 
 		private:
 			/** Controls given module.
@@ -118,7 +118,7 @@ namespace BVS
 
 			std::atomic<int> runningThreads; /**< The number of actively running threads. */
 
-			ModuleVector masterModules; /**< Vector of modules executed by master. */
+			ModuleDataVector masterModules; /**< Vector of modules executed by master. */
 
 			PoolMap pools; /**< Map of pools. */
 
