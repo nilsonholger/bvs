@@ -1,13 +1,13 @@
 #ifndef BVS_CONNECTORDATA_H
 #define BV__CONNECTORDATA_H
 
-#include "bvs/traits.h"
+#include <mutex>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <string>
 
-#include<mutex>
-#include<iostream>
-#include<map>
-#include<memory>
-#include<string>
+#include "bvs/traits.h"
 
 
 

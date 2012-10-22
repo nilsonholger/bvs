@@ -1,9 +1,9 @@
 #ifndef BVS_H
 #define BVS_H
 
-#include<iomanip>
-#include<iostream>
-#include<string>
+#include <iomanip>
+#include <iostream>
+#include <string>
 
 #include "bvs/bvsinfo.h"
 #include "bvs/config.h"
@@ -20,7 +20,7 @@
 
 
 /** BVS namespace, contains all library stuff. */
-namespace BVS 
+namespace BVS
 {
 	// Forward declarations
 	class Control;

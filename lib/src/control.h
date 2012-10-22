@@ -1,10 +1,11 @@
 #ifndef BVS_CONTROL_H
 #define BVS_CONTROL_H
 
-#include<atomic>
-#include<condition_variable>
-#include<mutex>
-#include<thread>
+#include <atomic>
+#include <condition_variable>
+#include <mutex>
+#include <thread>
+#include <vector>
 
 #include "bvs/bvsinfo.h"
 #include "bvs/logger.h"

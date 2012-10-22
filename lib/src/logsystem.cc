@@ -1,8 +1,8 @@
+#include <algorithm>
+#include <iomanip>
+
 #include "logsystem.h"
 #include "bvs/traits.h"
-
-#include<algorithm>
-#include<iomanip>
 
 
 

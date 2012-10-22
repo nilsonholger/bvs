@@ -1,11 +1,11 @@
 #ifndef BVS_LOGGER_H
 #define BVS_LOGGER_H
 
-#include "bvs/traits.h"
+#include <iostream>
+#include <memory>
+#include <string>
 
-#include<iostream>
-#include<memory>
-#include<string>
+#include "bvs/traits.h"
 
 
 
