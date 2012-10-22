@@ -1,13 +1,13 @@
 #ifndef BVS_CONFIG_H
 #define BVS_CONFIG_H
 
-#include "bvs/traits.h"
+#include <map>
+#include <mutex>
+#include <sstream>
+#include <string>
+#include <vector>
 
-#include<map>
-#include<mutex>
-#include<sstream>
-#include<string>
-#include<vector>
+#include "bvs/traits.h"
 
 
 

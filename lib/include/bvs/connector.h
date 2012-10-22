@@ -1,15 +1,15 @@
 #ifndef BVS_CONNECTOR_H
 #define BVS_CONNECTOR_H
 
-#include "bvs/connectordata.h"
+#include <atomic>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <typeinfo>
 
-#include<atomic>
-#include<iostream>
-#include<map>
-#include<memory>
-#include<mutex>
-#include<string>
-#include<typeinfo>
+#include "bvs/connectordata.h"
 
 
 

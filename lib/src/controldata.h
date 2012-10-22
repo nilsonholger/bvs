@@ -1,12 +1,12 @@
 #ifndef BVS_CONTROLDATA_H
 #define BVS_CONTROLDATA_H
 
-#include<atomic>
-#include<map>
-#include<memory>
-#include<string>
-#include<thread>
-#include<vector>
+#include <atomic>
+#include <map>
+#include <memory>
+#include <string>
+#include <thread>
+#include <vector>
 
 #include "bvs/connector.h"
 #include "bvs/module.h"

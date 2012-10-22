@@ -1,8 +1,8 @@
-#include "bvs/config.h"
+#include <algorithm>
+#include <iostream>
+#include <fstream>
 
-#include<algorithm>
-#include<iostream>
-#include<fstream>
+#include "bvs/config.h"
 
 
 

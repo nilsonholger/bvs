@@ -1,8 +1,8 @@
 #ifndef BVS_LOGSYSTEM_H
 #define BVS_LOGSYSTEM_H
 
-#include<fstream>
-#include<memory>
+#include <fstream>
+#include <memory>
 
 #include "bvs/config.h"
 #include "streams.h"

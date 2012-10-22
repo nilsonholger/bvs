@@ -1,12 +1,12 @@
 #ifndef BVS_INFO_H
 #define BVS_INFO_H
 
+#include <chrono>
+#include <map>
+#include <string>
+
 #include "bvs/config.h"
 #include "bvs/traits.h"
-
-#include<chrono>
-#include<map>
-#include<string>
 
 
 
