@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 	LOG(2, "starting!");
 	bvs->start();
 
-	bvs->run();
+	//bvs->run();
 
 	std::string input;
 	while (input != "q" && input != "quit")
@@ -78,6 +78,13 @@ int main(int argc, char** argv)
 			testLogger();
 			testConfig();
 		}
+		else if (input.substr(0,2) == "hs" || input.substr(0, 7) == "hotswap")
+		{
+			size_t delimiter = input.find_first_of(" ");
+			input.erase(0, delimiter+1);
+			if (input.empty() || delimiter==std::string::npos) std::cout << "ERROR: no module ID given!" << std::endl;
+			else bvs->hotSwap(input);
+		}
 		else if (input == "q" || input == "quit")
 		{
 			LOG(2, "quitting...");
@@ -87,13 +94,14 @@ int main(int argc, char** argv)
 		else if (input == "h" || input == "help")
 		{
 			std::cout << "usage:" << std::endl;
-			std::cout << "   r|run        run system until paused" << std::endl;
-			std::cout << "   c|continue   same as run" << std::endl;
-			std::cout << "   s|step       advance system by one step" << std::endl;
-			std::cout << "   p|pause      pause(stop) system" << std::endl;
-			std::cout << "   t|test       call test functions" << std::endl;
-			std::cout << "   q|quit       shutdown system and quit" << std::endl;
-			std::cout << "   h|help       show help" << std::endl;
+			std::cout << "   r|run            run system until paused" << std::endl;
+			std::cout << "   c|continue       same as run" << std::endl;
+			std::cout << "   s|step           advance system by one step" << std::endl;
+			std::cout << "   p|pause          pause(stop) system" << std::endl;
+			std::cout << "   hs|hotswap <arg> HotSwap(TM) <moduleID>" << std::endl;
+			std::cout << "   t|test           call test functions" << std::endl;
+			std::cout << "   q|quit           shutdown system and quit" << std::endl;
+			std::cout << "   h|help           show help" << std::endl;
 		}
 	}
 
