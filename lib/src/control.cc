@@ -10,6 +10,10 @@ BVS::ModuleMap BVS::Control::modules;
 
 
 
+BVS::ModuleVector* BVS::Control::hotSwapGraveYard = nullptr;
+
+
+
 BVS::Control::Control(Info& info)
 	: info(info),
 	logger("Control"),
@@ -30,9 +34,11 @@ void BVS::Control::registerModule(const std::string& id, Module* module, bool ho
 {
 	if (hotSwap)
 	{
-		//TODO check existence, just to be sure
-		//TODO there is (rare) a segfault in this line
-		modules[id]->module.reset(module);
+		//TODO check id existence, just to be sure
+		//TODO note about hotSwapGraveYard
+		if (hotSwapGraveYard==nullptr) hotSwapGraveYard = new ModuleVector();
+		hotSwapGraveYard->push_back(std::shared_ptr<Module>(module));
+		modules[id]->module.swap(hotSwapGraveYard->back());
 	}
 	else
 	{

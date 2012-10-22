@@ -76,6 +76,8 @@ namespace BVS
 	/** Module Vector.*/
 	typedef std::vector<std::shared_ptr<ModuleData>> ModuleVector;
 
+	/** Module Vector. */
+	typedef std::vector<std::shared_ptr<Module>> ModuleVector;
 
 
 

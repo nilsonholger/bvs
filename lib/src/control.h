@@ -135,6 +135,8 @@ namespace BVS
 
 			unsigned long long round; /**< System round counter. */
 
+			static ModuleVector* hotSwapGraveYard; /** TODO */
+
 			Control(const Control&) = delete; /**< -Weffc++ */
 			Control& operator=(const Control&) = delete; /**< -Weffc++ */
 	};

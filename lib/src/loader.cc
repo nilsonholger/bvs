@@ -306,7 +306,7 @@ BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 	modules[id]->module->prepareHotSwap(data);
 
 	//TODO delete using OLD desctructor code
-	modules[id]->module.reset();
+	//modules[id]->module.reset();
 
 	// wait for thread to join, first check if it is still running
 	//if (modules[id]->asThread == true)
@@ -377,7 +377,7 @@ BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 
 	// look for bvsRegisterModule in loaded lib, check for errors and execute register function
 	// TODO create modified version
-	typedef void (*bvsHotSwapModule_t)(const std::string& id, const Info& info, void* data);
+	typedef void (*bvsHotSwapModule_t)(const std::string& id, const Info& info, void* data, BVS::Module* module);
 	bvsHotSwapModule_t bvsHotSwapModule;
 	*reinterpret_cast<void**>(&bvsHotSwapModule)=dlsym(dlib, "bvsHotSwapModule");
 
@@ -391,7 +391,7 @@ BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 
 	// register
 	// TODO modify to include data
-	bvsHotSwapModule(id, info, data);
+	bvsHotSwapModule(id, info, data, modules[id]->module.get());
 	LOG(2, "Loading " << id << " successfull!");
 
 	modules[id]->dlib = dlib;
