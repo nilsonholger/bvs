@@ -21,6 +21,11 @@ namespace BVS
 
 
 
+	/** Library handle. */
+	typedef void* LibHandle;
+
+
+
 	/** Module metadata. */
 	struct ModuleData
 	{
@@ -37,7 +42,7 @@ namespace BVS
 		 * @param[in] connectors Connector map.
 		 */
 		ModuleData(std::string id, std::string library, std::string options,
-				Module* module, void* dlib, bool asThread, std::string poolName,
+				Module* module, LibHandle dlib, bool asThread, std::string poolName,
 				ControlFlag flag, Status status, ConnectorMap connectors)
 			: id(id),
 			library(library),
@@ -56,7 +61,7 @@ namespace BVS
 		std::string library; /**< Library to load module from. */
 		std::string options; /**< Module options. */
 		std::shared_ptr<Module> module; /**< Pointer to the module. */
-		void* dlib; /**< Dlib handle to module's lib. */
+		LibHandle dlib; /**< Dlib handle to module's lib. */
 		std::thread thread; /**< Thread handle of module. */
 		bool asThread; /**< Determines if module runs in its own thread. */
 		std::string poolName; /** The pool name executing this module (if any). */

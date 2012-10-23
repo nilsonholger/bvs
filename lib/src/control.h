@@ -37,7 +37,7 @@ namespace BVS
 			/** Registers a module.
 			 * @param[in] id Name of module.
 			 * @param[in] module Pointer to module.
-			 * @param[in] TODO
+			 * @param[in] hotSwap Whether to hotSwap (an already loaded) module.
 			 */
 			static void registerModule(const std::string& id, Module* module, bool hotSwap = false);
 
@@ -68,7 +68,9 @@ namespace BVS
 			 */
 			Control& sendCommand(const SystemFlag controlFlag = SystemFlag::PAUSE);
 
-			/** TODO comment */
+			/** Query the system for the actively used flag.
+			 * @return SystemFlag in use by system.
+			 */
 			SystemFlag queryActiveFlag();
 
 			/** Start a module.
@@ -135,7 +137,7 @@ namespace BVS
 
 			unsigned long long round; /**< System round counter. */
 
-			static ModuleVector* hotSwapGraveYard; /** TODO */
+			static ModuleVector* hotSwapGraveYard; /** GraveYard for hotswapped module pointers. */
 
 			Control(const Control&) = delete; /**< -Weffc++ */
 			Control& operator=(const Control&) = delete; /**< -Weffc++ */
