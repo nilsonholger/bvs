@@ -303,10 +303,11 @@ BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 	//TODO IMPORTANT: this works for now, but NOT for BVS::Connectors, we probably need a dual approach using reinterpret_cast while storing the BVS::Connectors outside of the module
 	//TODO cleanup, separate load/unload of library (duplicate)
 	//UNLOAD
-	void* data = nullptr;
+	//void* data = nullptr;
 	//TODO check if id exists
 
 	//TODO delete using OLD desctructor code
+	//modules[id]->module->prepareHotSwap(data);
 	//modules[id]->module.reset();
 
 	// wait for thread to join, first check if it is still running
@@ -378,7 +379,7 @@ BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 
 	// look for bvsRegisterModule in loaded lib, check for errors and execute register function
 	// TODO create modified version
-	typedef void (*bvsHotSwapModule_t)(const std::string& id, const Info& info, void* data, BVS::Module* module);
+	typedef void (*bvsHotSwapModule_t)(const std::string& id, BVS::Module* module);
 	bvsHotSwapModule_t bvsHotSwapModule;
 	*reinterpret_cast<void**>(&bvsHotSwapModule)=dlsym(dlib, "bvsHotSwapModule");
 
@@ -392,7 +393,7 @@ BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 
 	// register
 	// TODO modify to include data
-	bvsHotSwapModule(id, info, data, modules[id]->module.get());
+	bvsHotSwapModule(id, modules[id]->module.get());
 	LOG(2, "Loading " << id << " successfull!");
 
 	modules[id]->dlib = dlib;
