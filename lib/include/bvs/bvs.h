@@ -201,6 +201,23 @@ namespace BVS
 			 */
 			BVS& pause();
 
+			/** HotSwap a module.
+			 * This will reload/hotswap an already existing module.
+			 *
+			 * \note Only works if there is only ONE module instance of a
+			 * library present.
+			 *
+			 * \warning This is inherently not safe and should ONLY be used in a
+			 * development scenario. HotSwapping is likely to crash/segfault if
+			 * not used properly (for more info see BVS::Loader).
+			 *
+			 * \warning The function will pause the system and tell the loader
+			 * to hotswap the library. Afterwards the system will be put into
+			 * the same state as before.
+			 * @param[in] id Module ID to hotswap (if it does not exist, it fails silently).
+			 */
+			BVS& hotSwap(const std::string& id);
+
 			/** Tells the system to quit.
 			 * This will signal the system's controller to issue a quit signal to
 			 * all modules after which it will start to shutdown the entire system

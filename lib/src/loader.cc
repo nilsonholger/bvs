@@ -15,7 +15,7 @@ BVS::Loader::Loader(Control& control, const Info& info)
 
 
 
-BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThread, const std::string poolName)
+BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThread, const std::string& poolName)
 {
 	/* algorithm:
 	 * SEPARATE id(library).options
@@ -59,30 +59,8 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 		exit(-1);
 	}
 
-	// prepare path and load the lib
-	std::string modulePath = "lib" + library + ".so";
-	void* dlib = dlopen(modulePath.c_str(), RTLD_NOW);
-	if (dlib!=NULL)
-	{
-		LOG(3, "Loading " << id << " from " << modulePath << "!");
-	}
-	else
-	{
-#ifdef BVS_OSX_ANOMALIES
-		// additional check for 'dylib' (when compiled under OSX as SHARED instead of MODULE)
-		modulePath.resize(modulePath.size()-2);
-		modulePath += "dylib";
-		dlib = dlopen(modulePath.c_str(), RTLD_NOW);
-		if (dlib!=NULL) LOG(3, "Loading " << id << " from " << modulePath << "!");
-#endif //BVS_OSX_ANOMALIES
-	}
-
-	// check for errors
-	if (dlib==NULL)
-	{
-		LOG(0, "Loading " << modulePath << ", resulted in: " << dlerror());
-		exit(-1);
-	}
+	// load library
+	LibHandle dlib = loadLibrary(id, library);
 
 	// look for bvsRegisterModule in loaded lib, check for errors and execute register function
 	typedef void (*bvsRegisterModule_t)(const std::string& id, const Info& info);
@@ -93,15 +71,15 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 	char* dlerr = dlerror();
 	if (dlerr)
 	{
-		LOG(0, "Loading function bvsRegisterModule() in " << modulePath << " resulted in: " << dlerr);
+		LOG(0, "Loading function bvsRegisterModule() in '" << library << "' resulted in: " << dlerr);
 		exit(-1);
 	}
 
 	// register
 	bvsRegisterModule(id, info);
-	LOG(2, "Loading " << id << " successfull!");
+	LOG(2, "Loading '" << id << "' successfull!");
 
-	// save handle,library name and option string for later use
+	// load library and save handle, library name and option string for later use
 	modules[id]->dlib = dlib;
 	modules[id]->library = library;
 	modules[id]->options = options;
@@ -137,7 +115,7 @@ BVS::Loader& BVS::Loader::unload(const std::string& id)
 		{
 			modules[id]->flag = ControlFlag::QUIT;
 			control.notifyThreads();
-			LOG(3, "Waiting for " << id << " to join!");
+			LOG(3, "Waiting for '" << id << "' to join!");
 			modules[id]->thread.join();
 		}
 	}
@@ -166,36 +144,7 @@ BVS::Loader& BVS::Loader::unload(const std::string& id)
 		}
 	}
 
-	// close lib and check for errors
-#ifndef BVS_OSX_ANOMALIES
-	std::string modulePath = "./lib" + modules[id]->library + ".so";
-#else
-	std::string modulePath = "./lib" + modules[id]->library + ".(so|dylib)";
-#endif //BVS_OSX_ANOMALIES
-	LOG(3, id << " unloading from " << modulePath << "!");
-
-	// get handle from internals
-	void* dlib = modules[id]->dlib;
-	if (dlib==nullptr)
-	{
-		LOG(0, "Requested module " << id << " not found!");
-		exit(-1);
-	}
-
-	// purge module
-	control.purgeData(id);
-
-	// close the module
-	dlclose(dlib);
-
-	// check for errors
-	char* dlerr = dlerror();
-	if (dlerr)
-	{
-		LOG(0, "While closing " << modulePath << " following error occured: " << dlerror());
-		exit(-1);
-	}
-	LOG(2, id << " unloaded!");
+	unloadLibrary(id, true);
 
 	return *this;
 }
@@ -298,17 +247,112 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 
 
 
-BVS::Loader& BVS::Loader::printModuleConnectors(const ModuleData* module)
+BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 {
-	if (module->connectors.size()==0)
+#ifdef BVS_MODULE_HOTSWAP
+	// TODO NEXT wait for thread to and pools
+	if (modules[id]->asThread || !modules[id]->poolName.empty())
+		control.waitUntilInactive(id);
+
+	unloadLibrary(id, false);
+
+	//HOTSWAP
+
+	LibHandle dlib = loadLibrary(id, modules[id]->library);
+
+	// look for bvsRegisterModule in loaded lib, check for errors and execute register function
+	typedef void (*bvsHotSwapModule_t)(const std::string& id, BVS::Module* module);
+	bvsHotSwapModule_t bvsHotSwapModule;
+	*reinterpret_cast<void**>(&bvsHotSwapModule)=dlsym(dlib, "bvsHotSwapModule");
+
+	// check for errors
+	char* dlerr = dlerror();
+	if (dlerr)
 	{
-		LOG(0, "Module " << module->id << " does not define any connector!");
+		LOG(0, "Loading function bvsHotSwapModule() in '" << modules[id]->library << "' resulted in: " << dlerr);
+		exit(-1);
+	}
+
+	// call hotswap routine in module
+	bvsHotSwapModule(id, modules[id]->module.get());
+	LOG(2, "Hotswapping '" << id << "' successfull!");
+
+	// save new dlib information
+	modules[id]->dlib = dlib;
+#else //BVS_MODULE_HOTSWAP
+	(void) id;
+	LOG(0, "ERROR: HotSwap disabled!");
+#endif //BVS_MODULE_HOTSWAP
+
+	return *this;
+}
+
+
+
+BVS::LibHandle BVS::Loader::loadLibrary(const std::string& id, const std::string& library)
+{
+	// prepare path and load the lib
+	std::string modulePath = "lib" + library + ".so";
+	LibHandle dlib = dlopen(modulePath.c_str(), RTLD_NOW);
+	if (dlib!=NULL)
+	{
+		LOG(3, "Loading '" << id << "' from '" << modulePath << "'!");
 	}
 	else
 	{
-		LOG(0, "Module " << module->id << " defines the following connectors: ");
-		for (auto& it: module->connectors) LOG(0, it.second->type << ": " << it.second->id);
+#ifdef BVS_OSX_ANOMALIES
+		// additional check for 'dylib' (when compiled under OSX as SHARED instead of MODULE)
+		modulePath.resize(modulePath.size()-2);
+		modulePath += "dylib";
+		dlib = dlopen(modulePath.c_str(), RTLD_NOW);
+		if (dlib!=NULL) LOG(3, "Loading " << id << " from " << modulePath << "!");
+#endif //BVS_OSX_ANOMALIES
 	}
+
+	// check for errors
+	if (dlib==NULL)
+	{
+		LOG(0, "Loading '" << modulePath << "' resulted in: " << dlerror());
+		exit(-1);
+	}
+
+	return dlib;
+}
+
+
+
+BVS::Loader& BVS::Loader::unloadLibrary(const std::string& id, const bool& purgeModuleData)
+{
+	// close lib and check for errors
+#ifndef BVS_OSX_ANOMALIES
+	std::string modulePath = "./lib" + modules[id]->library + ".so";
+#else
+	std::string modulePath = "./lib" + modules[id]->library + ".(so|dylib)";
+#endif //BVS_OSX_ANOMALIES
+	LOG(3, "Module '" << id << "' unloading from '" << modulePath << "'!");
+
+	// get handle from internals
+	void* dlib = modules[id]->dlib;
+	if (dlib==nullptr)
+	{
+		LOG(0, "Requested module '" << id << "' not found!");
+		exit(-1);
+	}
+
+	// purge module data if desired
+	if (purgeModuleData) control.purgeData(id);
+
+	// close the lib
+	dlclose(dlib);
+
+	// check for errors
+	char* dlerr = dlerror();
+	if (dlerr)
+	{
+		LOG(0, "While closing '" << modulePath << "' following error occured: " << dlerror());
+		exit(-1);
+	}
+	LOG(2, "Library '" << modulePath << "' unloaded!");
 
 	return *this;
 }
@@ -359,6 +403,23 @@ BVS::Loader& BVS::Loader::checkModuleOutput(const ModuleData* module, const std:
 		LOG(0, "Output not found: " << targetOutput << " in " << module->id << "." << module->options);
 		printModuleConnectors(target->second.get());
 		exit(1);
+	}
+
+	return *this;
+}
+
+
+
+BVS::Loader& BVS::Loader::printModuleConnectors(const ModuleData* module)
+{
+	if (module->connectors.size()==0)
+	{
+		LOG(0, "Module " << module->id << " does not define any connector!");
+	}
+	else
+	{
+		LOG(0, "Module " << module->id << " defines the following connectors: ");
+		for (auto& it: module->connectors) LOG(0, it.second->type << ": " << it.second->id);
 	}
 
 	return *this;

@@ -16,9 +16,9 @@ BVSExampleModule::BVSExampleModule(const std::string id, const BVS::Info& bvs)
 	// loaded immediately, so you can use config to retrieve settings in the
 	// initialization list, e.g.
 	// yourSwitch(config.getValue<bool>(id + ".yourSwitch, false));
-	bvs(bvs),
-	input("testIn", BVS::ConnectorType::INPUT),
-	output("testOut", BVS::ConnectorType::OUTPUT)
+	bvs(bvs)
+	//input("testIn", BVS::ConnectorType::INPUT),
+	//output("testOut", BVS::ConnectorType::OUTPUT)
 {
 
 }
@@ -92,6 +92,13 @@ extern "C" {
 	int bvsRegisterModule(std::string id, BVS::Info& bvs)
 	{
 		registerModule(id, new BVSExampleModule(id, bvs));
+
+		return 0;
+	}
+
+	int bvsHotSwapModule(std::string id, BVS::Module* module)
+	{
+		registerModule(id, reinterpret_cast<BVSExampleModule*>(module), true);
 
 		return 0;
 	}

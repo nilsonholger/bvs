@@ -248,6 +248,24 @@ BVS::BVS& BVS::BVS::pause()
 
 
 
+BVS::BVS& BVS::BVS::hotSwap(const std::string& id)
+{
+	if (control->modules.find(id)!=control->modules.end())
+	{
+		SystemFlag state = control->queryActiveFlag();
+		control->sendCommand(SystemFlag::PAUSE);
+		loader->hotSwapModule(id);
+		control->sendCommand(state);
+	}
+	else
+	{
+		LOG(0, "'" << id << "' not found!");
+	}
+	return *this;
+}
+
+
+
 BVS::BVS& BVS::BVS::quit()
 {
 	control->sendCommand(SystemFlag::QUIT);

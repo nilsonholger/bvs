@@ -17,7 +17,7 @@ BVS::Module::~Module()
 
 
 
-void registerModule(const std::string& id, BVS::Module* module)
+void registerModule(const std::string& id, BVS::Module* module, bool hotSwap)
 {
-	BVS::Control::registerModule(id, module);
+	BVS::Control::registerModule(id, module, hotSwap);
 }

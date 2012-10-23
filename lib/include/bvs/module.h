@@ -46,8 +46,9 @@ namespace BVS
  * by the system's module loader upon loading the module.
  * @param[in] id The Module's name.
  * @param[in] module A pointer to the module.
+ * @param[in] hotSwap Whether to use module Hot Swapping instead of creating a new Module (please see BVS::Loader).
  */
-BVS_PUBLIC void registerModule(const std::string& id, BVS::Module* module);
+BVS_PUBLIC void registerModule(const std::string& id, BVS::Module* module, bool hotSwap = false);
 
 
 

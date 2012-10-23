@@ -34,7 +34,7 @@ namespace BVS
 			 * @param[in] poolName Select, if desired, the module pool to run this module.
 			 * @return Reference to object.
 			 */
-			Loader& load(const std::string& moduleTraits, const bool asThread, const std::string poolName = std::string());
+			Loader& load(const std::string& moduleTraits, const bool asThread, const std::string& poolName = std::string());
 
 			/** Unload the given module.
 			 * @param[in] moduleName The name of the module.
@@ -64,7 +64,45 @@ namespace BVS
 			 */
 			Loader& connectModule(const std::string& id, const bool connectorTypeMatching = true);
 
+			/** HotSwap a module.
+			 * This will reload/hotswap an already existing module.
+			 *
+			 * \note Only works if there is only ONE module instance of a
+			 * library present.
+			 *
+			 * \warning There is a known issue with BVS::Connector. If you
+			 * create two connectors of different template types, hotswapping
+			 * will fail (due to yet unknown and rather obscure reasons).  As a
+			 * possible workaround create a 'dummy' connector of the first type
+			 * (same template argument, same connector type). There might be
+			 * other combinations that might fail, but these too can possibly
+			 * be mitigated by the described workaround.
+			 * \par
+			 * \warning This has its (fair) limitations. As long as one does not
+			 * change the general layout of a module (add/remove/reorder
+			 * members) it *should* work fine.  Hotswap will be achieved by
+			 * using a 'reinterpret_cast<...>' inside the module. This is
+			 * inherently insafe and can fail due to all kind of reasons. YOU
+			 * HAVE BEEN WARNED!!!
+			 * @param[in] id Module ID to hotswap (if it does not exist, it fails silently).
+			 */
+			Loader& hotSwapModule(const std::string& id);
+
 		private:
+			/** Load the necessary library.
+			 * @param[in] id The module id of which to load the library.
+			 * @param[in] library The base name of the library to load from (no 'lib' and extension).
+			 * @return Reference to object.
+			 */
+			LibHandle loadLibrary(const std::string& id, const std::string& library);
+
+			/** Unload the necessary library.
+			 * @param[in] moduleName The name of the module.
+			 * @param[in] purgeModuleData Whether to purge the module's data.
+			 * @return Reference to object.
+			 */
+			Loader& unloadLibrary(const std::string& id, const bool& purgeModuleData = true);
+
 			/** Check input Connector.
 			 * Checks input connector for existence, type etc.
 			 * @param[in] module Module data for selected module.
