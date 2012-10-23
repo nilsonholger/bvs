@@ -34,7 +34,7 @@ namespace BVS
 		 * @param[in] poolName The pool name executing this module (if any).
 		 * @param[in] flag System control flag for module.
 		 * @param[in] status Return Status of module functions.
-		 * @param[in] connectors Connector vector.
+		 * @param[in] connectors Connector map.
 		 */
 		ModuleData(std::string id, std::string library, std::string options,
 				Module* module, void* dlib, bool asThread, std::string poolName,
@@ -62,7 +62,7 @@ namespace BVS
 		std::string poolName; /** The pool name executing this module (if any). */
 		ControlFlag flag; /**< System control flag for module. */
 		Status status; /**< Return Status of module functions. */
-		ConnectorMap connectors; /**< Connector vector. */
+		ConnectorMap connectors; /**< Connector map. */
 
 		ModuleData(const ModuleData&) = delete; /**< -Weffc++ */
 		ModuleData& operator=(const ModuleData&) = delete; /**< -Weffc++ */
@@ -71,10 +71,10 @@ namespace BVS
 
 
 	/** Module Map. */
-	typedef std::map<std::string, std::shared_ptr<ModuleData>, std::less<std::string>> ModuleMap;
+	typedef std::map<std::string, std::shared_ptr<ModuleData>, std::less<std::string>> ModuleDataMap;
 
-	/** Module Vector.*/
-	typedef std::vector<std::shared_ptr<ModuleData>> ModuleVector;
+	/** Module Data Vector.*/
+	typedef std::vector<std::shared_ptr<ModuleData>> ModuleDataVector;
 
 	/** Module Vector. */
 	typedef std::vector<std::shared_ptr<Module>> ModuleVector;
@@ -104,7 +104,7 @@ namespace BVS
 		std::string poolName; /**< Pool name. */
 		ControlFlag flag; /**< System control flag for pool. */
 		std::thread thread; /**< Pool thread handle. */
-		ModuleVector modules; /**< Pool module vector. */
+		ModuleDataVector modules; /**< Pool module vector. */
 	};
 
 

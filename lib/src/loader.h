@@ -109,7 +109,7 @@ namespace BVS
 
 			Logger logger; /**< Logger metadata. */
 			const Info& info; /**< Info reference. */
-			ModuleMap& modules; /**< Reference to Control::modules */
+			ModuleDataMap& modules; /**< Reference to Control::modules */
 
 			Loader(const Loader&) = delete; /**< -Weffc++ */
 			Loader& operator=(const Loader&) = delete; /**< -Weffc++ */

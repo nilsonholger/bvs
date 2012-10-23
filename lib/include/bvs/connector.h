@@ -42,6 +42,8 @@ namespace BVS
 			Connector(const std::string& connectorName, ConnectorType connectorType);
 
 			/** Copy constructor.
+			 * This copy constructor will use std::move(...) semantics for the
+			 * connection as well as data members.
 			 * @param[in] t Original.
 			 */
 			Connector(const Connector& t);
@@ -117,7 +119,15 @@ namespace BVS
 						nullptr,
 						false)))
 	{
-		ConnectorDataCollector::connectors[connectorName] = data;
+		if (ConnectorDataCollector::connectors.find(connectorName)==ConnectorDataCollector::connectors.end())
+		{
+			ConnectorDataCollector::connectors[connectorName] = data;
+		}
+		else
+		{
+			std::cerr << "[0|Connector] duplicate name detected: " << connectorName << std::endl;
+			exit(1);
+		}
 
 		if (data->type == ConnectorType::OUTPUT)
 		{
@@ -131,8 +141,8 @@ namespace BVS
 
 
 	template<typename T> Connector<T>::Connector(const Connector& t)
-		: connection(t.connection)
-		, data(t.data)
+		: connection(std::move(t.connection))
+		, data(std::move(t.data))
 	{ }
 
 

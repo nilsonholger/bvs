@@ -6,7 +6,7 @@
 
 
 
-BVS::ModuleMap BVS::Control::modules;
+BVS::ModuleDataMap BVS::Control::modules;
 
 
 
@@ -118,11 +118,11 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 				for (auto& it: masterModules) moduleController(*(it.get()));
 
 				if (flag==SystemFlag::STEP) flag = SystemFlag::PAUSE;
+				LOG(3, "WAIT FOR THREADS AND POOLS!");
 				break;
 			case SystemFlag::STEP_BACK:
 				break;
 		}
-		LOG(3, "WAIT FOR THREADS AND POOLS!");
 
 		if (!controlThread.joinable() && flag!=SystemFlag::RUN) return *this;
 	}
@@ -216,7 +216,7 @@ BVS::Control& BVS::Control::purgeData(std::string moduleID)
 		std::string pool = modules[moduleID]->poolName;
 		if (!pool.empty())
 		{
-			ModuleVector& poolModules = pools[pool]->modules;
+			ModuleDataVector& poolModules = pools[pool]->modules;
 			if (!poolModules.empty())
 				poolModules.erase(std::remove_if
 						(poolModules.begin(), poolModules.end(),
