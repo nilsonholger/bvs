@@ -117,7 +117,15 @@ namespace BVS
 						nullptr,
 						false)))
 	{
-		ConnectorDataCollector::connectors[connectorName] = data;
+		if (ConnectorDataCollector::connectors.find(connectorName)==ConnectorDataCollector::connectors.end())
+		{
+			ConnectorDataCollector::connectors[connectorName] = data;
+		}
+		else
+		{
+			std::cerr << "[0|Connector] duplicate name detected: " << connectorName << std::endl;
+			exit(1);
+		}
 
 		if (data->type == ConnectorType::OUTPUT)
 		{
