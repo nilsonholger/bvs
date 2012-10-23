@@ -16,9 +16,9 @@ BVSExampleModule::BVSExampleModule(const std::string id, const BVS::Info& bvs)
 	// loaded immediately, so you can use config to retrieve settings in the
 	// initialization list, e.g.
 	// yourSwitch(config.getValue<bool>(id + ".yourSwitch, false));
-	bvs(bvs),
-	input("testIn", BVS::ConnectorType::INPUT),
-	output("testOut", BVS::ConnectorType::OUTPUT)
+	bvs(bvs)
+	//input("testIn", BVS::ConnectorType::INPUT),
+	//output("testOut", BVS::ConnectorType::OUTPUT)
 {
 
 }
@@ -85,8 +85,8 @@ BVS::Status BVSExampleModule::debugDisplay()
 
 
 
-// These functions are needed by the framework upon creating a module instance
-// of this class or hotswapping it.
+// This function is called by the framework upon creating a module instance of
+// this class. It creates the module and registers it within the framework.
 // DO NOT CHANGE OR DELETE
 extern "C" {
 	int bvsRegisterModule(std::string id, BVS::Info& bvs)
@@ -96,11 +96,8 @@ extern "C" {
 		return 0;
 	}
 
-	//TODO cleanup
-	int bvsHotSwapModule(std::string id, BVS::Info& bvs, void* data, BVS::Module* module)
+	int bvsHotSwapModule(std::string id, BVS::Module* module)
 	{
-		(void) bvs;
-		(void) data;
 		registerModule(id, reinterpret_cast<BVSExampleModule*>(module), true);
 
 		return 0;
