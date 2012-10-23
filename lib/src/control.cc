@@ -101,11 +101,11 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 				for (auto& it: masterModules) moduleController(*(it.get()));
 
 				if (flag==SystemFlag::STEP) flag = SystemFlag::PAUSE;
+				LOG(3, "WAIT FOR THREADS AND POOLS!");
 				break;
 			case SystemFlag::STEP_BACK:
 				break;
 		}
-		LOG(3, "WAIT FOR THREADS AND POOLS!");
 
 		if (!controlThread.joinable() && flag!=SystemFlag::RUN) return *this;
 	}
