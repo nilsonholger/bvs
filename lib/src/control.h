@@ -5,7 +5,6 @@
 #include <condition_variable>
 #include <mutex>
 #include <thread>
-#include <vector>
 
 #include "bvs/bvsinfo.h"
 #include "bvs/logger.h"
@@ -94,7 +93,23 @@ namespace BVS
 			 * @param[in] moduleID Name of module to remove from internal data.
 			 * @return Reference to object.
 			 */
-			Control& purgeData(std::string moduleID);
+			Control& purgeData(const std::string& id);
+
+			/** Wait until given module is inactive.
+			 * Wait until the given module is inactive. If this never happens,
+			 * this call will loop forever.
+			 * @param[in] id Module id to wait for.
+			 * @return Reference to object.
+			 */
+			Control& waitUntilInactive(const std::string& id);
+
+			/** Check if module is active.
+			 * Check if the given module is being actively run by the master, a
+			 * thread or as part of a pool as of RIGHT AT THAT MOMENT!
+			 * @param[in] id Module id to check status for.
+			 * @return True if active, false if not.
+			 */
+			bool isActive(const std::string& id);
 
 			/** Map of registered modules and their metadata. */
 			static ModuleDataMap modules;

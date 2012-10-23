@@ -34,7 +34,7 @@ namespace BVS
 			 * @param[in] poolName Select, if desired, the module pool to run this module.
 			 * @return Reference to object.
 			 */
-			Loader& load(const std::string& moduleTraits, const bool asThread, const std::string poolName = std::string());
+			Loader& load(const std::string& moduleTraits, const bool asThread, const std::string& poolName = std::string());
 
 			/** Unload the given module.
 			 * @param[in] moduleName The name of the module.

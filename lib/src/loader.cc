@@ -15,7 +15,7 @@ BVS::Loader::Loader(Control& control, const Info& info)
 
 
 
-BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThread, const std::string poolName)
+BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThread, const std::string& poolName)
 {
 	/* algorithm:
 	 * SEPARATE id(library).options
@@ -250,7 +250,9 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 {
 #ifdef BVS_MODULE_HOTSWAP
-	// TODO wait for thread to and pools
+	// TODO NEXT wait for thread to and pools
+	if (modules[id]->asThread || !modules[id]->poolName.empty())
+		control.waitUntilInactive(id);
 
 	unloadLibrary(id, false);
 

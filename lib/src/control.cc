@@ -211,11 +211,11 @@ BVS::Control& BVS::Control::notifyThreads()
 
 
 
-BVS::Control& BVS::Control::purgeData(std::string moduleID)
+BVS::Control& BVS::Control::purgeData(const std::string& id)
 {
 	if (!pools.empty())
 	{
-		std::string pool = modules[moduleID]->poolName;
+		std::string pool = modules[id]->poolName;
 		if (!pool.empty())
 		{
 			ModuleDataVector& poolModules = pools[pool]->modules;
@@ -223,7 +223,7 @@ BVS::Control& BVS::Control::purgeData(std::string moduleID)
 				poolModules.erase(std::remove_if
 						(poolModules.begin(), poolModules.end(),
 						 [&](std::shared_ptr<ModuleData> data)
-						 { return data->id==moduleID; }));
+						 { return data->id==id; }));
 		}
 	}
 
@@ -231,12 +231,41 @@ BVS::Control& BVS::Control::purgeData(std::string moduleID)
 		masterModules.erase(std::remove_if
 				(masterModules.begin(), masterModules.end(),
 				 [&](std::shared_ptr<ModuleData> data)
-				 { return data->id==moduleID; }));
+				 { return data->id==id; }));
 
-	modules[moduleID]->connectors.clear();
-	modules.erase(moduleID);
+	modules[id]->connectors.clear();
+	modules.erase(id);
 
 	return *this;
+}
+
+
+
+BVS::Control& BVS::Control::waitUntilInactive(const std::string& id)
+{
+	while (isActive(id))
+		monitor.wait_for(masterLock, std::chrono::milliseconds(100), [&](){ return !isActive(id); });
+
+	return *this;
+}
+
+
+
+bool BVS::Control::isActive(const std::string& id)
+{
+	if (modules[id]->asThread)
+	{
+		if (modules[id]->flag==ControlFlag::WAIT) return false;
+		else return true;
+	}
+
+	if (!modules[id]->poolName.empty())
+	{
+		if (pools[modules[id]->poolName]->flag==ControlFlag::WAIT) return false;
+		else return true;
+	}
+
+	return false;
 }
 
 
