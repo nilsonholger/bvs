@@ -1,3 +1,11 @@
+2012-10-23:
+	NEW: cmake->BVS_MODULE_HOTSWAP
+		add module hotswapping, this is extremely experimental and must only
+		be used in a development environment, modules that will be hotswapped
+		can and will segfault due to an unlimited amount of reasons, use at
+		your own risk and NEVER expect it to work ;-) (read the documentation
+		in BVS::Loader for some hints on segfault mitigation)
+
 2012-10-16:
 	NEW: cmake->COMPILER_WARNINGS_MACRO
 		add 'disable_compiler_warnings(...)' macro to disable pedantic
