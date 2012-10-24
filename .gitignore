@@ -17,3 +17,8 @@ Makefile
 Doxyfile
 Session.vim
 tags
+
+.gitmodules
+bvsd
+libbvs
+modules
