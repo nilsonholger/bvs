@@ -1,57 +1,67 @@
-2012-10-24:
-	NEW: hotswap support
-		hotswap support has been added to bvsd (a call: hs|hotswap <moduleID>
-		and the run script got a fifo to control bvsd (see Readme.txt)
-	NOTE: in order to use hotswapping with already existing modules, the
-		'bvsHotSwapModule(...)' function will need to be added to it
-		(located in 'libbvs/module/BVSExampleModule.cc')
+2012-10-24  NilsonHolger <nilsonholger@hyve.org>
 
-2012-10-23:
-	NEW: cmake->BVS_MODULE_HOTSWAP
-		add module hotswapping, this is extremely experimental and must only
-		be used in a development environment, modules that will be hotswapped
-		can and will segfault due to an unlimited amount of reasons, use at
-		your own risk and NEVER expect it to work ;-) (read the documentation
-		in BVS::Loader for some hints on segfault mitigation)
+	* Hotswap support in bvsd:
+	hotswap support has been added to bvsd (a call: hs|hotswap <moduleID> and
+	the run script got a fifo to control bvsd (see Readme.txt)
+	* note:
+	in order to use hotswapping with already existing modules, the
+	'bvsHotSwapModule(...)' function will need to be added to it (located in
+	'libbvs/module/BVSExampleModule.cc')
 
-2012-10-16:
-	NEW: cmake->COMPILER_WARNINGS_MACRO
-		add 'disable_compiler_warnings(...)' macro to disable pedantic
-		compiler flags for certain source files (usually not one's own ;-),
-		some times it might be necessary to aditionally use
-		'include_directories(SYSTEM ...)' to really remove all of them
+2012-10-23  NilsonHolger <nilsonholger@hyve.org>
 
-2012-10-12:
-	CHANGED: submodule setup
-		setup will now ask which submodules shall be installed, this will
-		create a commit which must NOT be pushed back to the development
-		repository as this will break existing installs for others
+	* cmake -> BVS_MODULE_HOTSWAP:
+	add module hotswapping, this is extremely experimental and must only be
+	used in a development environment, modules that will be hotswapped can and
+	will segfault due to an unlimited amount of reasons, use at your own risk
+	and NEVER expect it to work ;-) (read the documentation in BVS::Loader for
+	some hints on segfault mitigation)
 
-2012-10-02:
-	NEW: cmake->BVS_GCC_VISIBILITY
-		uses gcc's visibility feature for dynamic library symbol exports (read
-		cmake info)
-	NEW: cmake->BVS_LOG_SYSTEM
-		now the log system can be enabled in cmake, if disabled, the log
-		system's backend won't even be compiled and the created logger
-		instances will have no functionality
+2012-10-16  NilsonHolger <nilsonholger@hyve.org>
 
-2012-10-01:
-	NEW: cmake->BVS_THREAD_NAMES
-		allows threads to set names (read cmake info)
+	* cmake -> COMPILER_WARNINGS_MACRO:
+	add 'disable_compiler_warnings(...)' macro to disable pedantic compiler
+	flags for certain source files (usually not one's own ;-), some times it
+	might be necessary to aditionally use 'include_directories(SYSTEM ...)' to
+	really remove all of them
 
-2012-09-30:
-	NEW: module pools
-		allow to setup module pools, meaning that a number of modules are
-		executed by one single thread
-		WARNING: not yet thoroughly tested, but should work fine
+2012-10-12  NilsonHolger <nilsonholger@hyve.org>
 
-2012-09-28:
-	NEW: ./run --update function to update without loosing local changes
-	CHANGED: config usage
-		please read the Readme.txt:USAGE, to migrate to the new system, please
-		move your configs to a different location, run cmake in your build
-		directory, that will setup the links to the config files from the
-		modules, then you can just move/copy your configs to the existing
-		symlinks, that will override the configs in their original places and
-		your all setup to use the new system
+	* Submodule setup changed:
+	setup will now ask which submodules shall be installed, this will create a
+	commit which must NOT be pushed back to the development repository as this
+	will break existing installs for others
+
+2012-10-02  NilsonHolger <nilsonholger@hyve.org>
+
+	* cmake -> BVS_GCC_VISIBILITY:
+	uses gcc's visibility feature for dynamic library symbol exports (read
+	cmake info)
+	* cmake -> BVS_LOG_SYSTEM:
+	now the log system can be enabled in cmake, if disabled, the log system's
+	backend won't even be compiled and the created logger instances will have
+	no functionality
+
+2012-10-01  NilsonHolger <nilsonholger@hyve.org>
+
+	* cmake -> BVS_THREAD_NAMES:
+	allows threads to set names (read cmake info)
+
+2012-09-30  NilsonHolger <nilsonholger@hyve.org>
+
+	* Module pools:
+	allow to setup module pools, meaning that a number of modules are executed
+	by one single thread.
+	WARNING: not yet thoroughly tested, but should work fine
+
+2012-09-28  NilsonHolger <nilsonholger@hyve.org>
+
+	* Update function:
+	add ./run --update function to update without loosing local changes
+	* Config usage changed:
+	please read Readme.txt:USAGE, to migrate to the new system, please move
+	your configs to a different location, run cmake in your build directory,
+	that will setup the links to the config files from the modules, then you
+	can just move/copy your configs to the existing symlinks, that will
+	override the configs in their original places and your all setup to use
+	the new system
