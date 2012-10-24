@@ -88,6 +88,24 @@ If you want to use a different config file, type './run --bvs.config=$CONFIG'
 and you can also append '--bvs.options=...' to override options (see the Config
 documentation for further details).
 
+If you want to control bvsd through a FIFO file, type './run -f'. This will (if
+necessary) create the special file 'bvsd-fifo' which you can use to control
+bvsd by sending for example: 'echo "h" > $BIN_DIR/bvsd-fifo'.
+Using 'cat - > $BIN_DIR/bvsd-fifo' gives you a shell as before, but now input
+and output ar nicely separated.
+
+To control bvsd from inside vim, you could set the following maps inside your
+vimrc (these assume that you opened your vim session inside the bvs base
+directory and use 'build' for an out of source build, also they are optimized
+for a dvorak keyboard layout ;-):
+
+	" bvsd-fifo control
+	map <leader>ui :execute "! echo r > build/bin/bvsd-fifo"<cr><cr>
+	map <leader>uu :execute "! echo s > build/bin/bvsd-fifo"<cr><cr>
+	map <leader>ud :execute "! echo p > build/bin/bvsd-fifo"<cr><cr>
+	map <leader>ue :execute "! echo q > build/bin/bvsd-fifo"<cr><cr>
+	map <leader>uh :execute "! echo hs " . expand('%:t:r') . " > build/bin/bvsd-fifo"<cr><cr>
+
 
 
 BVS MODULE LIST:
