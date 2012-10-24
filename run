@@ -66,6 +66,7 @@ maintenance flags:
 targets:
   [config]                   run 'bvsd' with the given config (default:BVSConfig.txt)
   -d|--debug                 run 'bvsd' in gdb session
+  -f|--fifo                  run 'bvsd' reading input from 'bvsd-fifo'
 EOF
 }
 
@@ -145,18 +146,37 @@ echo
 
 # run
 function bvs_run {
-if [ "$1" = "-d" -o "$1" = "--debug" ]
-then
-	GDB="gdb"
-	GDBOPTS="--args"
-	shift
-fi
-[ -n "$GDB" -a -r /usr/local/bin/gdb ] && GDB="/usr/local/bin/gdb"
 [ -r $BASE_DIR/bin/bvsd ] && BIN_DIR="bin"
 [ -r $BASE_DIR/build/bin/bvsd ] && BIN_DIR="build/bin"
 [ -z $BIN_DIR ] && echo "bvsd executable not found, run make first... (or use '--help' to show possible usage)" && exit
+
+for i in $@
+do
+	if [ "$i" = "-d" -o "$i" = "--debug" ]
+	then
+		GDB="gdb"
+		GDBOPTS="--args"
+		shift
+	fi
+	if [ "$i" = "-f" -o "$i" = "--fifo" ]
+	then
+		[ ! -r $BIN_DIR/bvsd-fifo ] && mkfifo $BIN_DIR/bvsd-fifo
+		FIFO='tail -f bvsd-fifo |'
+		shift
+	fi
+done
+
+[ -n "$GDB" -a -r /usr/local/bin/gdb ] && GDB="/usr/local/bin/gdb"
 [ $# = 0 ] && CONFIG="BVSConfig.txt" || CONFIG=$1
-(cd $BASE_DIR/$BIN_DIR && $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)
+
+[ -n "$FIFO" ] && cat << EOF
+>>> FIFO ACTIVATED!!!
+>>> FIFO located at: $BIN_DIR/bvsd-fifo
+>>> FIFO usage e.g.: 'cat - > $BIN_DIR/bvsd-fifo' or 'echo "h" > $BIN_DIR/bvsd-fifo'
+
+EOF
+
+eval "(cd $BASE_DIR/$BIN_DIR && $FIFO $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)"
 }
 
 
