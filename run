@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-# dk@hyve.org
+# by nilsonholger@hyve.org
 
 # settings
 BASE_DIR=`dirname $0`
