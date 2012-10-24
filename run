@@ -103,8 +103,8 @@ echo ">>> Created Module $MOD! Please modify modules/CMakeLists.txt to add it to
 # setup
 function bvs_setup {
 echo ">>> SETUP library and daemon!"
-[ ! -d libbvs ] && git submodule add git@i14gitlab.anthropomatik.kit.edu:bvs_libbvs.git libbvs || echo ">>> SKIP libbvs!"
-[ ! -d bvsd ] && git submodule add git@i14gitlab.anthropomatik.kit.edu:bvs_bvsd.git bvsd || echo ">>> SKIP bvsd!"
+[ ! -d libbvs ] && git submodule add -f git@i14gitlab.anthropomatik.kit.edu:bvs_libbvs.git libbvs || echo ">>> SKIP libbvs!"
+[ ! -d bvsd ] && git submodule add -f git@i14gitlab.anthropomatik.kit.edu:bvs_bvsd.git bvsd || echo ">>> SKIP bvsd!"
 
 echo
 echo ">>> SELECT modules to install!"
@@ -119,7 +119,7 @@ do
 	echo -e ">>> INSTALL $DIR ($REPO)? [y|N] \c"
 	read CMD
 	[ "$CMD"x != "yx" ] && echo ">>> SKIP $DIR!" && continue
-	git submodule add $REPO modules/$DIR
+	git submodule add -f $REPO modules/$DIR
 
 	[ ! -r modules/CMakeLists.txt ] && echo "# enable module compilation here (entries created by './run --new-module <MODULE>')" > modules/CMakeLists.txt
 	if [ "${#MOD[@]}" -lt 3 ]
