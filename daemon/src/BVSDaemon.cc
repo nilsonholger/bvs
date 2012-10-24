@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 	LOG(2, "starting!");
 	bvs->start();
 
-	//bvs->run();
+	bvs->run();
 
 	std::string input;
 	while (input != "q" && input != "quit")
@@ -102,6 +102,10 @@ int main(int argc, char** argv)
 			std::cout << "   t|test           call test functions" << std::endl;
 			std::cout << "   q|quit           shutdown system and quit" << std::endl;
 			std::cout << "   h|help           show help" << std::endl;
+		}
+		else
+		{
+			std::cout << ">>> unknown command: " << input << std::endl << ">>> for help press 'h<enter>'!" << std::endl;
 		}
 	}
 
