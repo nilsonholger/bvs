@@ -6,21 +6,21 @@
 
 
 
-BVS::Config::Config(const std::string& name, int argc, char** argv, std::string file)
-	: name(name)
-	, mutex()
-	, optionStore()
+BVS::Config::Config(const std::string& name, int argc, char** argv)
+	: name(name),
+	mutex(),
+	optionStore(),
+	sections(),
+	fileStack()
 {
 	if (argc!=0 && argv!=nullptr) loadCommandLine(argc, argv);
-
-	if (file!=std::string()) loadConfigFile(file);
 }
 
 
 
 std::map<std::string, std::string> BVS::Config::dumpOptionStore()
 {
-	std::lock_guard<std::mutex> lock(mutex);
+	std::lock_guard<std::recursive_mutex> lock(mutex);
 
 	std::map<std::string, std::string> dump = optionStore;
 
@@ -57,10 +57,7 @@ BVS::Config& BVS::Config::loadCommandLine(int argc, char** argv)
 
 			// check for missing argument
 			if (arg.empty())
-			{
-				std::cerr << "[ERROR|Config] no argument after --" + name + ".config=" << std::endl;
-				exit(1);
-			}
+				error("Command Line", 0, "--"+name+".config", "NO ARGUMENT GIVEN.");
 
 			// save config file for later use
 			configFile = arg;
@@ -73,16 +70,13 @@ BVS::Config& BVS::Config::loadCommandLine(int argc, char** argv)
 
 			// check for missing argument
 			if (arg.empty())
-			{
-				std::cerr << "[ERROR|Config] no argument after --" + name + ".options=" << std::endl;
-				exit(1);
-			}
+				error("Command Line", 0, "--"+name+".options", "NO ARGUMENTS GIVEN.");
 
 			// separate arg string and add to optionStore
 			std::string option;
 			size_t separatorPos = 0;
 			size_t equalPos;
-			std::lock_guard<std::mutex> lock(mutex);
+			std::lock_guard<std::recursive_mutex> lock(mutex);
 			while (separatorPos != std::string::npos)
 			{
 				// separate
@@ -115,8 +109,10 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 	// check if file can be read from
 	if (!file.is_open())
 	{
-		std::cerr << "[ERROR|Config] file not found: " << configFile << std::endl;
-		exit(1);
+		if (fileStack.empty())
+			error(name, 0, configFile, "FILE NOT FOUND.");
+		else
+			error(fileStack.top().first, fileStack.top().second, "source " + configFile, "FILE NOT FOUND.");
 	}
 
 	std::string line, tmp, option, section;
@@ -124,7 +120,7 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 	size_t pos;
 	int lineNumber = 0;
 
-	std::lock_guard<std::mutex> lock(mutex);
+	std::lock_guard<std::recursive_mutex> lock(mutex);
 
 	/* algorithm:
 	 * FOR EACH line in config file
@@ -133,6 +129,7 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 	 *      REMOVE all unquoted whitespace/tabs, strip inline comments
 	 *          CHECK for ' and "
 	 *          COPY with/without whitespace/tabs
+	 *      CHECK 'source' command
 	 *      CHECK section existence
 	 *      FIND delimiter, separate
 	 *      APPEND option if set
@@ -163,14 +160,17 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 		}
 
 		// ignore empty lines and comments
-		if (line.length()==0) continue;
-		if (line[0]=='#') continue;
+		if (tmp.length()==0) continue;
+		if (tmp[0]=='#') continue;
 
-		// REMOVE at some future point in time
-		if (line[0]=='+')
+		// check 'source' command
+		if (tmp.substr(0,6)=="source" && tmp[6]!='=')
 		{
-			std::cerr << "[ERROR|Config] '+option' DEPRECATED, please use the new '+=' operator instead (sorry for the syntax change)" << std::endl;
-			exit(1);
+			std::string source = tmp.substr(6, tmp.length()-6);
+			fileStack.push(std::pair<std::string, int>(configFile, lineNumber));
+			loadConfigFile(source);
+			fileStack.pop();
+			continue;
 		}
 
 		// check section existence
@@ -178,18 +178,22 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 		{
 			pos = tmp.find_first_of(']');
 			section = tmp.substr(1, pos-1);
+			if (pos==std::string::npos)
+				error(configFile, lineNumber, line, "MISSING ']' IN SECTION DECLARATION.");
+
+			std::transform(section.begin(), section.end(), section.begin(), ::tolower);
+			if (sections.find(section)==sections.end()) sections[section] = configFile + ":" + std::to_string(lineNumber);
+			else error(configFile, lineNumber, line, "DUPLICATE, FIRST SEEN HERE: " + sections.find(section)->second);
 			continue;
 		}
 		if (section.empty())
-		{
-			std::cerr << "[ERROR|Config] option without section." << std::endl;
-			std::cerr << "[ERROR|Config] " << configFile << ":" << lineNumber << ": " << line << std::endl;
-			exit(1);
-		}
+			error(configFile, lineNumber, line, "OPTION WITHOUT SECTION.");
 
 		// find '='/'+=' delimiter, prepend section name, separate
 		pos = tmp.find_first_of("=");
-		if (tmp.at(pos-1)=='+')
+		if (pos==std::string::npos)
+			error(configFile, lineNumber, line, "NO SEPARATOR ('=') FOUND.");
+		if (pos>0 && tmp.at(pos-1)=='+')
 		{
 			append = true;
 			tmp.erase(pos-1, 1);
@@ -200,11 +204,7 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 
 		// check for empty option name
 		if (option.length()==section.length()+1 )
-		{
-			std::cerr << "[ERROR|Config] starting line with '='." << std::endl;
-			std::cerr << "[ERROR|Config] " << configFile << ":" << lineNumber << ": " << line << std::endl;
-			exit(1);
-		}
+			error(configFile, lineNumber, line, "STARTING LINE WITH '='.");
 
 		// to lowercase
 		std::transform(option.begin(), option.end(), option.begin(), ::tolower);
@@ -214,11 +214,7 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 		{
 			// check if option exists
 			if (optionStore.find(option)==optionStore.end())
-			{
-				std::cerr << "[ERROR|Config] cannot append to a non existing option." << std::endl;
-				std::cerr << "[ERROR|Config] " << configFile << ":" << lineNumber << ": " << line << std::endl;
-				exit(1);
-			}
+				error(configFile, lineNumber, line, "CANNOT APPEND TO A NEW OPTION.");
 
 			optionStore[option] = optionStore[option] + "," + tmp;
 			continue;
@@ -237,7 +233,7 @@ std::string BVS::Config::searchOption(std::string option) const
 {
 	std::transform(option.begin(), option.end(), option.begin(), ::tolower);
 
-	std::lock_guard<std::mutex> lock(mutex);
+	std::lock_guard<std::recursive_mutex> lock(mutex);
 
 	// search for option in store
 	if(optionStore.find(option)!=optionStore.end())
@@ -248,32 +244,27 @@ std::string BVS::Config::searchOption(std::string option) const
 	else
 	{
 		// search if section exists
-		bool found = false;
-		bool foundSection = false;
 		size_t separatorPos = option.find_first_of('.');
 		std::string section = option.substr(0, separatorPos);
-		std::string match;
-		std::vector<std::string> sections;
-		for (auto& it: optionStore)
-		{
-			separatorPos = it.first.find_first_of('.');
-			match = it.first.substr(0, separatorPos);
-			if (section==match) found = true;
-			for (auto& it2: sections)
-				if (it2==match) foundSection = true;
-			if (!foundSection) sections.push_back(match);
-		}
-		if (!found)
+		if (sections.find(section)==sections.end())
 		{
 			std::cerr << "[WARNING|Config] SECTION NOT FOUND: [" << section << "]" << std::endl;
 			std::cerr << "[WARNING|Config] follwing sections were encountered: ";
-			for (auto& it: sections)
-				std::cerr << "[" << it << "] ";
+			for (auto& s: sections)
+				std::cerr << "[" << s.first << "]:" << s.second << "  ";
 			std::cerr << std::endl;
 		}
 	}
 
 	return std::string();
+}
+
+
+
+inline void BVS::Config::error(const std::string& configFile, int lineNumber, const std::string& line, const std::string& message) const
+{
+	std::cerr << "[ERROR|Config] " << configFile << ":" << lineNumber << ": " << line << " <=== " << message <<  std::endl;
+	exit(1);
 }
 
 
