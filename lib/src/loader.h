@@ -97,7 +97,7 @@ namespace BVS
 			LibHandle loadLibrary(const std::string& id, const std::string& library);
 
 			/** Unload the necessary library.
-			 * @param[in] moduleName The name of the module.
+			 * @param[in] id The name of the module.
 			 * @param[in] purgeModuleData Whether to purge the module's data.
 			 * @return Reference to object.
 			 */
