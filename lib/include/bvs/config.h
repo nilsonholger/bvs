@@ -90,12 +90,6 @@ namespace BVS
 			 */
 			Config(const std::string& name, int argc = 0, char** argv = nullptr, std::string file = std::string());
 
-			/** Gets the system name.
-			 * @param[out] name Return object containing name.
-			 * @return Reference to object.
-			 */
-			Config& getName(std::string& name);
-
 			/** Loads the given config file (if it exists).
 			 * This checks the supplied path for a config file and if found parses
 			 * its contents.
