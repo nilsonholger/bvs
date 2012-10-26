@@ -11,7 +11,6 @@ BVSExampleModule::BVSExampleModule(const std::string id, const BVS::Info& bvs)
 	: BVS::Module(),
 	id(id),
 	logger(id),
-	config("BVSExampleModule", 0, nullptr),
 	bvs(bvs)
 	//yourSwitch(bvs.config.getValue<bool>(id + ".yourSwitch, false)),
 	//input("testIn", BVS::ConnectorType::INPUT),
