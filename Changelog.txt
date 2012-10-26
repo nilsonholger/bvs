@@ -1,9 +1,17 @@
+2012-10-26  NilsonHolger <nilsonholger@hyve.org>
+
+	* Config -> 'source' command:
+	modules should no longer create config objects to retrieve config options
+	and instead use the supplied 'bvs.config' object, this allows the change
+	of all (even module) options on the command line (do not forget to
+	'source' your config files into the main config loaded by BVS)
+
 2012-10-24  NilsonHolger <nilsonholger@hyve.org>
 
 	* Hotswap support in bvsd:
 	hotswap support has been added to bvsd (a call: hs|hotswap <moduleID> and
 	the run script got a fifo to control bvsd (see Readme.txt)
-	* note:
+	* Note:
 	in order to use hotswapping with already existing modules, the
 	'bvsHotSwapModule(...)' function will need to be added to it (located in
 	'libbvs/module/BVSExampleModule.cc')
