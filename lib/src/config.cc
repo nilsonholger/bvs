@@ -57,10 +57,7 @@ BVS::Config& BVS::Config::loadCommandLine(int argc, char** argv)
 
 			// check for missing argument
 			if (arg.empty())
-			{
-				std::cerr << "[ERROR|Config] no argument after --" + name + ".config=" << std::endl;
-				exit(1);
-			}
+				error("Command Line", 0, "--"+name+".config", "NO ARGUMENT GIVEN.");
 
 			// save config file for later use
 			configFile = arg;
@@ -73,10 +70,7 @@ BVS::Config& BVS::Config::loadCommandLine(int argc, char** argv)
 
 			// check for missing argument
 			if (arg.empty())
-			{
-				std::cerr << "[ERROR|Config] no argument after --" + name + ".options=" << std::endl;
-				exit(1);
-			}
+				error("Command Line", 0, "--"+name+".options", "NO ARGUMENTS GIVEN.");
 
 			// separate arg string and add to optionStore
 			std::string option;
@@ -174,15 +168,13 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 			continue;
 		}
 		if (section.empty())
-		{
-			std::cerr << "[ERROR|Config] option without section." << std::endl;
-			std::cerr << "[ERROR|Config] " << configFile << ":" << lineNumber << ": " << line << std::endl;
-			exit(1);
-		}
+			error(configFile, lineNumber, line, "OPTION WITHOUT SECTION.");
 
 		// find '='/'+=' delimiter, prepend section name, separate
 		pos = tmp.find_first_of("=");
-		if (tmp.at(pos-1)=='+')
+		if (pos==std::string::npos)
+			error(configFile, lineNumber, line, "NO SEPARATOR ('=') FOUND.");
+		if (pos>0 && tmp.at(pos-1)=='+')
 		{
 			append = true;
 			tmp.erase(pos-1, 1);
@@ -193,11 +185,7 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 
 		// check for empty option name
 		if (option.length()==section.length()+1 )
-		{
-			std::cerr << "[ERROR|Config] starting line with '='." << std::endl;
-			std::cerr << "[ERROR|Config] " << configFile << ":" << lineNumber << ": " << line << std::endl;
-			exit(1);
-		}
+			error(configFile, lineNumber, line, "STARTING LINE WITH '='.");
 
 		// to lowercase
 		std::transform(option.begin(), option.end(), option.begin(), ::tolower);
@@ -207,11 +195,7 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 		{
 			// check if option exists
 			if (optionStore.find(option)==optionStore.end())
-			{
-				std::cerr << "[ERROR|Config] cannot append to a non existing option." << std::endl;
-				std::cerr << "[ERROR|Config] " << configFile << ":" << lineNumber << ": " << line << std::endl;
-				exit(1);
-			}
+				error(configFile, lineNumber, line, "CANNOT APPEND TO A NEW OPTION.");
 
 			optionStore[option] = optionStore[option] + "," + tmp;
 			continue;
@@ -267,6 +251,14 @@ std::string BVS::Config::searchOption(std::string option) const
 	}
 
 	return std::string();
+}
+
+
+
+inline void BVS::Config::error(const std::string& configFile, int lineNumber, const std::string& line, const std::string& message) const
+{
+	std::cerr << "[ERROR|Config] " << configFile << ":" << lineNumber << ": " << line << " <=== " << message <<  std::endl;
+	exit(1);
 }
 
 

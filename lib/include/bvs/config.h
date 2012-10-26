@@ -149,6 +149,14 @@ namespace BVS
 			 */
 			Config& loadCommandLine(int argc, char** argv);
 
+			/** Log parsing error to std::cerr.
+			 * @param[in] configFile File name of parsed config file.
+			 * @param[in] lineNumber Line number.
+			 * @param[in] line Current line content.
+			 * @param[in] message Message to log.
+			 */
+			inline void error(const std::string& configFile, const int lineNumber, const std::string& line, const std::string& message) const;
+
 			/** Searches optionStore for the given option name.
 			 * @param[in] option Desired config option.
 			 * @return The option's value if found.
