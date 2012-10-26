@@ -166,13 +166,6 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 		if (line.length()==0) continue;
 		if (line[0]=='#') continue;
 
-		// REMOVE at some future point in time
-		if (line[0]=='+')
-		{
-			std::cerr << "[ERROR|Config] '+option' DEPRECATED, please use the new '+=' operator instead (sorry for the syntax change)" << std::endl;
-			exit(1);
-		}
-
 		// check section existence
 		if (tmp[0]=='[')
 		{
