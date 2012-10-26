@@ -4,7 +4,9 @@
 #include <map>
 #include <mutex>
 #include <sstream>
+#include <stack>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "bvs/traits.h"
@@ -29,7 +31,7 @@ namespace BVS
 	 * If a config file is given, it is loaded into the system.
 	 * The syntax is:
 	 * @code
-	 * # lines starting with a '#' sign are considered comments as well as 
+	 * # lines starting with a '#' sign are considered comments as well as
 	 * # everything after a '#' sign
 	 *
 	 * option = ignored # options MUST belong to a section
@@ -54,7 +56,7 @@ namespace BVS
 	 * # accessed by using getValue with std::vector<TYPE>, and spaces are
 	 * # allowed inside single or double quotes (otherwise they will be stripped)
 	 *
-	 * # the plus-equal operatior can be used to expand existing options, which 
+	 * # the plus-equal operatior can be used to expand existing options, which
 	 * # turns them into a list, thus allowing for faster reordering
 	 * list = one
 	 * list += two
@@ -63,6 +65,9 @@ namespace BVS
 	 * list = +five
 	 * list = six # WARNING: redefiniton, will be ignored, see above
 	 * # the result of this will be: list = one,two,three,five
+	 *
+	 * # other config files can be sourced (included) by using the source command
+	 * source OtherConfigFile.txt
 	 * @endcode
 	 * @see loadConfigFile
 	 *
@@ -86,15 +91,9 @@ namespace BVS
 			 * @param[in] name A unique name for this config system.
 			 * @param[in] argc Number of arguments.
 			 * @param[in] argv Array of arguments.
-			 * @param[in] file Name of config file to load immediately.
+			 * @see loadCommandLine
 			 */
-			Config(const std::string& name, int argc = 0, char** argv = nullptr, std::string file = std::string());
-
-			/** Gets the system name.
-			 * @param[out] name Return object containing name.
-			 * @return Reference to object.
-			 */
-			Config& getName(std::string& name);
+			Config(const std::string& name, int argc = 0, char** argv = nullptr);
 
 			/** Loads the given config file (if it exists).
 			 * This checks the supplied path for a config file and if found parses
@@ -140,10 +139,16 @@ namespace BVS
 			const std::string name; /**< Instance's name. */
 
 		private:
-			mutable std::mutex mutex; /**< Mutex for thread safety. */
+			mutable std::recursive_mutex mutex; /**< Mutex for thread safety. */
 
 			/** A map of all stored options. */
 			std::map<std::string, std::string, std::less<std::string>> optionStore;
+
+			/** A map of all encountered sections. */
+			std::map<std::string, std::string, std::less<std::string>> sections;
+
+			/** A stack of the current config and line. */
+			std::stack<std::pair<std::string, int>> fileStack;
 
 			/** Loads the given arguments into the system.
 			 * This checks argv for occurences of --$NAME.config and
@@ -154,6 +159,14 @@ namespace BVS
 			 * @return Reference to object.
 			 */
 			Config& loadCommandLine(int argc, char** argv);
+
+			/** Log parsing error to std::cerr.
+			 * @param[in] configFile File name of parsed config file.
+			 * @param[in] lineNumber Line number.
+			 * @param[in] line Current line content.
+			 * @param[in] message Message to log.
+			 */
+			inline void error(const std::string& configFile, const int lineNumber, const std::string& line, const std::string& message) const;
 
 			/** Searches optionStore for the given option name.
 			 * @param[in] option Desired config option.

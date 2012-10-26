@@ -11,12 +11,9 @@ BVSExampleModule::BVSExampleModule(const std::string id, const BVS::Info& bvs)
 	: BVS::Module(),
 	id(id),
 	logger(id),
-	config("BVSExampleModule", 0, nullptr), // "BVSExampleModuleConfig.txt"),
-	// if you add BVSExampleConfig.txt to the config constructior, it will be
-	// loaded immediately, so you can use config to retrieve settings in the
-	// initialization list, e.g.
-	// yourSwitch(config.getValue<bool>(id + ".yourSwitch, false));
+	config("BVSExampleModule", 0, nullptr),
 	bvs(bvs)
+	//yourSwitch(bvs.config.getValue<bool>(id + ".yourSwitch, false)),
 	//input("testIn", BVS::ConnectorType::INPUT),
 	//output("testOut", BVS::ConnectorType::OUTPUT)
 {
