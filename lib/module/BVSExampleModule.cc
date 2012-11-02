@@ -79,24 +79,3 @@ BVS::Status BVSExampleModule::debugDisplay()
 	return BVS::Status::OK;
 }
 
-
-
-// This function is called by the framework upon creating a module instance of
-// this class. It creates the module and registers it within the framework.
-// DO NOT CHANGE OR DELETE
-extern "C" {
-	int bvsRegisterModule(std::string id, BVS::Info& bvs)
-	{
-		registerModule(id, new BVSExampleModule(id, bvs));
-
-		return 0;
-	}
-
-	int bvsHotSwapModule(std::string id, BVS::Module* module)
-	{
-		registerModule(id, reinterpret_cast<BVSExampleModule*>(module), true);
-
-		return 0;
-	}
-}
-

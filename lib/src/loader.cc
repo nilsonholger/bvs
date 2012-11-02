@@ -250,17 +250,15 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 {
 #ifdef BVS_MODULE_HOTSWAP
-	// TODO NEXT wait for thread to and pools
+	// wait for thread or pool
 	if (modules[id]->asThread || !modules[id]->poolName.empty())
 		control.waitUntilInactive(id);
 
+	// reload library
 	unloadLibrary(id, false);
-
-	//HOTSWAP
-
 	LibHandle dlib = loadLibrary(id, modules[id]->library);
 
-	// look for bvsRegisterModule in loaded lib, check for errors and execute register function
+	// look for bvsHotSwapModule
 	typedef void (*bvsHotSwapModule_t)(const std::string& id, BVS::Module* module);
 	bvsHotSwapModule_t bvsHotSwapModule;
 	*reinterpret_cast<void**>(&bvsHotSwapModule)=dlsym(dlib, "bvsHotSwapModule");
@@ -280,8 +278,7 @@ BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 	// save new dlib information
 	modules[id]->dlib = dlib;
 #else //BVS_MODULE_HOTSWAP
-	(void) id;
-	LOG(0, "ERROR: HotSwap disabled!");
+	LOG(0, "ERROR: HotSwap disabled, could not hotswap: '" << id << "'!");
 #endif //BVS_MODULE_HOTSWAP
 
 	return *this;
