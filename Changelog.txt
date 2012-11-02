@@ -1,3 +1,16 @@
+2012-11-02  NilsonHolger <nilsonholger@hyve.org>
+
+	* Module utilities:
+	add macro to define module utilites (helper functions needed by the
+	framework to load/create/hotswap... the module), until now these were
+	defined inside each and every module, this means duplication and also lack
+	of change propagation to older modules, with the new macro this will be
+	improved upon, to adapt to these changes, please remove the 'extern "C"'
+	block from the 'YourModule.cc' file and add
+	'BVS_MODULE_UTILITIES(YourModule)' to the 'YourModule.h' file (these
+	changes can also be seen in the example module or in libbvs commit:
+	b7d1a19e09bf91be4c52e171362394368b5c40bb)
+
 2012-10-26  NilsonHolger <nilsonholger@hyve.org>
 
 	* Config -> 'source' command:
