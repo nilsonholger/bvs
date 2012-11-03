@@ -8,7 +8,8 @@ BVS::Loader::Loader(Control& control, const Info& info)
 	: control(control),
 	logger("Loader"),
 	info(info),
-	modules(Control::modules)
+	modules(Control::modules),
+	moduleStack()
 {
 
 }
@@ -92,6 +93,8 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 	modules[id]->poolName = poolName;
 	control.startModule(id);
 
+	moduleStack.push(id);
+
 	return *this;
 }
 
@@ -153,7 +156,14 @@ BVS::Loader& BVS::Loader::unload(const std::string& id)
 
 BVS::Loader& BVS::Loader::unloadAll()
 {
-	while (!modules.empty()) unload(modules.begin()->first);
+	while (!moduleStack.empty())
+	{
+		if(modules.find(moduleStack.top())!=modules.end())
+		{
+			unload(moduleStack.top());
+			moduleStack.pop();
+		}
+	}
 
 	return *this;
 }

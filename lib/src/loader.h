@@ -1,9 +1,9 @@
 #ifndef BVS_LOADER_H
 #define BVS_LOADER_H
 
+#include <stack>
 #include <string>
 #include <thread>
-#include <vector>
 
 #include "bvs/bvsinfo.h"
 #include "bvs/config.h"
@@ -132,6 +132,7 @@ namespace BVS
 			Logger logger; /**< Logger metadata. */
 			const Info& info; /**< Info reference. */
 			ModuleDataMap& modules; /**< Reference to Control::modules */
+			std::stack<std::string> moduleStack; /** Stack of modules names. */
 
 			Loader(const Loader&) = delete; /**< -Weffc++ */
 			Loader& operator=(const Loader&) = delete; /**< -Weffc++ */
