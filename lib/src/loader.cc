@@ -161,8 +161,8 @@ BVS::Loader& BVS::Loader::unloadAll()
 		if(modules.find(moduleStack.top())!=modules.end())
 		{
 			unload(moduleStack.top());
-			moduleStack.pop();
 		}
+		moduleStack.pop();
 	}
 
 	return *this;
