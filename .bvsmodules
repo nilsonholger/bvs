@@ -1,3 +1,4 @@
 bvsModules git@i14gitlab.anthropomatik.kit.edu:bvs_bvsmodules.git CalibrationCV CaptureCV StereoCVCUDA StereoELAS
 camGrasshopper git@i14gitlab.anthropomatik.kit.edu:bvs_camgrasshopper.git
 ImageSequencePlayer git@i14gitlab.anthropomatik.kit.edu:bvs_imagesequenceplayer.git
+gazeModules git@i14gitlab.anthropomatik.kit.edu:bvs_gazemodules.git FaceDetectionMod IsophoteMod SimpleOutputGUI
