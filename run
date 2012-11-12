@@ -112,24 +112,26 @@ while read LINE; do MODULES[${#MODULES[@]}]=$LINE; done < .bvsmodules
 for MOD in "${MODULES[@]}"
 do
 	eval MOD=($MOD)
-	DIR=${MOD[0]}
+	NAME=${MOD[0]}
 	REPO=${MOD[1]}
-	[ -d modules/$DIR ] && echo ">>> SKIP $DIR!" && continue
+	[ -d modules/$NAME ] && echo ">>> SKIP $NAME!" && continue
 	echo
-	echo -e ">>> INSTALL $DIR ($REPO)? [y|N] \c"
+	echo -e ">>> INSTALL $NAME ($REPO)? [y|N] \c"
 	read CMD
-	[ "$CMD"x != "yx" ] && echo ">>> SKIP $DIR!" && continue
-	git submodule add -f $REPO modules/$DIR
+	[ "$CMD"x != "yx" ] && echo ">>> SKIP $NAME!" && continue
+	git submodule add -f $REPO modules/$NAME
 
-	[ ! -r modules/CMakeLists.txt ] && echo "# enable module compilation here (entries created by './run --new-module <MODULE>')" > modules/CMakeLists.txt
-	if [ "${#MOD[@]}" -lt 3 ]
+	[ ! -r modules/CMakeLists.txt ] && echo "# enable module compilation here (entries created by './run --new-module <MODULE>' or './run --setup')" > modules/CMakeLists.txt
+	if [ "${MOD[2]}" == "COLLECTION" ]
 	then
-		echo "#add_subdirectory(${MOD[0]})" >> modules/CMakeLists.txt
-	else
-		for i in `eval "echo {2..$[${#MOD[@]}-1]}"`
+		for i in modules/$NAME/*
 		do
-			echo "#add_subdirectory(${MOD[0]}/${MOD[$i]})" >> modules/CMakeLists.txt
+			[ ! -d $i ] && continue
+			MOD=${i/modules\/}
+			echo "#add_subdirectory($MOD)" >> modules/CMakeLists.txt
 		done
+	else
+		echo "#add_subdirectory($NAME)" >> modules/CMakeLists.txt
 	fi
 done
 
