@@ -78,15 +78,19 @@ static const bool bvs_module_pools = true;
 
 
 
-/** Whether to use gcc's visibility option
- */
 #ifdef BVS_GCC_VISIBILITY
 #ifdef __GNUC__
 #define BVS_PRIVATE __attribute__ ((visibility ("hidden")))
 #define BVS_PUBLIC __attribute__ ((visibility ("default")))
 #endif //__GNUC__
 #else //BVS_GCC_VISIBILITY
+/** @def BVS_PRIVATE
+ * GCC visibility attribute macro for private/hidden objects.
+ */
 #define BVS_PRIVATE
+/** @def BVS_PUBLIC
+ * GCC visibility attribute macro for public objects.
+ */
 #define BVS_PUBLIC
 #endif //BVS_GCC_VISIBILITY
 
