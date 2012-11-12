@@ -48,11 +48,6 @@ class BVSExampleModule : public BVS::Module
 		 */
 		BVS::Logger logger;
 
-		/** Your config system.
-		 * @see Config
-		 */
-		BVS::Config config;
-
 		/** Your Info reference;
 		 * @see Info
 		 */
@@ -67,6 +62,13 @@ class BVSExampleModule : public BVS::Module
 		BVSExampleModule(const BVSExampleModule&) = delete; /**< -Weffc++ */
 		BVSExampleModule& operator=(const BVSExampleModule&) = delete; /**< -Weffc++ */
 };
+
+
+
+/** This calls a macro to create needed module utilities. */
+BVS_MODULE_UTILITIES(BVSExampleModule)
+
+
 
 #endif //BVSEXAMPLEMODULE_H
 

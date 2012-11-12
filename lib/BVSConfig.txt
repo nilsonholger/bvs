@@ -64,4 +64,10 @@ modulePools = ON
 #BVSMaster = 0
 #YourLogger = ...
 
+# To include other config files use the 'source' command. This sourced file
+# will be parsed right here so it might overwrite some of your settings
+# (first comes, first served).
+#
+# source OtherConfigFile.txt
+
 # This line tells vim something about the file type. -- vim:ft=config:

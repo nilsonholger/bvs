@@ -11,12 +11,8 @@ BVSExampleModule::BVSExampleModule(const std::string id, const BVS::Info& bvs)
 	: BVS::Module(),
 	id(id),
 	logger(id),
-	config("BVSExampleModule", 0, nullptr), // "BVSExampleModuleConfig.txt"),
-	// if you add BVSExampleConfig.txt to the config constructior, it will be
-	// loaded immediately, so you can use config to retrieve settings in the
-	// initialization list, e.g.
-	// yourSwitch(config.getValue<bool>(id + ".yourSwitch, false));
 	bvs(bvs)
+	//yourSwitch(bvs.config.getValue<bool>(id + ".yourSwitch, false)),
 	//input("testIn", BVS::ConnectorType::INPUT),
 	//output("testOut", BVS::ConnectorType::OUTPUT)
 {
@@ -81,26 +77,5 @@ BVS::Status BVSExampleModule::execute()
 BVS::Status BVSExampleModule::debugDisplay()
 {
 	return BVS::Status::OK;
-}
-
-
-
-// This function is called by the framework upon creating a module instance of
-// this class. It creates the module and registers it within the framework.
-// DO NOT CHANGE OR DELETE
-extern "C" {
-	int bvsRegisterModule(std::string id, BVS::Info& bvs)
-	{
-		registerModule(id, new BVSExampleModule(id, bvs));
-
-		return 0;
-	}
-
-	int bvsHotSwapModule(std::string id, BVS::Module* module)
-	{
-		registerModule(id, reinterpret_cast<BVSExampleModule*>(module), true);
-
-		return 0;
-	}
 }
 
