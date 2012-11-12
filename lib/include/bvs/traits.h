@@ -47,7 +47,7 @@ static const bool bvs_log_to_console = true;
  *
  * Possible Values: "" (NO log file), "$NAME", "+$NAME"
  */
-static const std::string bvs_log_to_logfile = std::string();
+static const std::string bvs_log_to_logfile = {};
 
 /** The logging system clients' default verbosity.
  * This verbosity level will be used for all log clients that have not

@@ -16,16 +16,16 @@ BVS::ModuleVector* BVS::Control::hotSwapGraveYard = nullptr;
 
 BVS::Control::Control(Info& info)
 	: info(info),
-	logger("Control"),
-	runningThreads(0),
-	masterModules(),
-	pools(),
-	flag(SystemFlag::PAUSE),
-	mutex(),
-	masterLock(mutex),
-	monitor(),
-	controlThread(),
-	round(0)
+	logger{"Control"},
+	runningThreads{0},
+	masterModules{},
+	pools{},
+	flag{SystemFlag::PAUSE},
+	mutex{},
+	masterLock{mutex},
+	monitor{},
+	controlThread{},
+	round{0}
 { }
 
 
@@ -46,17 +46,8 @@ void BVS::Control::registerModule(const std::string& id, Module* module, bool ho
 	}
 	else
 	{
-		modules[id] = std::shared_ptr<ModuleData>(new ModuleData(
-					id,
-					std::string(),
-					std::string(),
-					module,
-					nullptr,
-					false,
-					std::string(),
-					ControlFlag::WAIT,
-					Status::NONE,
-					ConnectorMap()));
+		modules[id] = std::shared_ptr<ModuleData>{new ModuleData{id, {}, {},
+			module, nullptr, false, {}, ControlFlag::WAIT, Status::NONE, {}}};
 	}
 }
 
@@ -67,7 +58,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 	if (forkMasterController)
 	{
 		LOG(3, "master -> FORKED!");
-		controlThread = std::thread(&Control::masterController, this, false);
+		controlThread = std::thread{&Control::masterController, this, false};
 		return *this;
 	}
 	else
@@ -180,7 +171,7 @@ BVS::Control& BVS::Control::startModule(std::string id)
 				(data->poolName, ControlFlag::WAIT);
 			pools[data->poolName]->modules.push_back(modules[id]);
 			pools[data->poolName]->thread = std::thread
-				(&Control::poolController, this, pools[data->poolName]);
+				{&Control::poolController, this, pools[data->poolName]};
 			runningThreads.fetch_add(1);
 		}
 		else
@@ -192,7 +183,7 @@ BVS::Control& BVS::Control::startModule(std::string id)
 	{
 		LOG(3, id << " -> THREAD");
 		runningThreads.fetch_add(1);
-		data->thread = std::thread(&Control::threadController, this, data);
+		data->thread = std::thread{&Control::threadController, this, data};
 	}
 	else
 	{
@@ -247,7 +238,7 @@ BVS::Control& BVS::Control::purgeData(const std::string& id)
 BVS::Control& BVS::Control::waitUntilInactive(const std::string& id)
 {
 	while (isActive(id)) monitor.wait_for(masterLock,
-			std::chrono::milliseconds(100), [&](){ return !isActive(id); });
+			std::chrono::milliseconds{100}, [&](){ return !isActive(id); });
 
 	return *this;
 }
@@ -303,7 +294,7 @@ BVS::Control& BVS::Control::moduleController(ModuleData& data)
 BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
 {
 	nameThisThread(("[M]"+data->id).c_str());
-	std::unique_lock<std::mutex> threadLock(mutex);
+	std::unique_lock<std::mutex> threadLock{mutex};
 
 	while (bool(data->flag))
 	{
@@ -324,7 +315,7 @@ BVS::Control& BVS::Control::poolController(std::shared_ptr<PoolData> data)
 {
 	nameThisThread(("[P]"+data->poolName).c_str());
 	LOG(3, "POOL(" << data->poolName << ") STARTED!");
-	std::unique_lock<std::mutex> threadLock(mutex);
+	std::unique_lock<std::mutex> threadLock{mutex};
 
 	while (bool(data->flag) && !data->modules.empty())
 	{

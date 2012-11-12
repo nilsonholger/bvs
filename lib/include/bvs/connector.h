@@ -108,8 +108,8 @@ namespace BVS
 
 
 	template<typename T> Connector<T>::Connector(const std::string& connectorName, ConnectorType connectorType)
-		: connection(nullptr)
-		, data(std::shared_ptr<ConnectorData>(new ConnectorData(
+		: connection{nullptr},
+		data{std::shared_ptr<ConnectorData>{new ConnectorData{
 						connectorName,
 						connectorType,
 						false,
@@ -117,7 +117,7 @@ namespace BVS
 						typeid(T).hash_code(),
 						typeid(T).name(),
 						nullptr,
-						false)))
+						false}}}
 	{
 		if (ConnectorDataCollector::connectors.find(connectorName)==ConnectorDataCollector::connectors.end())
 		{
@@ -141,8 +141,8 @@ namespace BVS
 
 
 	template<typename T> Connector<T>::Connector(const Connector& t)
-		: connection(std::move(t.connection))
-		, data(std::move(t.data))
+		: connection{std::move(t.connection)},
+		data{std::move(t.data)}
 	{ }
 
 

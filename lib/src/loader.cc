@@ -6,10 +6,10 @@
 
 BVS::Loader::Loader(Control& control, const Info& info)
 	: control(control),
-	logger("Loader"),
+	logger{"Loader"},
 	info(info),
 	modules(Control::modules),
-	moduleStack()
+	moduleStack{}
 { }
 
 
