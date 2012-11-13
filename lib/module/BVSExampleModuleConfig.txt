@@ -1,15 +1,11 @@
-# This is an example config file for BVSExampleModule. It will be linked to
-# [build/]bin/BVSExampleModuleConfig.txt so you can get started right away.
+# This is an example config file for BVSExampleModule.
 #
-# short syntax:
-#
-# [section]
-# option = value
-#
-# Spaces and tabs are ignored (except inside '' and "") and everything is case
-# insensitive. For more information on syntax as well as further capabilities,
-# please see 'libbvs/include/bvs/config.h' or 'DOXYGEN:Classes->BVS::Config'.
+# For more information on syntax as well as further capabilities, please see
+# 'libbvs/include/bvs/config.h' or 'DOXYGEN:Classes->BVS::Config'.
 
+# It will be linked to [build/]bin/BVSExampleModuleConfig.txt so you can get
+# started right away.
+#
 # This is a section/configuration header.
 # It can be used to create 'configurations' of your module, simply by creating
 # various sections with different options belonging to them. These are selected
