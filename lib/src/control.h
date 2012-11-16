@@ -128,6 +128,9 @@ namespace BVS
 			 */
 			Control& poolController(std::shared_ptr<PoolData> data);
 
+			/** Check module status and act upon it if necessary. */
+			Control& checkModuleStatus(std::shared_ptr<ModuleData> data);
+
 			Info& info; /**< Info reference. */
 
 			Logger logger; /**< Logger metadata. */

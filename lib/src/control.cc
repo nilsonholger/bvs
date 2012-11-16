@@ -47,7 +47,7 @@ void BVS::Control::registerModule(const std::string& id, Module* module, bool ho
 	else
 	{
 		modules[id] = std::shared_ptr<ModuleData>{new ModuleData{id, {}, {},
-			module, nullptr, false, {}, ControlFlag::WAIT, Status::NONE, {}}};
+			module, nullptr, false, {}, ControlFlag::WAIT, Status::OK, {}}};
 	}
 }
 
@@ -101,6 +101,8 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 
 				for (auto& module: modules)
 				{
+					if (module.second->status!=Status::OK)
+						checkModuleStatus(module.second);
 					module.second->flag = ControlFlag::RUN;
 					if (module.second->asThread) runningThreads.fetch_add(1);
 				}
@@ -339,6 +341,30 @@ BVS::Control& BVS::Control::poolController(std::shared_ptr<PoolData> data)
 	pools.erase(pools.find(data->poolName));
 
 	LOG(3, "POOL(" << data->poolName << ") QUITTING!");
+	return *this;
+}
+
+
+
+BVS::Control& BVS::Control::checkModuleStatus(std::shared_ptr<ModuleData> data)
+{
+	switch (data->status)
+	{
+		case Status::OK:
+			break;
+		case Status::NOINPUT:
+			break;
+		case Status::FAIL:
+			break;
+		case Status::WAIT:
+			break;
+		case Status::DONE:
+			// TODO
+			break;
+		case Status::REQUEST_SYSTEM_SHUTDOWN:
+			break;
+	}
+
 	return *this;
 }
 
