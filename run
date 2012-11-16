@@ -57,35 +57,65 @@ usage: $0 [--flags [\$arg]]
        $0 [--debug] [config]
 
 maintenance flags:
-  -c|--clean                 run make clean and remove all CMake generated content (for in source builds)
-  -h|-?|--help               display this text
-  -n|--new-module \$name      create new module blank/frame with given name
-  -s|--setup                 initialize all submodules
-  -u|--update                pull updates for all submodules
+  -c|--clean                   -- run make clean and remove all CMake generated content (for in source builds)
+  -h|-?|--help                 -- display this text
+  -n|--new-module \$name        -- create new module blank/frame with given name
+  -r|--rename-module \$old \$new -- rename module (path relative to ./modules/)
+  -s|--setup                   -- initialize all submodules
+  -u|--update                  -- pull updates for all submodules
 
 targets:
-  [config]                   run 'bvsd' with the given config (default:BVSConfig.txt)
-  -d|--debug                 run 'bvsd' in gdb session
-  -f|--fifo                  run 'bvsd' reading input from 'bvsd-fifo'
+  [config]     -- run 'bvsd' with the given config (default:BVSConfig.txt)
+  -d|--debug   -- run 'bvsd' in gdb session
+  -f|--fifo    -- run 'bvsd' reading input from 'bvsd-fifo'
 EOF
 }
 
 
 
-# create new module
-function bvs_new_module {
-echo ">>> Creating new module!"
-[ -z $1 ] && echo ">>> No module name given!" && exit 1
-[ -z ${1/*[^[:alnum:]_]*} ] && echo ">>> Module name cannot only contain 'a-z,0-9,_' due to internal processing reasons! Please choose a different name!" && exit 1
-[ -r modules/$1 ] && echo ">>> A module of name $1 already exits! Please choose a different name!" && exit 1
-ORIG=BVSExampleModule
+# create new module or modify existing one
+function bvs_module {
+# check input
+[ -z "$1" -o -z "$2" ] && echo ">>> No module name given!" && exit 1
+
+# name stuff
+ORIG_PATH=$1
+ORIG=`basename $1`
 ORIGC=`echo $ORIG | tr "[:lower:]" "[:upper:]"`
-MOD=$1
+MOD_PATH=$2
+MOD=`basename $2`
 MODC=`echo $MOD | tr "[:lower:]" "[:upper:]"`
-echo ">>> Copying template to $MOD!"
-cp -r libbvs/module modules/$MOD
-echo ">>> Modifying template!"
-cd modules/$MOD
+_NEW=''
+
+# verify arguments
+[ -z ${MOD/*[^[:alnum:]_]*} ] && echo ">>> Module name cannot only contain 'a-z,0-9,_' due to internal processing reasons! Please choose a different name!" && exit 1
+[ -d modules/$MOD ] && echo ">>> A module of name '$MOD' already exits at location 'modules/$MOD_PATH'! Please choose a different name and/or location!" && exit 1
+[ "$ORIG" == "BVSExampleModule" ] && _NEW="TRUE"
+if [ $_NEW ]
+then
+	echo ">>> Creating new module '$MOD'!"
+	[ ! -d modules/`dirname $MOD_PATH`/`basename $MOD_PATH` ] && mkdir -p modules/$MOD_PATH
+else
+	echo ">>> Renaming module '$ORIG' -> '$MOD'!"
+	[ ! -d modules/$ORIG_PATH ] && echo ">>> Directory 'modules/$ORIG_PATH' does not exist!" && exit 1
+	[ -d modules/$MOD_PATH ] && echo ">>> Direcotry or module 'modules/$MOD_PATH' already exists!" && exit 1
+	[ ! -d modules/`dirname $MOD_PATH` ] && mkdir -p modules/`dirname $MOD_PATH`
+fi
+
+# copy
+if [ $_NEW ]
+then
+	echo ">>> Copying template to 'modules/$MOD_PATH!'"
+	cp libbvs/module/* modules/$MOD_PATH/
+	echo ">>> Modifying template!"
+else
+	echo ">>> Copying 'modules/$ORIG_PATH' to 'modules/$MOD_PATH!'"
+	cp -r modules/$ORIG_PATH modules/$MOD_PATH
+	echo ">>> Modyfing '$MOD'!"
+fi
+
+# modify
+cd modules/$MOD_PATH
 mv $ORIG.h $MOD.h
 mv $ORIG.cc $MOD.cc
 mv ${ORIG}Config.txt ${MOD}Config.txt
@@ -93,9 +123,18 @@ FILES=(CMakeLists.txt $MOD.h $MOD.cc ${MOD}Config.txt)
 sed -i -e "s/$ORIG/$MOD/g" ${FILES[@]}
 sed -i -e "s/$ORIGC/$MODC/g" ${FILES[@]}
 cd - > /dev/null
+
+# update module cmake info
 [ ! -r modules/CMakeLists.txt ] && echo "# enable/disable to be compiled modules here (entries will be created by './run --new-module <MODULE>')" > modules/CMakeLists.txt
-echo "#add_subdirectory($MOD)" >> modules/CMakeLists.txt
-echo ">>> Created Module $MOD! Please modify modules/CMakeLists.txt to add it to compilation!"
+if [ $_NEW ]
+then
+	echo "#add_subdirectory($MOD_PATH)" >> modules/CMakeLists.txt
+	echo ">>> Created Module 'modules/$MOD_PATH'! Please modify modules/CMakeLists.txt to add it to compilation!"
+else
+	eval sed -i -e "s/\(${ORIG_PATH//\//\\\/}\)/\(${MOD_PATH//\//\\\/}\)/" modules/CMakeLists.txt
+	echo ">>> Renamed Module 'modules/$ORIG_PATH' to 'modules/$MOD_PATH' and modified CMakeLists.txt for you!"
+	echo ">>> 'modules/$ORIG_PATH' left intact, cat be deleted no!"
+fi
 }
 
 
@@ -228,7 +267,8 @@ echo ">>> Please solve any merge conflicts if necessary!"
 case $1 in
 	'-c'|'--clean') bvs_clean;;
 	'-h'|'-?'|'--help') bvs_help;;
-	'-n'|'--new-module') bvs_new_module $2;;
+	'-n'|'--new-module') bvs_module "BVSExampleModule" $2;;
+	'-r'|'--rename-module') bvs_module $2 $3;;
 	'-s'|'--setup') bvs_setup;;
 	'-u'|'--update') bvs_update;;
 	""|*) bvs_run "$@";;
