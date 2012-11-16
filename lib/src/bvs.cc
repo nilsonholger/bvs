@@ -17,7 +17,8 @@ BVS::BVS::BVS(int argc, char** argv)
 	logger{"BVS"},
 #endif
 	control{new Control{info}},
-	loader{new Loader{*control, info}}
+	loader{new Loader{control->modules, info}},
+	moduleStack{}
 {
 #ifdef BVS_LOG_SYSTEM
 	logSystem->updateSettings(config);
@@ -83,8 +84,12 @@ BVS::BVS& BVS::BVS::loadModules()
 
 
 
-BVS::BVS& BVS::BVS::loadModule(const std::string& id, bool asThread, std::string poolName)
+BVS::BVS& BVS::BVS::loadModule(const std::string& moduleTraits, bool asThread, std::string poolName)
 {
+	std::string id;
+	std::string library;
+	std::string options;
+
 	bool moduleThreads = config.getValue<bool>("BVS.moduleThreads", bvs_module_threads);
 	bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads", bvs_module_force_threads);
 	bool modulePools = config.getValue<bool>("BVS.modulePools", bvs_module_pools);
@@ -99,7 +104,43 @@ BVS::BVS& BVS::BVS::loadModule(const std::string& id, bool asThread, std::string
 
 	if (!modulePools) poolName.clear();
 
-	loader->load(id, asThread, poolName);
+	// separate id, library  and options
+	size_t separator = moduleTraits.find_first_of('.');
+	if (separator!=std::string::npos)
+	{
+		id = moduleTraits.substr(0, separator);
+		options = moduleTraits.substr(separator+1, std::string::npos);
+	}
+	else id = moduleTraits;
+
+	separator = id.find_first_of('(');
+	if (separator!=std::string::npos)
+	{
+		library = id.substr(separator+1, std::string::npos);
+		library.erase(library.length()-1);
+		id = id.erase(separator, std::string::npos);
+	}
+	else library = id;
+
+	loader->load(id, library, options, asThread, poolName);
+	control->startModule(id);
+	moduleStack.push(id);
+
+	return *this;
+}
+
+
+
+BVS::BVS& BVS::BVS::unloadModules()
+{
+	while (!moduleStack.empty())
+	{
+		if(control->modules.find(moduleStack.top())!=control->modules.end())
+		{
+			unloadModule(moduleStack.top());
+		}
+		moduleStack.pop();
+	}
 
 	return *this;
 }
@@ -108,7 +149,19 @@ BVS::BVS& BVS::BVS::loadModule(const std::string& id, bool asThread, std::string
 
 BVS::BVS& BVS::BVS::unloadModule(const std::string& id)
 {
+	SystemFlag state = control->queryActiveFlag();
+	if (state!=SystemFlag::QUIT)
+	{
+		control->sendCommand(SystemFlag::PAUSE);
+		control->waitUntilInactive(id);
+	}
+
+	control->quitModule(id);
+	control->purgeData(id);
 	loader->unload(id);
+
+
+	if (state!=SystemFlag::QUIT) control->sendCommand(state);
 
 	return *this;
 }
@@ -246,10 +299,13 @@ BVS::BVS& BVS::BVS::pause()
 
 BVS::BVS& BVS::BVS::hotSwap(const std::string& id)
 {
+#ifdef BVS_MODULE_HOTSWAP
 	if (control->modules.find(id)!=control->modules.end())
 	{
 		SystemFlag state = control->queryActiveFlag();
 		control->sendCommand(SystemFlag::PAUSE);
+		control->waitUntilInactive(id);
+
 		loader->hotSwapModule(id);
 		control->sendCommand(state);
 	}
@@ -257,6 +313,10 @@ BVS::BVS& BVS::BVS::hotSwap(const std::string& id)
 	{
 		LOG(0, "'" << id << "' not found!");
 	}
+#else //BVS_MODULE_HOTSWAP
+	LOG(0, "ERROR: HotSwap disabled, could not hotswap: '" << id << "'!");
+#endif //BVS_MODULE_HOTSWAP
+
 	return *this;
 }
 
@@ -265,7 +325,7 @@ BVS::BVS& BVS::BVS::hotSwap(const std::string& id)
 BVS::BVS& BVS::BVS::quit()
 {
 	control->sendCommand(SystemFlag::QUIT);
-	loader->unloadAll();
+	unloadModules();
 
 	return *this;
 }

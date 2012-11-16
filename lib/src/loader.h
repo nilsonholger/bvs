@@ -8,44 +8,41 @@
 #include "bvs/bvsinfo.h"
 #include "bvs/config.h"
 #include "bvs/logger.h"
-#include "control.h"
+#include "controldata.h"
 
 
 
 /** BVS namespace, contains all library stuff. */
 namespace BVS
 {
-	/** The system loader: loads, unloads and controls modules. */
+	/** The system loader: loads and unloads and modules and libraries. */
 	class Loader
 	{
 		public:
 			/** Constructor for loader.
-			 * @param[in] control Reference to control mechanism.
+			 * @param[in] modules Reference to module meta data map.
 			 * @param[in] info Reference to info struct.
 			 */
-			Loader(Control& control, const Info& info);
+			Loader(ModuleDataMap& modules, const Info& info);
 
 			/** Load the given module.
 			 * Executes bvsRegisterModule function in module to register it with the
 			 * system.
 			 * If a pool name is given, asThread has no effect.
-			 * @param[in] moduleTraits The name and traits of the module.
+			 * @param[in] id The module id to give to the new loaded module.
+			 * @param[in] library The library to load the module from.
+			 * @param[in] options The module options (connector settings...).
 			 * @param[in] asThread Whether to load the module inside a thread or not.
 			 * @param[in] poolName Select, if desired, the module pool to run this module.
 			 * @return Reference to object.
 			 */
-			Loader& load(const std::string& moduleTraits, const bool asThread, const std::string& poolName = std::string());
+			Loader& load(const std::string& id, const std::string& library, const std::string& options, const bool asThread, const std::string& poolName = std::string());
 
 			/** Unload the given module.
 			 * @param[in] moduleName The name of the module.
 			 * @return Reference to object.
 			 */
 			Loader& unload(const std::string& moduleName);
-
-			/** Unload all modules.
-			 * @return Reference to object.
-			 */
-			Loader& unloadAll();
 
 			/** Connect all modules.
 			 * @param[in] connectorTypeMatching Whether to try to match associated
@@ -64,6 +61,7 @@ namespace BVS
 			 */
 			Loader& connectModule(const std::string& id, const bool connectorTypeMatching = true);
 
+#ifdef BVS_MODULE_HOTSWAP
 			/** HotSwap a module.
 			 * This will reload/hotswap an already existing module.
 			 *
@@ -87,8 +85,8 @@ namespace BVS
 			 * @param[in] id Module ID to hotswap (if it does not exist, it fails silently).
 			 */
 			Loader& hotSwapModule(const std::string& id);
+#endif //BVS_MODULE_HOTSWAP
 
-		private:
 			/** Load the necessary library.
 			 * @param[in] id The module id of which to load the library.
 			 * @param[in] library The base name of the library to load from (no 'lib' and extension).
@@ -98,11 +96,11 @@ namespace BVS
 
 			/** Unload the necessary library.
 			 * @param[in] id The name of the module.
-			 * @param[in] purgeModuleData Whether to purge the module's data.
 			 * @return Reference to object.
 			 */
-			Loader& unloadLibrary(const std::string& id, const bool& purgeModuleData = true);
+			Loader& unloadLibrary(const std::string& id);
 
+		private:
 			/** Check input Connector.
 			 * Checks input connector for existence, type etc.
 			 * @param[in] module Module data for selected module.
@@ -126,13 +124,9 @@ namespace BVS
 			 */
 			Loader& printModuleConnectors(const ModuleData* module);
 
-			/** Reference to control mechanism, needed to load und unload threaded modules. */
-			Control& control;
-
 			Logger logger; /**< Logger metadata. */
 			const Info& info; /**< Info reference. */
-			ModuleDataMap& modules; /**< Reference to Control::modules */
-			std::stack<std::string> moduleStack; /** Stack of modules names. */
+			ModuleDataMap& modules; /**< Reference to module meta data map. */
 
 			Loader(const Loader&) = delete; /**< -Weffc++ */
 			Loader& operator=(const Loader&) = delete; /**< -Weffc++ */

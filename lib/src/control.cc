@@ -196,9 +196,18 @@ BVS::Control& BVS::Control::startModule(std::string id)
 
 
 
-BVS::Control& BVS::Control::notifyThreads()
+BVS::Control& BVS::Control::quitModule(std::string id)
 {
-	monitor.notify_all();
+	if (modules[id]->asThread==true)
+	{
+		if (modules[id]->thread.joinable())
+		{
+			modules[id]->flag = ControlFlag::QUIT;
+			monitor.notify_all();
+			LOG(3, "Waiting for '" << id << "' to join!");
+			modules[id]->thread.join();
+		}
+	}
 
 	return *this;
 }
@@ -228,7 +237,6 @@ BVS::Control& BVS::Control::purgeData(const std::string& id)
 				 { return data->id==id; }));
 
 	modules[id]->connectors.clear();
-	modules.erase(id);
 
 	return *this;
 }

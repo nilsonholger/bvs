@@ -4,40 +4,16 @@
 
 
 
-BVS::Loader::Loader(Control& control, const Info& info)
-	: control(control),
-	logger{"Loader"},
+BVS::Loader::Loader(ModuleDataMap& modules, const Info& info)
+	: logger{"Loader"},
 	info(info),
-	modules(Control::modules),
-	moduleStack{}
+	modules(modules)
 { }
 
 
 
-BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThread, const std::string& poolName)
+BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library, const std::string& options, const bool asThread, const std::string& poolName)
 {
-	std::string id;
-	std::string library;
-	std::string options;
-
-	// separate id, library  and options
-	size_t separator = moduleTraits.find_first_of('.');
-	if (separator!=std::string::npos)
-	{
-		id = moduleTraits.substr(0, separator);
-		options = moduleTraits.substr(separator+1, std::string::npos);
-	}
-	else id = moduleTraits;
-
-	separator = id.find_first_of('(');
-	if (separator!=std::string::npos)
-	{
-		library = id.substr(separator+1, std::string::npos);
-		library.erase(library.length()-1);
-		id = id.erase(separator, std::string::npos);
-	}
-	else library = id;
-
 	if (modules.find(id)!=modules.end())
 		LOG(0, "Duplicate id for module: " << id << std::endl << "If you try to load a module more than once, use unique ids and the id(library).options syntax!");
 
@@ -62,13 +38,10 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 	modules[id]->library = library;
 	modules[id]->options = options;
 
-	// get connectors and let control handle module start
+	// get connectors
 	modules[id]->connectors = std::move(ConnectorDataCollector::connectors);
 	modules[id]->asThread = asThread;
 	modules[id]->poolName = poolName;
-	control.startModule(id);
-
-	moduleStack.push(id);
 
 	LOG(2, "Loading '" << id << "' successfull!");
 
@@ -79,21 +52,6 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 
 BVS::Loader& BVS::Loader::unload(const std::string& id)
 {
-	SystemFlag state = control.queryActiveFlag();
-	control.sendCommand(SystemFlag::PAUSE);
-	control.waitUntilInactive(id);
-
-	if (modules[id]->asThread == true)
-	{
-		if (modules[id]->thread.joinable())
-		{
-			modules[id]->flag = ControlFlag::QUIT;
-			control.notifyThreads();
-			LOG(3, "Waiting for '" << id << "' to join!");
-			modules[id]->thread.join();
-		}
-	}
-
 	for (auto& it: modules)
 	{
 		for (auto& con: it.second->connectors)
@@ -115,25 +73,9 @@ BVS::Loader& BVS::Loader::unload(const std::string& id)
 		}
 	}
 
-	unloadLibrary(id, true);
-
-	control.sendCommand(state);
-
-	return *this;
-}
-
-
-
-BVS::Loader& BVS::Loader::unloadAll()
-{
-	while (!moduleStack.empty())
-	{
-		if(modules.find(moduleStack.top())!=modules.end())
-		{
-			unload(moduleStack.top());
-		}
-		moduleStack.pop();
-	}
+	modules[id]->module.reset();
+	unloadLibrary(id);
+	modules.erase(id);
 
 	return *this;
 }
@@ -210,12 +152,10 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 
 
 
+#ifdef BVS_MODULE_HOTSWAP
 BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 {
-#ifdef BVS_MODULE_HOTSWAP
-	if (modules[id]->asThread || !modules[id]->poolName.empty()) control.waitUntilInactive(id);
-
-	unloadLibrary(id, false);
+	unloadLibrary(id);
 	LibHandle dlib = loadLibrary(id, modules[id]->library);
 
 	typedef void (*bvsHotSwapModule_t)(const std::string& id, BVS::Module* module);
@@ -233,12 +173,10 @@ BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 	modules[id]->dlib = dlib;
 
 	LOG(2, "Hotswapping '" << id << "' successfull!");
-#else //BVS_MODULE_HOTSWAP
-	LOG(0, "ERROR: HotSwap disabled, could not hotswap: '" << id << "'!");
-#endif //BVS_MODULE_HOTSWAP
 
 	return *this;
 }
+#endif //BVS_MODULE_HOTSWAP
 
 
 
@@ -272,7 +210,7 @@ BVS::LibHandle BVS::Loader::loadLibrary(const std::string& id, const std::string
 
 
 
-BVS::Loader& BVS::Loader::unloadLibrary(const std::string& id, const bool& purgeModuleData)
+BVS::Loader& BVS::Loader::unloadLibrary(const std::string& id)
 {
 #ifndef BVS_OSX_ANOMALIES
 	std::string modulePath = "./lib" + modules[id]->library + ".so";
@@ -288,7 +226,6 @@ BVS::Loader& BVS::Loader::unloadLibrary(const std::string& id, const bool& purge
 		exit(-1);
 	}
 
-	if (purgeModuleData) control.purgeData(id);
 	dlclose(dlib);
 
 	char* dlerr = dlerror();

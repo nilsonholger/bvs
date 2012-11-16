@@ -15,11 +15,6 @@
 /** BVS namespace, contains all library stuff. */
 namespace BVS
 {
-	/** Forward declaration. */
-	class Loader;
-
-
-
 	/** Possible commands to send to masterController, see sendCommand(). */
 	enum class SystemFlag { QUIT = 0, PAUSE = 1, RUN = 2, STEP = 3, STEP_BACK = 4 };
 
@@ -33,6 +28,7 @@ namespace BVS
 			*/
 			Control(Info& info);
 
+			//TODO this should be in loader, since loader also destroys it
 			/** Registers a module.
 			 * @param[in] id Name of module.
 			 * @param[in] module Pointer to module.
@@ -81,13 +77,12 @@ namespace BVS
 			 */
 			Control& startModule(std::string id);
 
-			/** Notify all threads.
-			 * Note that this does NOT send any command, it merely notifies
-			 * all threads. This is useful for example if you want to send a
-			 * signal to one thread only, e.g. sending a QUIT.
+			/** Signal a module to quit.
+			 * This will send a 'QUIT' signal to the specified module.
+			 * @param[in] id Module id to signal quit to.
 			 * @return Reference to object.
 			 */
-			Control& notifyThreads();
+			Control& quitModule(std::string id);
 
 			/** Purge module from internal data.
 			 * @param[in] id Name of module to remove from internal data.
