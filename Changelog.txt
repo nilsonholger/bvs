@@ -1,3 +1,9 @@
+2012-11-16  NilsonHolger <nilsonholger@hyve.org>
+
+	* run:
+	add function (or better modify new-module function) to rename an existing
+	module
+
 2012-11-02  NilsonHolger <nilsonholger@hyve.org>
 
 	* Module utilities:
