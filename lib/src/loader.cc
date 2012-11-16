@@ -79,6 +79,10 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 
 BVS::Loader& BVS::Loader::unload(const std::string& id)
 {
+	SystemFlag state = control.queryActiveFlag();
+	control.sendCommand(SystemFlag::PAUSE);
+	control.waitUntilInactive(id);
+
 	if (modules[id]->asThread == true)
 	{
 		if (modules[id]->thread.joinable())
@@ -112,6 +116,8 @@ BVS::Loader& BVS::Loader::unload(const std::string& id)
 	}
 
 	unloadLibrary(id, true);
+
+	control.sendCommand(state);
 
 	return *this;
 }
