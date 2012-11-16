@@ -16,8 +16,8 @@ BVS::BVS::BVS(int argc, char** argv)
 	logSystem{LogSystem::connectToLogSystem()},
 	logger{"BVS"},
 #endif
-	control{new Control{info}},
-	loader{new Loader{control->modules, info}},
+	loader{new Loader{info}},
+	control{new Control{loader->modules, info}},
 	moduleStack{}
 {
 #ifdef BVS_LOG_SYSTEM
@@ -30,8 +30,8 @@ BVS::BVS::BVS(int argc, char** argv)
 
 BVS::BVS::~BVS()
 {
-	delete loader;
 	delete control;
+	delete loader;
 }
 
 
@@ -135,7 +135,7 @@ BVS::BVS& BVS::BVS::unloadModules()
 {
 	while (!moduleStack.empty())
 	{
-		if(control->modules.find(moduleStack.top())!=control->modules.end())
+		if(loader->modules.find(moduleStack.top())!=loader->modules.end())
 		{
 			unloadModule(moduleStack.top());
 		}

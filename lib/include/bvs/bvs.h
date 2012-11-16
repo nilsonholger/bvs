@@ -23,8 +23,8 @@
 namespace BVS
 {
 	// Forward declarations
-	class Control;
 	class Loader;
+	class Control;
 
 
 
@@ -239,8 +239,8 @@ namespace BVS
 			std::shared_ptr<LogSystem> logSystem; /**< Internal log system backend. */
 			Logger logger; /**< BVS' logging instance. */
 #endif
-			Control* control; /**< BVS' module controller. */
 			Loader* loader; /**< BVS' module loader. */
+			Control* control; /**< BVS' module controller. */
 			std::stack<std::string> moduleStack; /** Stack of modules names. */
 
 			BVS(const BVS&) = delete; /**< -Weffc++ */

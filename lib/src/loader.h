@@ -20,10 +20,16 @@ namespace BVS
 	{
 		public:
 			/** Constructor for loader.
-			 * @param[in] modules Reference to module meta data map.
 			 * @param[in] info Reference to info struct.
 			 */
-			Loader(ModuleDataMap& modules, const Info& info);
+			Loader(const Info& info);
+
+			/** Registers a module.
+			 * @param[in] id Name of module.
+			 * @param[in] module Pointer to module.
+			 * @param[in] hotSwap Whether to hotSwap (an already loaded) module.
+			 */
+			static void registerModule(const std::string& id, Module* module, bool hotSwap = false);
 
 			/** Load the given module.
 			 * Executes bvsRegisterModule function in module to register it with the
@@ -100,6 +106,9 @@ namespace BVS
 			 */
 			Loader& unloadLibrary(const std::string& id);
 
+			/** Map of registered modules and their metadata. */
+			static ModuleDataMap modules;
+
 		private:
 			/** Check input Connector.
 			 * Checks input connector for existence, type etc.
@@ -126,7 +135,7 @@ namespace BVS
 
 			Logger logger; /**< Logger metadata. */
 			const Info& info; /**< Info reference. */
-			ModuleDataMap& modules; /**< Reference to module meta data map. */
+			static ModuleVector* hotSwapGraveYard; /** GraveYard for hotswapped module pointers. */
 
 			Loader(const Loader&) = delete; /**< -Weffc++ */
 			Loader& operator=(const Loader&) = delete; /**< -Weffc++ */

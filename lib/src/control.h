@@ -25,16 +25,10 @@ namespace BVS
 	{
 		public:
 			/** Constructor for control.
+			 * @param[in] modules Reference to module meta data map.
+			 * @param[in] info Reference to info struct.
 			*/
-			Control(Info& info);
-
-			//TODO this should be in loader, since loader also destroys it
-			/** Registers a module.
-			 * @param[in] id Name of module.
-			 * @param[in] module Pointer to module.
-			 * @param[in] hotSwap Whether to hotSwap (an already loaded) module.
-			 */
-			static void registerModule(const std::string& id, Module* module, bool hotSwap = false);
+			Control(ModuleDataMap& modules, Info& info);
 
 			/** The master control function.
 			 * This is the master control function, it forks if desired and can
@@ -106,8 +100,7 @@ namespace BVS
 			 */
 			bool isActive(const std::string& id);
 
-			/** Map of registered modules and their metadata. */
-			static ModuleDataMap modules;
+			ModuleDataMap& modules; /**< Reference to module meta data map. */
 
 		private:
 			/** Controls given module.
@@ -132,15 +125,10 @@ namespace BVS
 			Control& checkModuleStatus(std::shared_ptr<ModuleData> data);
 
 			Info& info; /**< Info reference. */
-
 			Logger logger; /**< Logger metadata. */
-
 			std::atomic<int> runningThreads; /**< The number of actively running threads. */
-
 			ModuleDataVector masterModules; /**< Vector of modules executed by master. */
-
 			PoolMap pools; /**< Map of pools. */
-
 			SystemFlag flag; /**< The active system flag used by master. */
 
 			std::mutex mutex; /**< Mutex for condition variable. */
@@ -149,8 +137,6 @@ namespace BVS
 			std::thread controlThread; /**< Thread (if active) of masterController. */
 
 			unsigned long long round; /**< System round counter. */
-
-			static ModuleVector* hotSwapGraveYard; /** GraveYard for hotswapped module pointers. */
 
 			Control(const Control&) = delete; /**< -Weffc++ */
 			Control& operator=(const Control&) = delete; /**< -Weffc++ */

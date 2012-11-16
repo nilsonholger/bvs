@@ -6,16 +6,9 @@
 
 
 
-BVS::ModuleDataMap BVS::Control::modules;
-
-
-
-BVS::ModuleVector* BVS::Control::hotSwapGraveYard = nullptr;
-
-
-
-BVS::Control::Control(Info& info)
-	: info(info),
+BVS::Control::Control(ModuleDataMap& modules, Info& info)
+	: modules(modules),
+	info(info),
 	logger{"Control"},
 	runningThreads{0},
 	masterModules{},
@@ -27,29 +20,6 @@ BVS::Control::Control(Info& info)
 	controlThread{},
 	round{0}
 { }
-
-
-
-void BVS::Control::registerModule(const std::string& id, Module* module, bool hotSwap)
-{
-	if (hotSwap)
-	{
-#ifdef BVS_MODULE_HOTSWAP
-		// NOTE: hotSwapGraveYard will only be initialized when the HotSwap
-		// functionality is used. It is intended as a store for unneeded
-		// shared_ptr until the process execution ends, but since it is a
-		// static pointer it will never be explicitly deleted.
-		if (hotSwapGraveYard==nullptr) hotSwapGraveYard = new ModuleVector();
-		hotSwapGraveYard->push_back(std::shared_ptr<Module>(module));
-		modules[id]->module.swap(hotSwapGraveYard->back());
-#endif //BVS_MODULE_HOTSWAP
-	}
-	else
-	{
-		modules[id] = std::shared_ptr<ModuleData>{new ModuleData{id, {}, {},
-			module, nullptr, false, {}, ControlFlag::WAIT, Status::OK, {}}};
-	}
-}
 
 
 
