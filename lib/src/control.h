@@ -6,6 +6,7 @@
 #include <mutex>
 #include <thread>
 
+#include "bvs/bvs.h"
 #include "bvs/bvsinfo.h"
 #include "bvs/logger.h"
 #include "controldata.h"
@@ -26,9 +27,10 @@ namespace BVS
 		public:
 			/** Constructor for control.
 			 * @param[in] modules Reference to module meta data map.
+			 * @param[in] bvs Referecence to bvs.
 			 * @param[in] info Reference to info struct.
 			*/
-			Control(ModuleDataMap& modules, Info& info);
+			Control(ModuleDataMap& modules, BVS& bvs, Info& info);
 
 			/** The master control function.
 			 * This is the master control function, it forks if desired and can
@@ -124,6 +126,7 @@ namespace BVS
 			/** Check module status and act upon it if necessary. */
 			Control& checkModuleStatus(std::shared_ptr<ModuleData> data);
 
+			BVS& bvs; /**< BVS reference. */
 			Info& info; /**< Info reference. */
 			Logger logger; /**< Logger metadata. */
 			std::atomic<int> runningThreads; /**< The number of actively running threads. */

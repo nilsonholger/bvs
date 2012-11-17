@@ -6,8 +6,9 @@
 
 
 
-BVS::Control::Control(ModuleDataMap& modules, Info& info)
+BVS::Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info)
 	: modules(modules),
+	bvs(bvs),
 	info(info),
 	logger{"Control"},
 	runningThreads{0},
@@ -329,7 +330,7 @@ BVS::Control& BVS::Control::checkModuleStatus(std::shared_ptr<ModuleData> data)
 		case Status::WAIT:
 			break;
 		case Status::DONE:
-			// TODO
+			bvs.unloadModule(data->id);
 			break;
 		case Status::REQUEST_SYSTEM_SHUTDOWN:
 			break;

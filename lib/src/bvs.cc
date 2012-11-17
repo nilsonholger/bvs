@@ -17,7 +17,7 @@ BVS::BVS::BVS(int argc, char** argv)
 	logger{"BVS"},
 #endif
 	loader{new Loader{info}},
-	control{new Control{loader->modules, info}},
+	control{new Control{loader->modules, *this, info}},
 	moduleStack{}
 {
 #ifdef BVS_LOG_SYSTEM
