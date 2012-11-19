@@ -21,10 +21,6 @@ namespace BVS
 	 * @return 'errno' from the prctl(...) syscall.
 	 */
 	BVS_PUBLIC int nameThisThread(const char* threadName);
-
-	/**
-	 * @todo add loader specific stuff (dlfcn.h), appropriate windows version...
-	 */
 } // namespace BVS
 
 

@@ -57,14 +57,14 @@ namespace BVS
 		 */
 		ConnectorData(std::string id, ConnectorType type, bool active, std::shared_ptr<void> pointer,
 				size_t typeIDHash, std::string typeIDName, std::mutex* mutex, bool locked)
-			: id(id)
-			, type(type)
-			, active(active)
-			, pointer(pointer)
-			, typeIDHash(typeIDHash)
-			, typeIDName(typeIDName)
-			, mutex(mutex)
-			, locked(locked)
+			: id{id},
+			type{type},
+			active{active},
+			pointer{pointer},
+			typeIDHash{typeIDHash},
+			typeIDName{typeIDName},
+			mutex{mutex},
+			locked{locked}
 		{ }
 
 		std::string id; /**< Identifier. */

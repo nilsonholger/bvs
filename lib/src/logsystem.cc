@@ -19,7 +19,7 @@ std::shared_ptr<BVS::LogSystem> BVS::LogSystem::connectToLogSystem()
 	// check if system exists, if not create first
 	if (instance == nullptr)
 	{
-		instance = std::shared_ptr<LogSystem>(new LogSystem());
+		instance = std::shared_ptr<LogSystem>{new LogSystem()};
 	}
 	return instance;
 }
@@ -27,13 +27,13 @@ std::shared_ptr<BVS::LogSystem> BVS::LogSystem::connectToLogSystem()
 
 
 BVS::LogSystem::LogSystem()
-	: loggerLevels()
-	, tmpName()
-	, namePadding(0)
-	, systemVerbosity(3)
-	, outCLI(std::clog.rdbuf())
-	, outFile()
-	, outBoth(outCLI, outFile)
+	: loggerLevels{},
+	tmpName{},
+	namePadding{0},
+	systemVerbosity{3},
+	outCLI{std::clog.rdbuf()},
+	outFile{},
+	outBoth{outCLI, outFile}
 {
 	// show bools as "true"/"false" instead of "0"/"1"
 	outCLI.setf(outCLI.boolalpha);
@@ -217,3 +217,4 @@ BVS::LogSystem& BVS::LogSystem::updateLoggerLevels(Config& config)
 
 	return *this;
 }
+

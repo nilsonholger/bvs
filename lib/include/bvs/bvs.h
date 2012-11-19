@@ -1,7 +1,7 @@
 #ifndef BVS_H
 #define BVS_H
 
-#include <iomanip>
+#include <functional>
 #include <iostream>
 #include <string>
 
@@ -23,8 +23,8 @@
 namespace BVS
 {
 	// Forward declarations
-	class Control;
 	class Loader;
+	class Control;
 
 
 
@@ -85,8 +85,9 @@ namespace BVS
 			/** Create BVS System.
 			 * @param[in] argc Main's argc.
 			 * @param[in] argv Main's argv, used to pass config options to BVS, see Config.
+			 * @param[in] shutdownHandler A function the framework calls upon shutting down.
 			 */
-			BVS(int argc, char** argv);
+			BVS(int argc, char** argv, std::function<void()>shutdownHandler = [](){ exit(0);} );
 
 			/** Destructor.
 			 */
@@ -99,12 +100,17 @@ namespace BVS
 
 			/** Load selected module given by name.
 			 * If a pool name is given, asThread has no effect.
-			 * @param[in] id The name of the module.
+			 * @param[in] moduleTraits The module id, library name and connector settings, formatted as: "id(library).connector(source.connector)..."
 			 * @param[in] asThread Select, if the module should run in it's own thread.
 			 * @param[in] poolName Select, if desired, the module pool to execute this module.
 			 * @return Reference to object.
 			 */
-			BVS& loadModule(const std::string& id, bool asThread = false, std::string poolName = std::string());
+			BVS& loadModule(const std::string& moduleTraits, bool asThread = false, std::string poolName = std::string());
+
+			/** Unload all modules.
+			 * @return Reference to object.
+			 */
+			BVS& unloadModules();
 
 			/** Unload module given by name.
 			 * @param[in] id The name of the module.
@@ -227,6 +233,7 @@ namespace BVS
 			BVS& quit();
 
 			Config config; /**< BVS' config system. */
+			std::function<void()> shutdownHandler; /**< Function to call when shutting system down. */
 
 		private:
 			Info info; //**< BVS' information object. */
@@ -234,8 +241,9 @@ namespace BVS
 			std::shared_ptr<LogSystem> logSystem; /**< Internal log system backend. */
 			Logger logger; /**< BVS' logging instance. */
 #endif
-			Control* control; /**< BVS' module controller. */
 			Loader* loader; /**< BVS' module loader. */
+			Control* control; /**< BVS' module controller. */
+			std::stack<std::string> moduleStack; /** Stack of modules names. */
 
 			BVS(const BVS&) = delete; /**< -Weffc++ */
 			BVS& operator=(const BVS&) = delete; /**< -Weffc++ */

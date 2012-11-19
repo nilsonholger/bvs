@@ -6,6 +6,7 @@
 #include <mutex>
 #include <thread>
 
+#include "bvs/bvs.h"
 #include "bvs/bvsinfo.h"
 #include "bvs/logger.h"
 #include "controldata.h"
@@ -15,11 +16,6 @@
 /** BVS namespace, contains all library stuff. */
 namespace BVS
 {
-	/** Forward declaration. */
-	class Loader;
-
-
-
 	/** Possible commands to send to masterController, see sendCommand(). */
 	enum class SystemFlag { QUIT = 0, PAUSE = 1, RUN = 2, STEP = 3, STEP_BACK = 4 };
 
@@ -30,15 +26,11 @@ namespace BVS
 	{
 		public:
 			/** Constructor for control.
+			 * @param[in] modules Reference to module meta data map.
+			 * @param[in] bvs Referecence to bvs.
+			 * @param[in] info Reference to info struct.
 			*/
-			Control(Info& info);
-
-			/** Registers a module.
-			 * @param[in] id Name of module.
-			 * @param[in] module Pointer to module.
-			 * @param[in] hotSwap Whether to hotSwap (an already loaded) module.
-			 */
-			static void registerModule(const std::string& id, Module* module, bool hotSwap = false);
+			Control(ModuleDataMap& modules, BVS& bvs, Info& info);
 
 			/** The master control function.
 			 * This is the master control function, it forks if desired and can
@@ -81,13 +73,12 @@ namespace BVS
 			 */
 			Control& startModule(std::string id);
 
-			/** Notify all threads.
-			 * Note that this does NOT send any command, it merely notifies
-			 * all threads. This is useful for example if you want to send a
-			 * signal to one thread only, e.g. sending a QUIT.
+			/** Signal a module to quit.
+			 * This will send a 'QUIT' signal to the specified module.
+			 * @param[in] id Module id to signal quit to.
 			 * @return Reference to object.
 			 */
-			Control& notifyThreads();
+			Control& quitModule(std::string id);
 
 			/** Purge module from internal data.
 			 * @param[in] id Name of module to remove from internal data.
@@ -111,8 +102,7 @@ namespace BVS
 			 */
 			bool isActive(const std::string& id);
 
-			/** Map of registered modules and their metadata. */
-			static ModuleDataMap modules;
+			ModuleDataMap& modules; /**< Reference to module meta data map. */
 
 		private:
 			/** Controls given module.
@@ -133,16 +123,15 @@ namespace BVS
 			 */
 			Control& poolController(std::shared_ptr<PoolData> data);
 
+			/** Check module status and act upon it if necessary. */
+			Control& checkModuleStatus(std::shared_ptr<ModuleData> data);
+
+			BVS& bvs; /**< BVS reference. */
 			Info& info; /**< Info reference. */
-
 			Logger logger; /**< Logger metadata. */
-
 			std::atomic<int> runningThreads; /**< The number of actively running threads. */
-
 			ModuleDataVector masterModules; /**< Vector of modules executed by master. */
-
 			PoolMap pools; /**< Map of pools. */
-
 			SystemFlag flag; /**< The active system flag used by master. */
 
 			std::mutex mutex; /**< Mutex for condition variable. */
@@ -151,8 +140,8 @@ namespace BVS
 			std::thread controlThread; /**< Thread (if active) of masterController. */
 
 			unsigned long long round; /**< System round counter. */
-
-			static ModuleVector* hotSwapGraveYard; /** GraveYard for hotswapped module pointers. */
+			bool shutdownRequested; /**< True if shutdown was requested. */
+			unsigned long long shutdownRound; /**< System shutdown round. */
 
 			Control(const Control&) = delete; /**< -Weffc++ */
 			Control& operator=(const Control&) = delete; /**< -Weffc++ */

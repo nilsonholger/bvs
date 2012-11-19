@@ -240,7 +240,7 @@ namespace BVS
 
 	template<typename T> const Config& Config::convertStringTo(const std::string& input, T& t) const
 	{
-		std::istringstream stream(input);
+		std::istringstream stream{input};
 		stream >> t;
 		return *this;
 	}

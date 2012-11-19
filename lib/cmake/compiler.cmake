@@ -1,6 +1,13 @@
-# STANDARDS
-set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -std=c99")
+# DEBUG INFORMATION
+if(${CMAKE_BUILD_TYPE} STREQUAL DEBUG)
+	if (APPLE)
+		set(CMAKE_CXX_FLAGS_DEBUG "-g3 -ggdb3 -gdwarf-3")
+	elseif(UNIX)
+		set(CMAKE_CXX_FLAGS_DEBUG "-g3 -ggdb3 -gdwarf-4")
+	endif()
+endif()
 
+# COMPILER DEPENDANT C++0x/C++11 FLAGS
 execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
 if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
 	if (GCC_VERSION VERSION_GREATER 4.6)
@@ -8,13 +15,9 @@ if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
 	else()
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 	endif()
-endif()
-
-if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wc++11-extensions")
 endif()
-
-
 
 # WARNINGS
 set(COMPILER_WARNINGS ON CACHE BOOL "Enable all/pedantic/effc++ compiler errors/warnings.")

@@ -16,7 +16,7 @@ namespace BVS
 			 * @param[in] out First streambuffer.
 			 * @param[in] copy Second streambuffer.
 			 */
-			BufferDup(std::streambuf* out, std::streambuf* copy) : out(out) , copy(copy) {}
+			BufferDup(std::streambuf* out, std::streambuf* copy) : out{out} , copy{copy} {}
 
 		protected:
 			/** Since there is no actual buffer, every character "overflows" and gets forwarded.
@@ -59,7 +59,7 @@ namespace BVS
 			 * @param[in,out] one Stream one where output is redirected to.
 			 * @param[in,out] two Stream two where output is redirected to.
 			 */
-			StreamDup(std::ostream& one, std::ostream& two) : std::ostream(&bufferDup), bufferDup(one.rdbuf(), two.rdbuf()) {}
+			StreamDup(std::ostream& one, std::ostream& two) : std::ostream{&bufferDup}, bufferDup{one.rdbuf(), two.rdbuf()} {}
 
 		private:
 			BufferDup bufferDup; /**< A streambuffer doing the actual work of duplicating. */
@@ -74,7 +74,7 @@ namespace BVS
 			/** Construct an ostream that collects input, but never outputs.
 			 * This is done by initializing the underlying ostream and ios with 0.
 			 */
-			NullStream(): std::ios(0), std::ostream(0)
+			NullStream(): std::ios{0}, std::ostream{0}
 		{
 			setstate(std::ios_base::badbit);
 		}
