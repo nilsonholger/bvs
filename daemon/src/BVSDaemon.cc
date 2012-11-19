@@ -1,3 +1,4 @@
+#include <csignal>
 #include "bvs/bvs.h"
 
 
@@ -7,6 +8,8 @@ BVS::Logger logger("Daemon");
 
 
 
+void mainSignal(int sig);
+void shutdownFunction();
 int testLogger();
 int testConfig();
 
@@ -39,8 +42,10 @@ namespace BVSD
 /** Main function, creates interactive loop. */
 int main(int argc, char** argv)
 {
+	signal(SIGINT, mainSignal);
+
 	LOG(2, "starting!");
-	bvs = new BVS::BVS(argc, argv);
+	bvs = new BVS::BVS(argc, argv, &shutdownFunction);
 
 	LOG(2, "loading modules!");
 	bvs->loadModules();
@@ -112,6 +117,25 @@ int main(int argc, char** argv)
 	delete bvs;
 
 	return 0;
+}
+
+
+
+void mainSignal(int sig)
+{
+	LOG(1,"Catched signal: " << sig << " (Ctrl-C), quitting!");
+	signal(SIGINT, SIG_DFL);
+	bvs->quit();
+	exit(0);
+}
+
+
+
+void shutdownFunction()
+{
+	LOG(1,"daemon exit caused by bvs shutdown request!");
+	bvs->quit();
+	exit(0);
 }
 
 
