@@ -20,9 +20,9 @@ namespace BVS
 		FAIL = 2, /**< Module failing to execute properly. @todo: NOT YET ACTED UPON */
 		WAIT = 4, /**< Module waiting for event to happen, e.g.\ a certain input or other signal. @todo: NOT YET ACTED UPON */
 		DONE = 8, /**< Module is done processing and can be unloaded. */
-		REQUEST_SYSTEM_SHUTDOWN = 16 /**< Module is requesting system shutdown, e.g.\ due to no more input to process.
-									   The system will keep on running (including the requesting module) for as many rounds
-									   as there are modules loaded and then shutdown. */
+		SHUTDOWN = 16 /**< Module is requesting system shutdown, e.g.\ due to no more input to process.
+						The system will keep on running (including the requesting module) for as many rounds
+						as there are modules loaded and then shutdown. */
 	};
 
 

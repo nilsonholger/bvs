@@ -332,7 +332,7 @@ BVS::Control& BVS::Control::checkModuleStatus(std::shared_ptr<ModuleData> data)
 		case Status::DONE:
 			bvs.unloadModule(data->id);
 			break;
-		case Status::REQUEST_SYSTEM_SHUTDOWN:
+		case Status::SHUTDOWN:
 			break;
 	}
 
