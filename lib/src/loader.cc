@@ -82,27 +82,8 @@ BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library
 
 BVS::Loader& BVS::Loader::unload(const std::string& id)
 {
-	for (auto& it: modules)
-	{
-		for (auto& con: it.second->connectors)
-		{
-			if (con.second->type==ConnectorType::INPUT) continue;
-
-			for (auto& mods: modules)
-			{
-				for (auto& modCon: mods.second->connectors)
-				{
-					if (con.second->pointer==modCon.second->pointer)
-					{
-						modCon.second->pointer = nullptr;
-						modCon.second->active = false;
-						modCon.second->mutex = nullptr;
-					}
-				}
-			}
-		}
-	}
-
+	disconnectModule(id);
+	modules[id]->connectors.clear();
 	modules[id]->module.reset();
 	unloadLibrary(id);
 	modules.erase(id);
@@ -179,6 +160,32 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 
 	return *this;
 }
+
+
+
+BVS::Loader& BVS::Loader::disconnectModule(const std::string& id)
+{
+	for (auto& connector: modules[id]->connectors)
+	{
+		if (connector.second->type==ConnectorType::INPUT) continue;
+
+		for (auto& module: modules)
+		{
+			for (auto& targetConnector: module.second->connectors)
+			{
+				if (connector.second->pointer==targetConnector.second->pointer)
+				{
+					targetConnector.second->active = false;
+					targetConnector.second->mutex = nullptr;
+					targetConnector.second->pointer = nullptr;
+				}
+			}
+		}
+	}
+
+	return *this;
+}
+
 
 
 

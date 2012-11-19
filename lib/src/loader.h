@@ -67,6 +67,14 @@ namespace BVS
 			 */
 			Loader& connectModule(const std::string& id, const bool connectorTypeMatching = true);
 
+			/** Disconnect selected module.
+			 * Disconnects the selected module by disconnecting its connectors one
+			 * by one.
+			 * @param[in] id Module id.
+			 * @return Reference to object.
+			 */
+			Loader& disconnectModule(const std::string& id);
+
 #ifdef BVS_MODULE_HOTSWAP
 			/** HotSwap a module.
 			 * This will reload/hotswap an already existing module.

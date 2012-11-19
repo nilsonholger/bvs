@@ -206,8 +206,6 @@ BVS::Control& BVS::Control::purgeData(const std::string& id)
 				 [&](std::shared_ptr<ModuleData> data)
 				 { return data->id==id; }));
 
-	modules[id]->connectors.clear();
-
 	return *this;
 }
 
