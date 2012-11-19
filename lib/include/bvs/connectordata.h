@@ -83,7 +83,7 @@ namespace BVS
 
 
 	/** Connector map definition. */
-	typedef std::map<std::string, std::shared_ptr<ConnectorData>, std::less<std::string>> ConnectorMap;
+	using ConnectorMap = std::map<std::string, std::shared_ptr<ConnectorData>, std::less<std::string>>;
 
 
 
