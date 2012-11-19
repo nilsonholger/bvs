@@ -132,8 +132,8 @@ then
 	echo ">>> Created Module 'modules/$MOD_PATH'! Please modify modules/CMakeLists.txt to add it to compilation!"
 else
 	eval sed -i -e "s/\(${ORIG_PATH//\//\\\/}\)/\(${MOD_PATH//\//\\\/}\)/" modules/CMakeLists.txt
-	echo ">>> Renamed Module 'modules/$ORIG_PATH' to 'modules/$MOD_PATH' and modified CMakeLists.txt for you!"
-	echo ">>> 'modules/$ORIG_PATH' left intact, cat be deleted no!"
+	echo ">>> Renamed Module 'modules/$ORIG_PATH' to 'modules/$MOD_PATH' and modified CMakeLists.txt accordingly!"
+	echo ">>> 'modules/$ORIG_PATH' left intact, cat be deleted now!"
 fi
 }
 
