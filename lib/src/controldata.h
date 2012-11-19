@@ -22,7 +22,7 @@ namespace BVS
 
 
 	/** Library handle. */
-	using LibHandle = void*;
+	typedef void* LibHandle;
 
 
 
@@ -76,13 +76,13 @@ namespace BVS
 
 
 	/** Module Map. */
-	using ModuleDataMap = std::map<std::string, std::shared_ptr<ModuleData>, std::less<std::string>>;
+	typedef std::map<std::string, std::shared_ptr<ModuleData>, std::less<std::string>> ModuleDataMap;
 
 	/** Module Data Vector.*/
-	using ModuleDataVector = std::vector<std::shared_ptr<ModuleData>>;
+	typedef std::vector<std::shared_ptr<ModuleData>> ModuleDataVector;
 
 	/** Module Vector. */
-	using ModuleVector = std::vector<std::shared_ptr<Module>>;
+	typedef std::vector<std::shared_ptr<Module>> ModuleVector;
 
 
 
