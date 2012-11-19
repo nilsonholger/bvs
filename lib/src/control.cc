@@ -19,7 +19,9 @@ BVS::Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info)
 	masterLock{mutex},
 	monitor{},
 	controlThread{},
-	round{0}
+	round{0},
+	shutdownRequested{false},
+	shutdownRound{0}
 { }
 
 
@@ -88,11 +90,14 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 			case SystemFlag::STEP_BACK: break;
 		}
 
+		if (shutdownRequested && round==shutdownRound) flag = SystemFlag::QUIT;
+
 		if (!controlThread.joinable() && flag!=SystemFlag::RUN) return *this;
 	}
 
 	for (auto& pool: pools) pool.second->flag = ControlFlag::QUIT;
 	masterLock.unlock();
+	if (shutdownRequested && round==shutdownRound) bvs.shutdownHandler();
 
 	return *this;
 }
@@ -109,7 +114,7 @@ BVS::Control& BVS::Control::sendCommand(const SystemFlag controlFlag)
 
 	if (controlFlag==SystemFlag::QUIT)
 	{
-		if (controlThread.joinable())
+		if (controlThread.joinable() && std::this_thread::get_id()!=controlThread.get_id())
 		{
 			LOG(3, "JOIN MASTER CONTROLLER!");
 			controlThread.join();
@@ -321,6 +326,9 @@ BVS::Control& BVS::Control::checkModuleStatus(std::shared_ptr<ModuleData> data)
 			bvs.unloadModule(data->id);
 			break;
 		case Status::SHUTDOWN:
+			LOG(1, "SHUTDOWN REQUEST BY '" << data->id << "', SHUTTING DOWN IN '" << modules.size() << "' ROUNDS!");
+			shutdownRequested = true;
+			if (shutdownRound==0) shutdownRound = round + modules.size();
 			break;
 	}
 

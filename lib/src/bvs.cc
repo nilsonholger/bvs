@@ -9,8 +9,9 @@
 
 
 
-BVS::BVS::BVS(int argc, char** argv)
+BVS::BVS::BVS(int argc, char** argv, std::function<void()>shutdownHandler)
 	: config{"bvs", argc, argv},
+	shutdownHandler(shutdownHandler),
 	info(Info{config, 0, {}, {}}),
 #ifdef BVS_LOG_SYSTEM
 	logSystem{LogSystem::connectToLogSystem()},
@@ -156,10 +157,9 @@ BVS::BVS& BVS::BVS::unloadModule(const std::string& id)
 		control->waitUntilInactive(id);
 	}
 
-	control->quitModule(id);
 	control->purgeData(id);
+	control->quitModule(id);
 	loader->unload(id);
-
 
 	if (state!=SystemFlag::QUIT) control->sendCommand(state);
 

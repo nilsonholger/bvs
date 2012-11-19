@@ -1,7 +1,7 @@
 #ifndef BVS_H
 #define BVS_H
 
-#include <iomanip>
+#include <functional>
 #include <iostream>
 #include <string>
 
@@ -85,8 +85,9 @@ namespace BVS
 			/** Create BVS System.
 			 * @param[in] argc Main's argc.
 			 * @param[in] argv Main's argv, used to pass config options to BVS, see Config.
+			 * @param[in] shutdownHandler A function the framework calls upon shutting down.
 			 */
-			BVS(int argc, char** argv);
+			BVS(int argc, char** argv, std::function<void()>shutdownHandler = [](){ exit(0);} );
 
 			/** Destructor.
 			 */
@@ -232,6 +233,7 @@ namespace BVS
 			BVS& quit();
 
 			Config config; /**< BVS' config system. */
+			std::function<void()> shutdownHandler; /**< Function to call when shutting system down. */
 
 		private:
 			Info info; //**< BVS' information object. */

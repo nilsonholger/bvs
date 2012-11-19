@@ -140,6 +140,8 @@ namespace BVS
 			std::thread controlThread; /**< Thread (if active) of masterController. */
 
 			unsigned long long round; /**< System round counter. */
+			bool shutdownRequested; /**< True if shutdown was requested. */
+			unsigned long long shutdownRound; /**< System shutdown round. */
 
 			Control(const Control&) = delete; /**< -Weffc++ */
 			Control& operator=(const Control&) = delete; /**< -Weffc++ */
