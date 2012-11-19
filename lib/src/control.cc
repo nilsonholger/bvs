@@ -57,8 +57,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 
 		switch (flag)
 		{
-			case SystemFlag::QUIT:
-				break;
+			case SystemFlag::QUIT: break;
 			case SystemFlag::PAUSE:
 				if (!controlThread.joinable()) return *this;
 				LOG(3, "PAUSE...");
@@ -86,15 +85,13 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 				if (flag==SystemFlag::STEP) flag = SystemFlag::PAUSE;
 				LOG(3, "WAIT FOR THREADS AND POOLS!");
 				break;
-			case SystemFlag::STEP_BACK:
-				break;
+			case SystemFlag::STEP_BACK: break;
 		}
 
 		if (!controlThread.joinable() && flag!=SystemFlag::RUN) return *this;
 	}
 
 	for (auto& pool: pools) pool.second->flag = ControlFlag::QUIT;
-
 	masterLock.unlock();
 
 	return *this;
@@ -252,13 +249,10 @@ BVS::Control& BVS::Control::moduleController(ModuleData& data)
 
 	switch (data.flag)
 	{
-		case ControlFlag::QUIT:
-			break;
-		case ControlFlag::WAIT:
-			break;
+		case ControlFlag::QUIT: break;
+		case ControlFlag::WAIT: break;
 		case ControlFlag::RUN:
 			data.status = data.module->execute();
-
 			data.flag = ControlFlag::WAIT;
 			break;
 	}
@@ -321,14 +315,10 @@ BVS::Control& BVS::Control::checkModuleStatus(std::shared_ptr<ModuleData> data)
 {
 	switch (data->status)
 	{
-		case Status::OK:
-			break;
-		case Status::NOINPUT:
-			break;
-		case Status::FAIL:
-			break;
-		case Status::WAIT:
-			break;
+		case Status::OK: break;
+		case Status::NOINPUT: break;
+		case Status::FAIL: break;
+		case Status::WAIT: break;
 		case Status::DONE:
 			bvs.unloadModule(data->id);
 			break;
