@@ -1,0 +1,73 @@
+# This is an example config file. Please copy it to
+# [build/]bin/BVSConfig.txt to get started right away.
+#
+# For more information:
+# TOPIC        FILE                              DOXYGEN (see Readme.txt)
+# syntax       'libbvs/include/bvs/config.h'     'Classes->BVS::Config'
+# bvs options  'libbvs/include/bvs/bvs.h'        'Classes->BVS::BVS'
+# bvs defaults 'libbvs/include/bvs/traits.h'     'Files->include/bvs/traits.h'
+
+# Settings for the BVS framework.
+[BVS]
+# warn about connector type mismatch
+connectorTypeMatching = ON
+
+# enable logging system
+logSystem = ON
+
+# log to console
+logConsole = ON
+
+# log to file (empty disables, +FILE appends)
+#logFile = BVSLog.txt
+
+# overall system log verbosity
+logVerbosity = 3
+
+# allow modules to run in dedicated threads
+moduleThreads = ON
+
+# force modules to run in dedicated threads
+# NOTE: this also disables module pools.
+forceModuleThreads = OFF
+
+# allow modules to be bundled in pools
+modulePools = ON
+
+# list of modules to load
+#
+# modules = uniqueID(moduleLibrary)
+# this allows to load modules more than once using unique identifiers
+#
+# modules = uniqueID(moduleLibrary).input(test.output)
+# this connects uniqueID's Connector named 'input' with 'test' module's
+# connector named 'output'
+#
+# modules += +id(...)
+# this expands the modules variable (the += operator) as well as runs
+# the id module in its own thread (the second + prefix)
+#
+# modules += [testPool]id(...)
+# modules += [testPool]id2(...)
+# this adds the modules id and id2 to the module pool 'testPool', they
+# are executed by a dedicated pool thread in the specified order
+#
+#modules = id(library)
+#modules += +id2(library2).input(id.output)
+#modules += [pool]id3(..)
+#modules += ...
+
+# Logger level settings.
+[Logger]
+#BVS = 0
+#BVSDaemon = 0
+#BVSMaster = 0
+#YourLogger = ...
+
+# To include other config files use the 'source' command. This sourced file
+# will be parsed right here so it might overwrite some of your settings
+# (first comes, first served).
+#
+# source OtherConfigFile.txt
+
+# This line tells vim something about the file type. -- vim:ft=config:
