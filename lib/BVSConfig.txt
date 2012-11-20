@@ -3,9 +3,9 @@
 #
 # For more information:
 # TOPIC        FILE                              DOXYGEN (see Readme.txt)
-# syntax       'libbvs/include/bvs/config.h'     'Classes->BVS::Config'
-# bvs options  'libbvs/include/bvs/bvs.h'        'Classes->BVS::BVS'
-# bvs defaults 'libbvs/include/bvs/traits.h'     'Files->include/bvs/traits.h'
+# syntax       'lib/include/bvs/config.h'        'Classes->BVS::Config'
+# bvs options  'lib/include/bvs/bvs.h'           'Classes->BVS::BVS'
+# bvs defaults 'lib/include/bvs/traits.h'        'Files->include/bvs/traits.h'
 
 # Settings for the BVS framework.
 [BVS]
