@@ -1,3 +1,15 @@
+2012-11-20  NilsonHolger <nilsonholger@hyve.org>
+
+	* Libbvs merged into base:
+	Libbvs has been merged into bvs/base and is now located in ./lib/. There
+	should be no modifications needed with any module code, everything should
+	have been adapted in the base repository. This merge was necessary to
+	simplify development and create unique tags for both the lib and the
+	accompanying infrastructure (as well as merge Readme and Licensing).
+	The only action needed by users is to delete the 'leftover' libbvs
+	directory. Libbvs has been fully merged (including its branches),
+	therefore the original repository will be deleted soon.
+
 2012-11-19  NilsonHolger <nilsonholger@hyve.org>
 
 	* module:
@@ -23,8 +35,7 @@
 	improved upon, to adapt to these changes, please remove the 'extern "C"'
 	block from the 'YourModule.cc' file and add
 	'BVS_MODULE_UTILITIES(YourModule)' to the 'YourModule.h' file (these
-	changes can also be seen in the example module or in libbvs commit:
-	b7d1a19e09bf91be4c52e171362394368b5c40bb)
+	changes can also be seen in the example module)
 
 2012-10-26  NilsonHolger <nilsonholger@hyve.org>
 
@@ -42,7 +53,7 @@
 	* Note:
 	in order to use hotswapping with already existing modules, the
 	'bvsHotSwapModule(...)' function will need to be added to it (located in
-	'libbvs/module/BVSExampleModule.cc')
+	'lib/module/BVSExampleModule.cc')
 
 2012-10-23  NilsonHolger <nilsonholger@hyve.org>
 
