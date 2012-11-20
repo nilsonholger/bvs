@@ -23,8 +23,7 @@
 	improved upon, to adapt to these changes, please remove the 'extern "C"'
 	block from the 'YourModule.cc' file and add
 	'BVS_MODULE_UTILITIES(YourModule)' to the 'YourModule.h' file (these
-	changes can also be seen in the example module or in libbvs commit:
-	b7d1a19e09bf91be4c52e171362394368b5c40bb)
+	changes can also be seen in the example module)
 
 2012-10-26  NilsonHolger <nilsonholger@hyve.org>
 
@@ -42,7 +41,7 @@
 	* Note:
 	in order to use hotswapping with already existing modules, the
 	'bvsHotSwapModule(...)' function will need to be added to it (located in
-	'libbvs/module/BVSExampleModule.cc')
+	'lib/module/BVSExampleModule.cc')
 
 2012-10-23  NilsonHolger <nilsonholger@hyve.org>
 

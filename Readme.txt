@@ -60,8 +60,8 @@ for in source builds, or 'cmake $PATH_TO_BVS' for out of source builds (if you
 use the directory 'build', the run script will still work).
 
 After that, if you want to generate the doxygen documentation, type 'make doc'.
-The documentation will be located in 'libbvs/doc/', so if you want to browse
-the html documentation, point your browser to 'libbvs/doc/html/index.html' or
+The documentation will be located in 'lib/doc/', so if you want to browse the
+html documentation, point your browser to '[build/]lib/doc/html/index.html' or
 just read through the header/source files.
 
 If you need/want to delete all cmake generated files and the documentation,
@@ -147,15 +147,16 @@ in a single git repository and either symlink them to './modules/...' or modify
 
 DIRECTORIES AND FILES:
 '.'
- |- bin: directory where all your modules/executables/settings are
- |- build: OPTIONAL directory for out of source builds
- |- bvsd: contains an interactive command line daemon
- |- libbvs: contains the actual library,
- |- modules: module directory, create git submodules here (do not forget
+ |_bin: directory where all your modules/executables/settings are
+ |_build: OPTIONAL directory for out of source builds
+ |_bvsd: contains an interactive command line daemon
+ |_lib: contains the actual library
+ |_modules: module directory, create git submodules here (do not forget
  |           to enable used modules in './modules/CMakeLists.txt')
  |
- |- run: main script to do various tasks
- |- Changelog.txt: contains important notes about updates
- |- CMakeLists.txt: cmake build file
- |- Doxyfile.in: doxygen config, parsed by cmake
- \- Readme.txt: this readme file
+ |_.bvsmodules: list of known modules (used during setup)
+ |_run: main script to do various tasks
+ |_Changelog.txt: contains important notes about updates
+ |_CMakeLists.txt: cmake build file
+ |_Doxyfile.in: doxygen config, parsed by cmake
+ |_Readme.txt: this readme file

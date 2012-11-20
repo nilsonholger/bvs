@@ -1,7 +1,7 @@
 # This is an example config file for BVSExampleModule.
 #
 # For more information on syntax as well as further capabilities, please see
-# 'libbvs/include/bvs/config.h' or 'DOXYGEN:Classes->BVS::Config'.
+# 'lib/include/bvs/config.h' or 'DOXYGEN:Classes->BVS::Config'.
 
 # It will be linked to [build/]bin/BVSExampleModuleConfig.txt so you can get
 # started right away.
