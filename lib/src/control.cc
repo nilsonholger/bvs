@@ -326,9 +326,12 @@ BVS::Control& BVS::Control::checkModuleStatus(std::shared_ptr<ModuleData> data)
 			bvs.unloadModule(data->id);
 			break;
 		case Status::SHUTDOWN:
-			LOG(1, "SHUTDOWN REQUEST BY '" << data->id << "', SHUTTING DOWN IN '" << modules.size() << "' ROUNDS!");
-			shutdownRequested = true;
-			if (shutdownRound==0) shutdownRound = round + modules.size();
+			if (!shutdownRequested)
+			{
+				LOG(1, "SHUTDOWN REQUEST BY '" << data->id << "', SHUTTING DOWN IN '" << modules.size() << "' ROUNDS!");
+				shutdownRequested = true;
+				shutdownRound = round + modules.size();
+			}
 			break;
 	}
 
