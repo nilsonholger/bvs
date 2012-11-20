@@ -4,40 +4,46 @@
 
 
 
-BVS::Loader::Loader(Control& control, const Info& info)
-	: control(control),
-	logger("Loader"),
-	info(info),
-	modules(Control::modules),
-	moduleStack()
+BVS::ModuleDataMap BVS::Loader::modules;
+
+
+
+BVS::ModuleVector* BVS::Loader::hotSwapGraveYard = nullptr;
+
+
+
+BVS::Loader::Loader(const Info& info)
+	: logger{"Loader"},
+	info(info)
 { }
 
 
 
-BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThread, const std::string& poolName)
+void BVS::Loader::registerModule(const std::string& id, Module* module, bool hotSwap)
 {
-	std::string id;
-	std::string library;
-	std::string options;
-
-	// separate id, library  and options
-	size_t separator = moduleTraits.find_first_of('.');
-	if (separator!=std::string::npos)
+	if (hotSwap)
 	{
-		id = moduleTraits.substr(0, separator);
-		options = moduleTraits.substr(separator+1, std::string::npos);
+#ifdef BVS_MODULE_HOTSWAP
+		// NOTE: hotSwapGraveYard will only be initialized when the HotSwap
+		// functionality is used. It is intended as a store for unneeded
+		// shared_ptr until the process execution ends, but since it is a
+		// static pointer it will never be explicitly deleted.
+		if (hotSwapGraveYard==nullptr) hotSwapGraveYard = new ModuleVector();
+		hotSwapGraveYard->push_back(std::shared_ptr<Module>(module));
+		modules[id]->module.swap(hotSwapGraveYard->back());
+#endif //BVS_MODULE_HOTSWAP
 	}
-	else id = moduleTraits;
-
-	separator = id.find_first_of('(');
-	if (separator!=std::string::npos)
+	else
 	{
-		library = id.substr(separator+1, std::string::npos);
-		library.erase(library.length()-1);
-		id = id.erase(separator, std::string::npos);
+		modules[id] = std::shared_ptr<ModuleData>{new ModuleData{id, {}, {},
+			module, nullptr, false, {}, ControlFlag::WAIT, Status::OK, {}}};
 	}
-	else library = id;
+}
 
+
+
+BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library, const std::string& options, const bool asThread, const std::string& poolName)
+{
 	if (modules.find(id)!=modules.end())
 		LOG(0, "Duplicate id for module: " << id << std::endl << "If you try to load a module more than once, use unique ids and the id(library).options syntax!");
 
@@ -62,13 +68,10 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 	modules[id]->library = library;
 	modules[id]->options = options;
 
-	// get connectors and let control handle module start
+	// get connectors
 	modules[id]->connectors = std::move(ConnectorDataCollector::connectors);
 	modules[id]->asThread = asThread;
 	modules[id]->poolName = poolName;
-	control.startModule(id);
-
-	moduleStack.push(id);
 
 	LOG(2, "Loading '" << id << "' successfull!");
 
@@ -79,55 +82,11 @@ BVS::Loader& BVS::Loader::load(const std::string& moduleTraits, const bool asThr
 
 BVS::Loader& BVS::Loader::unload(const std::string& id)
 {
-	if (modules[id]->asThread == true)
-	{
-		if (modules[id]->thread.joinable())
-		{
-			modules[id]->flag = ControlFlag::QUIT;
-			control.notifyThreads();
-			LOG(3, "Waiting for '" << id << "' to join!");
-			modules[id]->thread.join();
-		}
-	}
-
-	for (auto& it: modules)
-	{
-		for (auto& con: it.second->connectors)
-		{
-			if (con.second->type==ConnectorType::INPUT) continue;
-
-			for (auto& mods: modules)
-			{
-				for (auto& modCon: mods.second->connectors)
-				{
-					if (con.second->pointer==modCon.second->pointer)
-					{
-						modCon.second->pointer = nullptr;
-						modCon.second->active = false;
-						modCon.second->mutex = nullptr;
-					}
-				}
-			}
-		}
-	}
-
-	unloadLibrary(id, true);
-
-	return *this;
-}
-
-
-
-BVS::Loader& BVS::Loader::unloadAll()
-{
-	while (!moduleStack.empty())
-	{
-		if(modules.find(moduleStack.top())!=modules.end())
-		{
-			unload(moduleStack.top());
-		}
-		moduleStack.pop();
-	}
+	disconnectModule(id);
+	modules[id]->connectors.clear();
+	modules[id]->module.reset();
+	unloadLibrary(id);
+	modules.erase(id);
 
 	return *this;
 }
@@ -204,12 +163,36 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 
 
 
+BVS::Loader& BVS::Loader::disconnectModule(const std::string& id)
+{
+	for (auto& connector: modules[id]->connectors)
+	{
+		if (connector.second->type==ConnectorType::INPUT) continue;
+
+		for (auto& module: modules)
+		{
+			for (auto& targetConnector: module.second->connectors)
+			{
+				if (connector.second->pointer==targetConnector.second->pointer)
+				{
+					targetConnector.second->active = false;
+					targetConnector.second->mutex = nullptr;
+					targetConnector.second->pointer = nullptr;
+				}
+			}
+		}
+	}
+
+	return *this;
+}
+
+
+
+
+#ifdef BVS_MODULE_HOTSWAP
 BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 {
-#ifdef BVS_MODULE_HOTSWAP
-	if (modules[id]->asThread || !modules[id]->poolName.empty()) control.waitUntilInactive(id);
-
-	unloadLibrary(id, false);
+	unloadLibrary(id);
 	LibHandle dlib = loadLibrary(id, modules[id]->library);
 
 	typedef void (*bvsHotSwapModule_t)(const std::string& id, BVS::Module* module);
@@ -227,12 +210,10 @@ BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 	modules[id]->dlib = dlib;
 
 	LOG(2, "Hotswapping '" << id << "' successfull!");
-#else //BVS_MODULE_HOTSWAP
-	LOG(0, "ERROR: HotSwap disabled, could not hotswap: '" << id << "'!");
-#endif //BVS_MODULE_HOTSWAP
 
 	return *this;
 }
+#endif //BVS_MODULE_HOTSWAP
 
 
 
@@ -266,7 +247,7 @@ BVS::LibHandle BVS::Loader::loadLibrary(const std::string& id, const std::string
 
 
 
-BVS::Loader& BVS::Loader::unloadLibrary(const std::string& id, const bool& purgeModuleData)
+BVS::Loader& BVS::Loader::unloadLibrary(const std::string& id)
 {
 #ifndef BVS_OSX_ANOMALIES
 	std::string modulePath = "./lib" + modules[id]->library + ".so";
@@ -282,7 +263,6 @@ BVS::Loader& BVS::Loader::unloadLibrary(const std::string& id, const bool& purge
 		exit(-1);
 	}
 
-	if (purgeModuleData) control.purgeData(id);
 	dlclose(dlib);
 
 	char* dlerr = dlerror();

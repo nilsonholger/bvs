@@ -7,11 +7,11 @@
 
 
 BVS::Config::Config(const std::string& name, int argc, char** argv)
-	: name(name),
-	mutex(),
-	optionStore(),
-	sections(),
-	fileStack()
+	: name{name},
+	mutex{},
+	optionStore{},
+	sections{},
+	fileStack{}
 {
 	if (argc!=0 && argv!=nullptr) loadCommandLine(argc, argv);
 }
@@ -76,7 +76,7 @@ BVS::Config& BVS::Config::loadCommandLine(int argc, char** argv)
 			std::string option;
 			size_t separatorPos = 0;
 			size_t equalPos;
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			std::lock_guard<std::recursive_mutex> lock{mutex};
 			while (separatorPos != std::string::npos)
 			{
 				// separate
@@ -104,7 +104,7 @@ BVS::Config& BVS::Config::loadCommandLine(int argc, char** argv)
 
 BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 {
-	std::ifstream file(configFile.c_str(), std::ifstream::in);
+	std::ifstream file{configFile.c_str(), std::ifstream::in};
 
 	// check if file can be read from
 	if (!file.is_open())
@@ -120,7 +120,7 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 	size_t pos;
 	int lineNumber = 0;
 
-	std::lock_guard<std::recursive_mutex> lock(mutex);
+	std::lock_guard<std::recursive_mutex> lock{mutex};
 
 	/* algorithm:
 	 * FOR EACH line in config file
@@ -233,7 +233,7 @@ std::string BVS::Config::searchOption(std::string option) const
 {
 	std::transform(option.begin(), option.end(), option.begin(), ::tolower);
 
-	std::lock_guard<std::recursive_mutex> lock(mutex);
+	std::lock_guard<std::recursive_mutex> lock{mutex};
 
 	// search for option in store
 	if(optionStore.find(option)!=optionStore.end())

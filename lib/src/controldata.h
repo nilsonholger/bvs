@@ -44,17 +44,17 @@ namespace BVS
 		ModuleData(std::string id, std::string library, std::string options,
 				Module* module, LibHandle dlib, bool asThread, std::string poolName,
 				ControlFlag flag, Status status, ConnectorMap connectors)
-			: id(id),
-			library(library),
-			options(options),
-			module(module),
-			dlib(dlib),
-			thread(),
-			asThread(asThread),
-			poolName(poolName),
-			flag(flag),
-			status(status),
-			connectors(connectors)
+			: id{id},
+			library{library},
+			options{options},
+			module{module},
+			dlib{dlib},
+			thread{},
+			asThread{asThread},
+			poolName{poolName},
+			flag{flag},
+			status{status},
+			connectors{connectors}
 		{}
 
 		std::string id; /**< Name of module. */
@@ -94,10 +94,10 @@ namespace BVS
 		 * @param[in] flag Control flag.
 		 */
 		PoolData(std::string poolName, ControlFlag flag)
-			: poolName(poolName),
-			flag(flag),
-			thread(),
-			modules()
+			: poolName{poolName},
+			flag{flag},
+			thread{},
+			modules{}
 		{}
 
 		/** Desctructor. */

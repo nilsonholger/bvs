@@ -7,11 +7,11 @@
 
 
 BVS::Logger::Logger(const std::string& name, unsigned short verbosity, LogTarget target)
-	: name(name)
-	, verbosity(verbosity)
-	, target(target)
+	: name{name},
+	verbosity{verbosity},
+	target{target}
 #ifdef BVS_LOG_SYSTEM
-	, logSystem(LogSystem::connectToLogSystem())
+	, logSystem{LogSystem::connectToLogSystem()}
 #endif
 {
 #ifdef BVS_LOG_SYSTEM
