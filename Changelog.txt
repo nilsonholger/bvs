@@ -6,9 +6,15 @@
 	have been adapted in the base repository. This merge was necessary to
 	simplify development and create unique tags for both the lib and the
 	accompanying infrastructure (as well as merge Readme and Licensing).
+	Libbvs has been fully merged (including its branches), therefore the
+	original repository will be deleted soon.
 	The only action needed by users is to delete the 'leftover' libbvs
-	directory. Libbvs has been fully merged (including its branches),
-	therefore the original repository will be deleted soon.
+	directory and remove the git submodule. This can be done as follows:
+	1. 'git rm libbvs'
+	2. edit '.gitmodules' and '.git/config', remove the '[submodule "libbvs"]'
+	   section
+	3. 'rm -rf .git/modules/libbvs
+	4. commit your changes (should be only '.gitmodules') locally
 
 2012-11-19  NilsonHolger <nilsonholger@hyve.org>
 
