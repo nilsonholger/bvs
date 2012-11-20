@@ -1,3 +1,15 @@
+2012-11-20  NilsonHolger <nilsonholger@hyve.org>
+
+	* Libbvs merged into base:
+	Libbvs has been merged into bvs/base and is now located in ./lib/. There
+	should be no modifications needed with any module code, everything should
+	have been adapted in the base repository. This merge was necessary to
+	simplify development and create unique tags for both the lib and the
+	accompanying infrastructure (as well as merge Readme and Licensing).
+	The only action needed by users is to delete the 'leftover' libbvs
+	directory. Libbvs has been fully merged (including its branches),
+	therefore the original repository will be deleted soon.
+
 2012-11-19  NilsonHolger <nilsonholger@hyve.org>
 
 	* module:
