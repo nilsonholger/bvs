@@ -1,0 +1,103 @@
+2012-11-19  NilsonHolger <nilsonholger@hyve.org>
+
+	* module:
+	new return status signals, 'DONE' causes module to be unloaded, 'SHUTDOWN'
+	causes system to initiate shutdown sequence after all other modules had
+	the chance finish their work
+	* run:
+	modify module creation function to also handle module renaming
+
+2012-11-16  NilsonHolger <nilsonholger@hyve.org>
+
+	* run:
+	add function (or better modify new-module function) to rename an existing
+	module
+
+2012-11-02  NilsonHolger <nilsonholger@hyve.org>
+
+	* Module utilities:
+	add macro to define module utilites (helper functions needed by the
+	framework to load/create/hotswap... the module), until now these were
+	defined inside each and every module, this means duplication and also lack
+	of change propagation to older modules, with the new macro this will be
+	improved upon, to adapt to these changes, please remove the 'extern "C"'
+	block from the 'YourModule.cc' file and add
+	'BVS_MODULE_UTILITIES(YourModule)' to the 'YourModule.h' file (these
+	changes can also be seen in the example module or in libbvs commit:
+	b7d1a19e09bf91be4c52e171362394368b5c40bb)
+
+2012-10-26  NilsonHolger <nilsonholger@hyve.org>
+
+	* Config -> 'source' command:
+	modules should no longer create config objects to retrieve config options
+	and instead use the supplied 'bvs.config' object, this allows the change
+	of all (even module) options on the command line (do not forget to
+	'source' your config files into the main config loaded by BVS)
+
+2012-10-24  NilsonHolger <nilsonholger@hyve.org>
+
+	* Hotswap support in bvsd:
+	hotswap support has been added to bvsd (a call: hs|hotswap <moduleID> and
+	the run script got a fifo to control bvsd (see Readme.txt)
+	* Note:
+	in order to use hotswapping with already existing modules, the
+	'bvsHotSwapModule(...)' function will need to be added to it (located in
+	'libbvs/module/BVSExampleModule.cc')
+
+2012-10-23  NilsonHolger <nilsonholger@hyve.org>
+
+	* cmake -> BVS_MODULE_HOTSWAP:
+	add module hotswapping, this is extremely experimental and must only be
+	used in a development environment, modules that will be hotswapped can and
+	will segfault due to an unlimited amount of reasons, use at your own risk
+	and NEVER expect it to work ;-) (read the documentation in BVS::Loader for
+	some hints on segfault mitigation)
+
+2012-10-16  NilsonHolger <nilsonholger@hyve.org>
+
+	* cmake -> COMPILER_WARNINGS_MACRO:
+	add 'disable_compiler_warnings(...)' macro to disable pedantic compiler
+	flags for certain source files (usually not one's own ;-), some times it
+	might be necessary to aditionally use 'include_directories(SYSTEM ...)' to
+	really remove all of them
+
+2012-10-12  NilsonHolger <nilsonholger@hyve.org>
+
+	* Submodule setup changed:
+	setup will now ask which submodules shall be installed, this will create a
+	commit which must NOT be pushed back to the development repository as this
+	will break existing installs for others
+
+2012-10-02  NilsonHolger <nilsonholger@hyve.org>
+
+	* cmake -> BVS_GCC_VISIBILITY:
+	uses gcc's visibility feature for dynamic library symbol exports (read
+	cmake info)
+	* cmake -> BVS_LOG_SYSTEM:
+	now the log system can be enabled in cmake, if disabled, the log system's
+	backend won't even be compiled and the created logger instances will have
+	no functionality
+
+2012-10-01  NilsonHolger <nilsonholger@hyve.org>
+
+	* cmake -> BVS_THREAD_NAMES:
+	allows threads to set names (read cmake info)
+
+2012-09-30  NilsonHolger <nilsonholger@hyve.org>
+
+	* Module pools:
+	allow to setup module pools, meaning that a number of modules are executed
+	by one single thread.
+	WARNING: not yet thoroughly tested, but should work fine
+
+2012-09-28  NilsonHolger <nilsonholger@hyve.org>
+
+	* Update function:
+	add ./run --update function to update without loosing local changes
+	* Config usage changed:
+	please read Readme.txt:USAGE, to migrate to the new system, please move
+	your configs to a different location, run cmake in your build directory,
+	that will setup the links to the config files from the modules, then you
+	can just move/copy your configs to the existing symlinks, that will
+	override the configs in their original places and your all setup to use
+	the new system
