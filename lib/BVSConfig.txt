@@ -28,7 +28,7 @@ logVerbosity = 3
 moduleThreads = ON
 
 # force modules to run in dedicated threads
-# NOTE: this also disables module pools.
+# NOTE: this does NOT disable module pools.
 forceModuleThreads = OFF
 
 # allow modules to be bundled in pools

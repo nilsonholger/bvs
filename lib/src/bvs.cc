@@ -91,18 +91,13 @@ BVS::BVS& BVS::BVS::loadModule(const std::string& moduleTraits, bool asThread, s
 	std::string library;
 	std::string options;
 
+	// adapt to module thread/pools settings
 	bool moduleThreads = config.getValue<bool>("BVS.moduleThreads", bvs_module_threads);
 	bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads", bvs_module_force_threads);
 	bool modulePools = config.getValue<bool>("BVS.modulePools", bvs_module_pools);
 
-	if (forceModuleThreads)
-	{
-		asThread = true;
-		poolName.clear();
-	}
-
+	if (forceModuleThreads) asThread = true;
 	if (!moduleThreads) asThread = false;
-
 	if (!modulePools) poolName.clear();
 
 	// separate id, library  and options
