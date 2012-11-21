@@ -10,8 +10,10 @@
 # It can be used to create 'configurations' of your module, simply by creating
 # various sections with different options belonging to them. These are selected
 # by using them as a uniqueID in BVSConfig.txt when adding modules to the
-# system (if you use 'id + ".option"' to retrieve them), e.g.
+# system (if you use 'id + ".option"' to retrieve them), or by adding them
+# after the library name, e.g.
 # modules += uniqueID(BVSExampleModule)...
+# modules += uniqueID(BVSExampleModule.configuration)...
 #
 # [uniqueID]
 # # please comment your settings
