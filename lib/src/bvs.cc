@@ -89,41 +89,44 @@ BVS::BVS& BVS::BVS::loadModule(const std::string& moduleTraits, bool asThread, s
 {
 	std::string id;
 	std::string library;
+	std::string configuration;
 	std::string options;
 
+	// adapt to module thread/pools settings
 	bool moduleThreads = config.getValue<bool>("BVS.moduleThreads", bvs_module_threads);
 	bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads", bvs_module_force_threads);
 	bool modulePools = config.getValue<bool>("BVS.modulePools", bvs_module_pools);
 
-	if (forceModuleThreads)
-	{
-		asThread = true;
-		poolName.clear();
-	}
-
+	if (forceModuleThreads) asThread = true;
 	if (!moduleThreads) asThread = false;
-
 	if (!modulePools) poolName.clear();
 
-	// separate id, library  and options
-	size_t separator = moduleTraits.find_first_of('.');
-	if (separator!=std::string::npos)
+	// separate id, library, configuration and options
+	size_t separator = moduleTraits.find_first_of(".()");
+	if (separator==std::string::npos) id = moduleTraits;
+	else if (moduleTraits.at(separator)=='.')
 	{
 		id = moduleTraits.substr(0, separator);
 		options = moduleTraits.substr(separator+1, std::string::npos);
 	}
-	else id = moduleTraits;
-
-	separator = id.find_first_of('(');
-	if (separator!=std::string::npos)
+	else if (moduleTraits.at(separator)=='(')
 	{
-		library = id.substr(separator+1, std::string::npos);
-		library.erase(library.length()-1);
-		id = id.erase(separator, std::string::npos);
+		size_t dot = moduleTraits.find_first_of('.');
+		size_t rp = moduleTraits.find_first_of(')');
+		id = moduleTraits.substr(0, separator);
+		library = moduleTraits.substr(separator+1, rp-separator-1);
+		options = moduleTraits.substr(rp+2<moduleTraits.size()?rp+2:rp+1, std::string::npos);
+		if (dot<rp)
+		{
+			library = moduleTraits.substr(separator+1, dot-separator-1);
+			configuration = moduleTraits.substr(dot+1, rp-dot-1);
+		}
 	}
-	else library = id;
+	if (library.empty()) library = id;
+	if (configuration.empty()) configuration = id;
 
-	loader->load(id, library, options, asThread, poolName);
+	// load
+	loader->load(id, library, configuration, options, asThread, poolName);
 	control->startModule(id);
 	moduleStack.push(id);
 

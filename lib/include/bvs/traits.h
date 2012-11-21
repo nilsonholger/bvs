@@ -64,7 +64,7 @@ static const unsigned int bvs_log_client_default_verbosity = 3;
 static const bool bvs_module_threads = true;
 
 /** Whether the system ENFORCES modules to run in threads.
- * NOTE: this also disables module pools.
+ * NOTE: this does NOT disable module pools.
  *
  * Possible Values: true, false
  */

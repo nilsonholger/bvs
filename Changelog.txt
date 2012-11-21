@@ -1,5 +1,18 @@
+2012-11-21  NilsonHolger <nilsonholger@hyve.org>
+
+	* v0.2
+	* Module interface change:
+	Sorry for this, but there needs to be a module interface change. Modules
+	need to add change their constructor to match the signature:
+	Module(const std::string id, const std::string conf, const Info& info)
+	This is needed to support the new 'id(library.configuration' syntax in the
+	config file. During compilation, you will get errors on the
+	'BVS_MODULE_UTILITIES(...)' macro and some additional information about
+	the constructor differences.
+
 2012-11-20  NilsonHolger <nilsonholger@hyve.org>
 
+	* v0.1
 	* Libbvs merged into base:
 	Libbvs has been merged into bvs/base and is now located in ./lib/. There
 	should be no modifications needed with any module code, everything should
@@ -10,7 +23,7 @@
 	original repository will be deleted soon.
 	The only action needed by users is to delete the 'leftover' libbvs
 	directory and remove the git submodule. This can be done as follows:
-	1. 'git rm libbvs'
+	1. 'git rm -r libbvs'
 	2. edit '.gitmodules' and '.git/config', remove the '[submodule "libbvs"]'
 	   section
 	3. 'rm -rf .git/modules/libbvs
