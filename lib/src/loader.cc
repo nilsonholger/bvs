@@ -43,7 +43,7 @@ void BVS::Loader::registerModule(const std::string& id, Module* module, bool hot
 
 
 
-BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library, const std::string& options, const bool asThread, const std::string& poolName)
+BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library, const std::string& configuration, const std::string& options, const bool asThread, const std::string& poolName)
 {
 	if (modules.find(id)!=modules.end())
 	{
@@ -54,7 +54,7 @@ BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library
 	LibHandle dlib = loadLibrary(id, library);
 
 	// execute bvsRegisterModule in loaded lib
-	typedef void (*bvsRegisterModule_t)(const std::string& id, const Info& info);
+	typedef void (*bvsRegisterModule_t)(const std::string id, const std::string configuration, const Info& info);
 	bvsRegisterModule_t bvsRegisterModule;
 	*reinterpret_cast<void**>(&bvsRegisterModule)=dlsym(dlib, "bvsRegisterModule");
 
@@ -65,7 +65,7 @@ BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library
 		errorHandler();
 	}
 
-	bvsRegisterModule(id, info);
+	bvsRegisterModule(id, configuration, info);
 
 	// load library and save handle, library name and option string for later use
 	modules[id]->dlib = dlib;
