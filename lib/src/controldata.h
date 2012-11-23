@@ -32,6 +32,7 @@ namespace BVS
 		/** Creates Module MetaData.
 		 * @param[in] id Name of module.
 		 * @param[in] library Library to load module from.
+		 * @param[in] configuration Configuration to use for module.
 		 * @param[in] options Module options.
 		 * @param[in] module Pointer to the module.
 		 * @param[in] dlib Dlib handle to module's lib.
@@ -41,11 +42,12 @@ namespace BVS
 		 * @param[in] status Return Status of module functions.
 		 * @param[in] connectors Connector map.
 		 */
-		ModuleData(std::string id, std::string library, std::string options,
-				Module* module, LibHandle dlib, bool asThread, std::string poolName,
-				ControlFlag flag, Status status, ConnectorMap connectors)
+		ModuleData(std::string id, std::string library, std::string configuration,
+				std::string options, Module* module, LibHandle dlib, bool asThread,
+				std::string poolName, ControlFlag flag, Status status, ConnectorMap connectors)
 			: id{id},
 			library{library},
+			configuration{configuration},
 			options{options},
 			module{module},
 			dlib{dlib},
@@ -59,6 +61,7 @@ namespace BVS
 
 		std::string id; /**< Name of module. */
 		std::string library; /**< Library to load module from. */
+		std::string configuration; /**< Configuration to use for module. */
 		std::string options; /**< Module options. */
 		std::shared_ptr<Module> module; /**< Pointer to the module. */
 		LibHandle dlib; /**< Dlib handle to module's lib. */

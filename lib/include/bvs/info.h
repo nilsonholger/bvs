@@ -33,6 +33,15 @@ namespace BVS
 		 */
 		std::string getFPS() const;
 	};
+
+
+
+	/** Module information. */
+	struct BVS_PUBLIC ModuleInfo
+	{
+		std::string id; /**< Module id. */
+		std::string conf; /**< Module Configuration. */
+	};
 }
 
 

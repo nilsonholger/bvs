@@ -4,7 +4,7 @@ project(LIBBVS)
 include(cmake/toolbox.cmake)
 
 include_directories(include src)
-add_subdir_lib(src bvs SHARED archutils.cc bvs.cc bvsinfo.cc config.cc connector.cc control.cc loader.cc logger.cc logsystem.cc module.cc)
+add_subdir_lib(src bvs SHARED archutils.cc bvs.cc config.cc connector.cc control.cc info.cc loader.cc logger.cc logsystem.cc module.cc)
 target_link_libraries(bvs dl pthread)
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/BVSConfig.txt ${CMAKE_BINARY_DIR}/bin/BVSConfig.txt)

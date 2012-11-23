@@ -36,7 +36,7 @@ void BVS::Loader::registerModule(const std::string& id, Module* module, bool hot
 	}
 	else
 	{
-		modules[id] = std::shared_ptr<ModuleData>{new ModuleData{id, {}, {},
+		modules[id] = std::shared_ptr<ModuleData>{new ModuleData{id, {}, {}, {},
 			module, nullptr, false, {}, ControlFlag::WAIT, Status::OK, {}}};
 	}
 }
@@ -54,7 +54,7 @@ BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library
 	LibHandle dlib = loadLibrary(id, library);
 
 	// execute bvsRegisterModule in loaded lib
-	typedef void (*bvsRegisterModule_t)(const std::string id, const std::string configuration, const Info& info);
+	typedef void (*bvsRegisterModule_t)(ModuleInfo moduleInfo, const Info& info);
 	bvsRegisterModule_t bvsRegisterModule;
 	*reinterpret_cast<void**>(&bvsRegisterModule)=dlsym(dlib, "bvsRegisterModule");
 
@@ -65,9 +65,10 @@ BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library
 		errorHandler();
 	}
 
-	bvsRegisterModule(id, configuration, info);
+	ModuleInfo moduleInfo{id, configuration};
+	bvsRegisterModule(moduleInfo, info);
 
-	// load library and save handle, library name and option string for later use
+	modules[id]->configuration = configuration;
 	modules[id]->dlib = dlib;
 	modules[id]->library = library;
 	modules[id]->options = options;

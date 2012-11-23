@@ -1,3 +1,11 @@
+2012-11-23  NilsonHolger <nilsonholger@hyve.org>
+
+	* v0.2.1
+	* Module interface change 2nd try:
+	THIS is the way the change should have been made in the first place. The
+	new signature: Module(BVS::ModuleInfo info, const BVS::Info& bvs). Please
+	see the entry from '2012-11-21' for further information.
+
 2012-11-21  NilsonHolger <nilsonholger@hyve.org>
 
 	* v0.2

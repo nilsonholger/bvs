@@ -1,6 +1,6 @@
 #include <limits>
 
-#include "bvs/bvsinfo.h"
+#include "bvs/info.h"
 
 
 std::string BVS::Info::getFPS() const
