@@ -6,8 +6,8 @@
 #include <string>
 #include <thread>
 
-#include "bvs/bvsinfo.h"
 #include "bvs/config.h"
+#include "bvs/info.h"
 #include "bvs/logger.h"
 #include "controldata.h"
 

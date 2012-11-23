@@ -2,9 +2,9 @@
 #define BVS_MODULE_H
 
 #include "bvs/archutils.h"
-#include "bvs/bvsinfo.h"
 #include "bvs/config.h"
 #include "bvs/connector.h"
+#include "bvs/info.h"
 #include "bvs/logger.h"
 #include "bvs/traits.h"
 
