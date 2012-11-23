@@ -36,7 +36,7 @@ void BVS::Loader::registerModule(const std::string& id, Module* module, bool hot
 	}
 	else
 	{
-		modules[id] = std::shared_ptr<ModuleData>{new ModuleData{id, {}, {},
+		modules[id] = std::shared_ptr<ModuleData>{new ModuleData{id, {}, {}, {},
 			module, nullptr, false, {}, ControlFlag::WAIT, Status::OK, {}}};
 	}
 }
@@ -67,7 +67,7 @@ BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library
 
 	bvsRegisterModule(id, configuration, info);
 
-	// load library and save handle, library name and option string for later use
+	modules[id]->configuration = configuration;
 	modules[id]->dlib = dlib;
 	modules[id]->library = library;
 	modules[id]->options = options;
