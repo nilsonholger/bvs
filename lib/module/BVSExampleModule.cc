@@ -7,12 +7,12 @@
 // framework actually creates your module) and the framework assigns the unique
 // identifier and gives you access to its config.
 // However, you should use it to create your data structures etc.
-BVSExampleModule::BVSExampleModule(const std::string id, const std::string conf, const BVS::Info& bvs)
+BVSExampleModule::BVSExampleModule(BVS::ModuleInfo info, const BVS::Info& bvs)
 	: BVS::Module(),
-	id(id),
-	logger(id),
+	info(info),
+	logger(info.id),
 	bvs(bvs)
-	//yourSwitch(bvs.config.getValue<bool>(conf + ".yourSwitch, false)),
+	//yourSwitch(bvs.config.getValue<bool>(info.conf + ".yourSwitch, false)),
 	//input("testIn", BVS::ConnectorType::INPUT),
 	//output("testOut", BVS::ConnectorType::OUTPUT)
 {
@@ -34,15 +34,15 @@ BVSExampleModule::~BVSExampleModule()
 BVS::Status BVSExampleModule::execute()
 {
 	// to log messages to console or file, use the LOG(...) macro
-	//LOG(3, "Execution of " << id << "!");
+	//LOG(3, "Execution of " << info.id << "!");
 
 	// Various settings and information
 	// in some config:
-	// [thisModuleId]
+	// [moduleConfiguration]
 	// foo = 42
 	//int foo = bvs.getValue<int>(conf + ".myInteger, 23);
 	//unsigned long long round = bvs.round;
-	//int lastRoundModuleDuration = bvs.moduleDurations.find(id)->second.count();
+	//int lastRoundModuleDuration = bvs.moduleDurations.find(info.id)->second.count();
 	//int lastRoundDuration = bvs.lastRoundDuration.count();
 
 	// Simple Connector Example

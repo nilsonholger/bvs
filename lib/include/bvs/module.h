@@ -71,9 +71,9 @@ BVS_PUBLIC void registerModule(const std::string& id, BVS::Module* module, bool 
  */
 #define BVS_MODULE_UTILITIES(BVS_MODULE_CLASS_NAME) \
 	extern "C" { \
-		int bvsRegisterModule(std::string id, std::string conf, BVS::Info& bvs) \
+		int bvsRegisterModule(BVS::ModuleInfo info, BVS::Info& bvs) \
 		{ \
-			registerModule(id, new BVS_MODULE_CLASS_NAME(id, conf, bvs)); \
+			registerModule(info.id, new BVS_MODULE_CLASS_NAME(info, bvs)); \
 			return 0; \
 		} \
 		int bvsHotSwapModule(std::string id, BVS::Module* module) \
