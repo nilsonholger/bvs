@@ -37,12 +37,13 @@ modulePools = ON
 # list of modules to load
 #
 # full specification of a module line:
-# modules [+]= [+|poolName]id[(library[.configuration])][.connectorOptions]
+# modules [+]= [+|[poolName]]id[(library[.configuration])][.connectorOptions]
 #
 # [+] -> append the module list
 # [+|poolName] -> load module inside its own thread ('+') or add/create to a
-#             module pool of name 'poolName' which also runs inside its own
+#             module pool of name '[poolName]' which also runs inside its own
 #             thread and executes added modules in the given order
+#             NOTE: 'poolName' must be inside '[...]', '+' must not
 # [(library...)] -> use as module library, useful more multiple modules from
 #                   one library
 # [.configuration] -> use this configuration for the module, useful so the
