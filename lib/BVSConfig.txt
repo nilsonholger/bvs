@@ -7,58 +7,73 @@
 # bvs options  'lib/include/bvs/bvs.h'           'Classes->BVS::BVS'
 # bvs defaults 'lib/include/bvs/traits.h'        'Files->include/bvs/traits.h'
 
-# Settings for the BVS framework.
-[BVS]
-# warn about connector type mismatch
-connectorTypeMatching = ON
+# Settings for the BVS framework (defaults: <...>).
 
-# enable logging system
-logSystem = ON
+# connectorTypeMatching = <ON> | OFF
+# Warn about connector type mismatch (uses RTTI).
 
-# log to console
-logConsole = ON
+# logSystem = <ON> | OFF
+# Enable logging system.
 
-# log to file (empty disables, +FILE appends)
-#logFile = BVSLog.txt
+# logConsole = <ON> | OFF
+# Log to console.
 
-# overall system log verbosity
-logVerbosity = 3
+# logFile = <> | BVSLog.txt | ...
+# Log to file (empty disables, +FILE appends to file).
 
-# allow modules to run in dedicated threads
-moduleThreads = ON
+# logVerbosity = 0 | 1 | 2 | <3> | ...
+# Overall system log verbosity.
 
-# force modules to run in dedicated threads
+# moduleThreads = <ON> | OFF
+# Allow modules to run in dedicated threads.
+
+# forceModuleThreads = ON | <OFF>
+# Force modules to run in dedicated threads.
 # NOTE: this does NOT disable module pools.
-forceModuleThreads = OFF
 
-# allow modules to be bundled in pools
-modulePools = ON
+# modulePools = <ON> | OFF
+# Allow modules to be bundled in pools.
 
-# list of modules to load
+# modules = ''
+# List of modules to load.
 #
-# full specification of a module line:
+# Full specification of a module line:
+#
 # modules [+]= [+|[poolName]]id[(library[.configuration])][.connectorOptions]
 #
-# [+] -> append the module list
-# [+|poolName] -> load module inside its own thread ('+') or add/create to a
+# [+] -> Append the module list.
+# [+|[poolName]] -> Load module inside its own thread ('+') or add/create to a
 #             module pool of name '[poolName]' which also runs inside its own
-#             thread and executes added modules in the given order
-#             NOTE: 'poolName' must be inside '[...]', '+' must not
-# [(library...)] -> use as module library, useful more multiple modules from
-#                   one library
-# [.configuration] -> use this configuration for the module, useful so the
-#                     module name does not change but its configuration does
-# [.connectorOptions] -> options for connectors, look as follows:
+#             thread and executes added modules in the given order.
+#             NOTE: 'poolName' must be inside '[...]', '+' must not.
+# [(library...)] -> Use as module library, useful for multiple modules from one
+#                   library.
+# [.configuration] -> Use this configuration for the module, useful so the
+#                     module name does not change but its configuration does.
+# [.connectorOptions] -> Options for connectors, looks as follows:
 #                        input(test.output)[.input2(test.output2)]...
 #
-# if configuration and/or library are not given, the system will use the given
-# id instead
+# If configuration and/or library are not given, the system will use the given
+# id instead (useful as a shorthand).
 #
 # examples:
 # modules = id(library)
 # modules += +id2(library2).input(id.output)
 # modules += +id3(library2.configuration).input(id2.output)
 # modules += [pool]id4.input(id3.output)
+
+
+
+[BVS]
+connectorTypeMatching = ON
+logSystem = ON
+logConsole = ON
+#logFile = BVSLog.txt
+logVerbosity = 3
+moduleThreads = ON
+forceModuleThreads = OFF
+modulePools = ON
+
 
 
 # Logger level settings.

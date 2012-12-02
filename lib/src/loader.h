@@ -2,9 +2,7 @@
 #define BVS_LOADER_H
 
 #include <functional>
-#include <stack>
 #include <string>
-#include <thread>
 
 #include "bvs/config.h"
 #include "bvs/info.h"

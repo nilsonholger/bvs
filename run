@@ -186,6 +186,7 @@ echo
 
 # run
 function bvs_run {
+[ -r $BASE_DIR/bvsd ] && BIN_DIR="."
 [ -r $BASE_DIR/bin/bvsd ] && BIN_DIR="bin"
 [ -r $BASE_DIR/build/bin/bvsd ] && BIN_DIR="build/bin"
 [ -z $BIN_DIR ] && echo "bvsd executable not found, run make first... (or use '--help' to show possible usage)" && exit
