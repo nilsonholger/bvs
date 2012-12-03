@@ -8,6 +8,8 @@
 # bvs defaults 'lib/include/bvs/traits.h'        'Files->include/bvs/traits.h'
 
 # Settings for the BVS framework (defaults: <...>).
+# These should go into section:
+# [BVS]
 
 # connectorTypeMatching = <ON> | OFF
 # Warn about connector type mismatch (uses RTTI).
