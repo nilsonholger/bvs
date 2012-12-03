@@ -58,7 +58,7 @@ original config files through these symlinks directly. You won't have to worry
 about these changes being lost if you use the provided update function (see
 UPDATING).
 
-To start the system with a config file (default=BVSConfig.txt), type './run' or
+To start the system with a config file (default=bvs.conf), type './run' or
 './run $config' after building the system (type 'make').
 
 If you need to debug, type './run --debug ...'.
