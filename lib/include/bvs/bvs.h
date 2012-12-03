@@ -5,9 +5,9 @@
 #include <iostream>
 #include <string>
 
-#include "bvs/bvsinfo.h"
 #include "bvs/config.h"
 #include "bvs/connector.h"
+#include "bvs/info.h"
 #include "bvs/logger.h"
 #include "bvs/traits.h"
 
@@ -53,21 +53,27 @@ namespace BVS
 	 *
 	 * Module Syntax:
 	 * @code
-	 * modules = uniqueID(moduleLibrary)
-	 * # this allows to load modules more than once using unique identifiers
-	 *
-	 * modules = uniqueID(moduleLibrary).input(test.output)
-	 * # this connects uniqueID's Connector named 'input' with 'test' module's
-	 * # connector named 'output'
-	 *
-	 * modules += +id(...)
-	 * # this expands the modules variable (the += operator) as well as runs
-	 * # the id module in its own thread (the second + prefix)
-	 *
-	 * modules += [testPool]id(...)
-	 * modules += [testPool]id2(...)
-	 * # this adds the modules id and id2 to the module pool 'testPool', they
-	 * # are executed by a dedicated pool thread in the specified order
+	 * # modules [+]= [+|poolName]id[(library[.configuration])][.connectorOptions]
+	 * #
+	 * # [+] -> append the module list
+	 * # [+|poolName] -> load module inside its own thread ('+') or add/create to a
+	 * #             module pool of name 'poolName' which also runs inside its own
+	 * #             thread and executes added modules in the given order
+	 * # [(library...)] -> use as module library, useful more multiple modules from
+	 * #                   one library
+	 * # [.configuration] -> use this configuration for the module, useful so the
+	 * #                     module name does not change but its configuration does
+	 * # [.connectorOptions] -> options for connectors, look as follows:
+	 * #                        input(test.output)[.input2(test.output2)]...
+	 * #
+	 * # if configuration and/or library are not given, the system will use the given
+	 * # id instead
+	 * #
+	 * # examples:
+	 * modules = id(library)
+	 * modules += +id2(library2).input(id.output)
+	 * modules += +id3(library2.configuration).input(id2.output)
+	 * modules += [pool]id4.input(id3.output)
 	 * @endcode
 	 *
 	 *
@@ -87,7 +93,7 @@ namespace BVS
 			 * @param[in] argv Main's argv, used to pass config options to BVS, see Config.
 			 * @param[in] shutdownHandler A function the framework calls upon shutting down.
 			 */
-			BVS(int argc, char** argv, std::function<void()>shutdownHandler = [](){ exit(0);} );
+			BVS(int argc, char** argv, std::function<void()> shutdownHandler = [](){ exit(0);} );
 
 			/** Destructor.
 			 */

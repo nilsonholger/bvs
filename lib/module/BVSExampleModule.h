@@ -20,10 +20,10 @@ class BVSExampleModule : public BVS::Module
 		 * Please do not change the signature, as it will be called by the
 		 * framework.
 		 * You can use the constructor/destructor pair to create/destroy your data.
-		 * @param[in] id Your modules unique identifier, will be set by framework.
+		 * @param[in] info Your modules information, will be set by framework.
 		 * @param[in] bvs Reference to framework info for e.g. config option retrieval.
 		 */
-		BVSExampleModule(const std::string id, const BVS::Info& bvs);
+		BVSExampleModule(BVS::ModuleInfo info, const BVS::Info& bvs);
 
 		/** Your module destructor. */
 		~BVSExampleModule();
@@ -41,17 +41,9 @@ class BVSExampleModule : public BVS::Module
 		BVS::Status debugDisplay();
 
 	private:
-		const std::string id; /**< Your unique module id, set by framework. */
-
-		/** Your logger instance.
-		 * @see Logger
-		 */
-		BVS::Logger logger;
-
-		/** Your Info reference;
-		 * @see Info
-		 */
-		const BVS::Info& bvs;
+		const BVS::ModuleInfo info; /**< Your module metadata, set by framework. */
+		BVS::Logger logger; /**< Your logger instance. @see Logger */
+		const BVS::Info& bvs; /**< Your Info reference. @see Info */
 
 		/** Example Connector used to retrieve/send data from/to other modules.
 		 * @see Connector
@@ -62,11 +54,6 @@ class BVSExampleModule : public BVS::Module
 		BVSExampleModule(const BVSExampleModule&) = delete; /**< -Weffc++ */
 		BVSExampleModule& operator=(const BVSExampleModule&) = delete; /**< -Weffc++ */
 };
-
-
-
-/** This calls a macro to create needed module utilities. */
-BVS_MODULE_UTILITIES(BVSExampleModule)
 
 
 

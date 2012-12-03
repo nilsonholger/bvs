@@ -2,9 +2,9 @@
 #define BVS_MODULE_H
 
 #include "bvs/archutils.h"
-#include "bvs/bvsinfo.h"
 #include "bvs/config.h"
 #include "bvs/connector.h"
+#include "bvs/info.h"
 #include "bvs/logger.h"
 #include "bvs/traits.h"
 
@@ -71,9 +71,9 @@ BVS_PUBLIC void registerModule(const std::string& id, BVS::Module* module, bool 
  */
 #define BVS_MODULE_UTILITIES(BVS_MODULE_CLASS_NAME) \
 	extern "C" { \
-		int bvsRegisterModule(std::string id, BVS::Info& bvs) \
+		int bvsRegisterModule(BVS::ModuleInfo info, BVS::Info& bvs) \
 		{ \
-			registerModule(id, new BVS_MODULE_CLASS_NAME(id, bvs)); \
+			registerModule(info.id, new BVS_MODULE_CLASS_NAME(info, bvs)); \
 			return 0; \
 		} \
 		int bvsHotSwapModule(std::string id, BVS::Module* module) \

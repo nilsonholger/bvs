@@ -12,9 +12,10 @@ BVS::ModuleVector* BVS::Loader::hotSwapGraveYard = nullptr;
 
 
 
-BVS::Loader::Loader(const Info& info)
+BVS::Loader::Loader(const Info& info, std::function<void()> errorHandler)
 	: logger{"Loader"},
-	info(info)
+	info(info),
+	errorHandler(errorHandler)
 { }
 
 
@@ -35,22 +36,25 @@ void BVS::Loader::registerModule(const std::string& id, Module* module, bool hot
 	}
 	else
 	{
-		modules[id] = std::shared_ptr<ModuleData>{new ModuleData{id, {}, {},
+		modules[id] = std::shared_ptr<ModuleData>{new ModuleData{id, {}, {}, {},
 			module, nullptr, false, {}, ControlFlag::WAIT, Status::OK, {}}};
 	}
 }
 
 
 
-BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library, const std::string& options, const bool asThread, const std::string& poolName)
+BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library, const std::string& configuration, const std::string& options, const bool asThread, const std::string& poolName)
 {
 	if (modules.find(id)!=modules.end())
+	{
 		LOG(0, "Duplicate id for module: " << id << std::endl << "If you try to load a module more than once, use unique ids and the id(library).options syntax!");
+		errorHandler();
+	}
 
 	LibHandle dlib = loadLibrary(id, library);
 
 	// execute bvsRegisterModule in loaded lib
-	typedef void (*bvsRegisterModule_t)(const std::string& id, const Info& info);
+	typedef void (*bvsRegisterModule_t)(ModuleInfo moduleInfo, const Info& info);
 	bvsRegisterModule_t bvsRegisterModule;
 	*reinterpret_cast<void**>(&bvsRegisterModule)=dlsym(dlib, "bvsRegisterModule");
 
@@ -58,12 +62,13 @@ BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library
 	if (dlerr)
 	{
 		LOG(0, "Loading function bvsRegisterModule() in '" << library << "' resulted in: " << dlerr);
-		exit(-1);
+		errorHandler();
 	}
 
-	bvsRegisterModule(id, info);
+	ModuleInfo moduleInfo{id, configuration};
+	bvsRegisterModule(moduleInfo, info);
 
-	// load library and save handle, library name and option string for later use
+	modules[id]->configuration = configuration;
 	modules[id]->dlib = dlib;
 	modules[id]->library = library;
 	modules[id]->options = options;
@@ -126,7 +131,7 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 		else
 		{
 			LOG(0, "No input selection found: " << selection);
-			exit(1);
+			errorHandler();
 		}
 
 		options.erase(0, separator2+1);
@@ -141,7 +146,7 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 		else
 		{
 			LOG(0, "No module output selected: " << module->id << "." << selection);
-			exit(1);
+			errorHandler();
 		}
 
 		checkModuleInput(module, input);
@@ -150,7 +155,7 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 		if (connectorTypeMatching && module->connectors[input]->typeIDHash != modules[targetModule]->connectors[targetOutput]->typeIDHash)
 		{
 			LOG(0, "Selected input and output connector template instantiations are of different type: " << module->id << "." << selection << " -> " << module->connectors[input]->typeIDName << " != " << modules[targetModule]->connectors[targetOutput]->typeIDName);
-			exit(1);
+			errorHandler();
 		}
 
 		module->connectors[input]->pointer = modules[targetModule]->connectors[targetOutput]->pointer;
@@ -203,7 +208,7 @@ BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 	if (dlerr)
 	{
 		LOG(0, "Loading function bvsHotSwapModule() in '" << modules[id]->library << "' resulted in: " << dlerr);
-		exit(-1);
+		errorHandler();
 	}
 
 	bvsHotSwapModule(id, modules[id]->module.get());
@@ -239,7 +244,7 @@ BVS::LibHandle BVS::Loader::loadLibrary(const std::string& id, const std::string
 	if (dlib==NULL)
 	{
 		LOG(0, "Loading '" << modulePath << "' resulted in: " << dlerror());
-		exit(-1);
+		errorHandler();
 	}
 
 	return dlib;
@@ -257,11 +262,7 @@ BVS::Loader& BVS::Loader::unloadLibrary(const std::string& id)
 	LOG(3, "Module '" << id << "' unloading from '" << modulePath << "'!");
 
 	void* dlib = modules[id]->dlib;
-	if (dlib==nullptr)
-	{
-		LOG(0, "Requested module '" << id << "' not found!");
-		exit(-1);
-	}
+	if (dlib==nullptr) LOG(0, "Requested module '" << id << "' not found!");
 
 	dlclose(dlib);
 
@@ -269,7 +270,7 @@ BVS::Loader& BVS::Loader::unloadLibrary(const std::string& id)
 	if (dlerr)
 	{
 		LOG(0, "While closing '" << modulePath << "' following error occured: " << dlerror());
-		exit(-1);
+		errorHandler();
 	}
 	LOG(2, "Library '" << modulePath << "' unloaded!");
 
@@ -286,13 +287,13 @@ BVS::Loader& BVS::Loader::checkModuleInput(const ModuleData* module, const std::
 	{
 		LOG(0, "Input not found: " << module->id << "." << inputName);
 		printModuleConnectors(module);
-		exit(1);
+		errorHandler();
 	}
 
 	if (input->second->active)
 	{
 		LOG(0, "Input already connected: " << module->id << "." << inputName);
-		exit(1);
+		errorHandler();
 	}
 
 	return *this;
@@ -303,19 +304,18 @@ BVS::Loader& BVS::Loader::checkModuleInput(const ModuleData* module, const std::
 BVS::Loader& BVS::Loader::checkModuleOutput(const ModuleData* module, const std::string& targetModule, const std::string& targetOutput)
 {
 	auto target = modules.find(targetModule);
-	auto output = target->second->connectors.find(targetOutput);
-
 	if (target == modules.end())
 	{
 		LOG(0, "Module not found: " << targetModule << " in " << module->id << "." << module->options);
-		exit(1);
+		errorHandler();
 	}
 
+	auto output = target->second->connectors.find(targetOutput);
 	if (output == target->second->connectors.end() || output->second->type != ConnectorType::OUTPUT)
 	{
 		LOG(0, "Output not found: " << targetOutput << " in " << module->id << "." << module->options);
 		printModuleConnectors(target->second.get());
-		exit(1);
+		errorHandler();
 	}
 
 	return *this;

@@ -228,7 +228,6 @@ namespace BVS
 		while (separatorPos != std::string::npos)
 		{
 			separatorPos = tmp.find_first_of(',');
-			t = t;
 			t.push_back(convertStringTo<T>(tmp.substr(0, separatorPos)));
 			tmp.erase(0, separatorPos+1);
 		}

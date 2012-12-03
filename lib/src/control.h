@@ -7,7 +7,7 @@
 #include <thread>
 
 #include "bvs/bvs.h"
-#include "bvs/bvsinfo.h"
+#include "bvs/info.h"
 #include "bvs/logger.h"
 #include "controldata.h"
 

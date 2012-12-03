@@ -1,12 +1,11 @@
 #ifndef BVS_LOADER_H
 #define BVS_LOADER_H
 
-#include <stack>
+#include <functional>
 #include <string>
-#include <thread>
 
-#include "bvs/bvsinfo.h"
 #include "bvs/config.h"
+#include "bvs/info.h"
 #include "bvs/logger.h"
 #include "controldata.h"
 
@@ -21,8 +20,9 @@ namespace BVS
 		public:
 			/** Constructor for loader.
 			 * @param[in] info Reference to info struct.
+			 * @param[in] errorHandler Callback in case an error has occured.
 			 */
-			Loader(const Info& info);
+			Loader(const Info& info, std::function<void()> errorHandler = [](){ exit(0); });
 
 			/** Registers a module.
 			 * @param[in] id Name of module.
@@ -37,12 +37,13 @@ namespace BVS
 			 * If a pool name is given, asThread has no effect.
 			 * @param[in] id The module id to give to the new loaded module.
 			 * @param[in] library The library to load the module from.
+			 * @param[in] configuration The configuration to pass to the module.
 			 * @param[in] options The module options (connector settings...).
 			 * @param[in] asThread Whether to load the module inside a thread or not.
 			 * @param[in] poolName Select, if desired, the module pool to run this module.
 			 * @return Reference to object.
 			 */
-			Loader& load(const std::string& id, const std::string& library, const std::string& options, const bool asThread, const std::string& poolName = std::string());
+			Loader& load(const std::string& id, const std::string& library, const std::string& configuration, const std::string& options, const bool asThread, const std::string& poolName = std::string());
 
 			/** Unload the given module.
 			 * @param[in] moduleName The name of the module.
@@ -143,6 +144,7 @@ namespace BVS
 
 			Logger logger; /**< Logger metadata. */
 			const Info& info; /**< Info reference. */
+			std::function<void()> errorHandler; /**< Function to call on errors. */
 			static ModuleVector* hotSwapGraveYard; /** GraveYard for hotswapped module pointers. */
 
 			Loader(const Loader&) = delete; /**< -Weffc++ */
