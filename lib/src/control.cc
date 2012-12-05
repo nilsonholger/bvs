@@ -12,7 +12,7 @@ BVS::Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info)
 	info(info),
 	logger{"Control"},
 	runningThreads{0},
-	masterModules{},
+	masterPoolModules{},
 	pools{},
 	flag{SystemFlag::PAUSE},
 	mutex{},
@@ -82,7 +82,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 				runningThreads.fetch_add(pools.size());
 
 				monitor.notify_all();
-				for (auto& it: masterModules) moduleController(*(it.get()));
+				for (auto& it: masterPoolModules) moduleController(*(it.get()));
 
 				if (flag==SystemFlag::STEP) flag = SystemFlag::PAUSE;
 				LOG(3, "WAIT FOR THREADS AND POOLS!");
@@ -163,7 +163,7 @@ BVS::Control& BVS::Control::startModule(std::string id)
 	else
 	{
 		LOG(3, id << " -> MASTER");
-		masterModules.push_back(modules[id]);
+		masterPoolModules.push_back(modules[id]);
 	}
 
 	return *this;
@@ -205,9 +205,9 @@ BVS::Control& BVS::Control::purgeData(const std::string& id)
 		}
 	}
 
-	if (!masterModules.empty())
-		masterModules.erase(std::remove_if
-				(masterModules.begin(), masterModules.end(),
+	if (!masterPoolModules.empty())
+		masterPoolModules.erase(std::remove_if
+				(masterPoolModules.begin(), masterPoolModules.end(),
 				 [&](std::shared_ptr<ModuleData> data)
 				 { return data->id==id; }));
 
