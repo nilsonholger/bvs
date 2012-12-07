@@ -26,14 +26,16 @@ std::ostream& BVS::Logger::out(const int level)
 #ifdef BVS_LOG_SYSTEM
 	return logSystem->out(*this, level);
 #else
-	return std::clog;
+	return std::cout;
 #endif
 }
 
 
 
-BVS::Logger::~Logger()
+void BVS::Logger::endl()
 {
-
+#ifdef BVS_LOG_SYSTEM
+	logSystem->endl();
+#endif
 }
 

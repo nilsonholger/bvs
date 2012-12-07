@@ -31,6 +31,7 @@ BVS::LogSystem::LogSystem()
 	tmpName{},
 	namePadding{0},
 	systemVerbosity{3},
+	outMutex{},
 	outCLI{std::clog.rdbuf()},
 	outFile{},
 	outBoth{outCLI, outFile}
@@ -45,6 +46,8 @@ BVS::LogSystem::LogSystem()
 
 std::ostream& BVS::LogSystem::out(const Logger& logger, int level)
 {
+	outMutex.lock();
+
 	// convert name to lowercase
 	tmpName = logger.name;
 	std::transform(tmpName.begin(), tmpName.end(), tmpName.begin(), ::tolower);
@@ -82,6 +85,13 @@ std::ostream& BVS::LogSystem::out(const Logger& logger, int level)
 
 	// return stream selected by caller given the systems constraints
 	return *out;
+}
+
+
+
+void BVS::LogSystem::endl()
+{
+	outMutex.unlock();
 }
 
 
