@@ -240,14 +240,16 @@ bool BVS::Control::isActive(const std::string& id)
 {
 	if (modules[id]->asThread)
 	{
-		if (modules[id]->flag==ControlFlag::WAIT) return false;
-		else return true;
+		//TODO fix these
+		//if (modules[id]->flag==ControlFlag::WAIT) return false;
+		//else return true;
 	}
 
 	if (!modules[id]->poolName.empty())
 	{
-		if (pools[modules[id]->poolName]->flag==ControlFlag::WAIT) return false;
-		else return true;
+		//TODO fix these
+		//if (pools[modules[id]->poolName]->flag==ControlFlag::WAIT) return false;
+		//else return true;
 	}
 
 	return false;
