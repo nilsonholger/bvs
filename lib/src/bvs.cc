@@ -154,12 +154,9 @@ BVS::BVS& BVS::BVS::unloadModules()
 BVS::BVS& BVS::BVS::unloadModule(const std::string& id)
 {
 	SystemFlag state = control->queryActiveFlag();
-	if (state!=SystemFlag::QUIT)
-	{
-		control->sendCommand(SystemFlag::PAUSE);
-		control->waitUntilInactive(id);
-	}
+	if (state!=SystemFlag::QUIT) control->sendCommand(SystemFlag::PAUSE);
 
+	control->waitUntilInactive(id);
 	control->purgeData(id);
 	control->quitModule(id);
 	loader->unload(id);

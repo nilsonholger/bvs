@@ -1,3 +1,22 @@
+2012-12-07  NilsonHolger <nilsonholger@hyve.org>
+
+	* v0.3.1
+	* Concurrency fix:
+	There was a bug in the synchronization elements used which caused quite a
+	few segfaults a while ago. During fixing this bug, concurrency was
+	actually removed from the system, the code was performing as it should,
+	but the code design was faulty causing the system to mostly run
+	sequentially (threads as well as modules). This has been fixed now,
+	so concurrency is back at full speed utilizing all available if cores.
+	Alas, there still are eventual crashes possible, but these should occur
+	only on system startup or shutdown.
+	* Logging:
+	A while ago the logging system was changed to use lockless logging. This
+	seemed to work just as well as locked logging, but that fact was due to
+	the bug mentioned above. As a consequence, there has been a regression
+	back to locked logging (which shouldn't hurt performance that much, but
+	might actually do so in heavy logging situations, you have been advised).
+
 2012-12-03  NilsonHolger <nilsonholger@hyve.org>
 
 	* v0.3

@@ -12,12 +12,11 @@ BVS::Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info)
 	info(info),
 	logger{"Control"},
 	runningThreads{0},
-	masterModules{},
+	masterPoolModules{},
 	pools{},
 	flag{SystemFlag::PAUSE},
-	mutex{},
-	masterLock{mutex},
-	monitor{},
+	barrier{},
+	masterLock{barrier.attachParty()},
 	controlThread{},
 	round{0},
 	shutdownRequested{false},
@@ -39,8 +38,8 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 		nameThisThread("masterControl");
 
 		// startup sync
-		monitor.notify_all();
-		monitor.wait(masterLock, [&](){ return runningThreads.load()==0; });
+		barrier.notify();
+		barrier.enqueue(masterLock, [&](){ return runningThreads.load()==0; });
 		runningThreads.store(0);
 	}
 
@@ -50,7 +49,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 	while (flag!=SystemFlag::QUIT)
 	{
 		// round sync
-		monitor.wait(masterLock, [&](){ return runningThreads.load()==0; });
+		barrier.enqueue(masterLock, [&](){ return runningThreads.load()==0; });
 
 		info.lastRoundDuration =
 			std::chrono::duration_cast<std::chrono::milliseconds>
@@ -63,7 +62,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 			case SystemFlag::PAUSE:
 				if (!controlThread.joinable()) return *this;
 				LOG(3, "PAUSE...");
-				monitor.wait(masterLock, [&](){ return flag!=SystemFlag::PAUSE; });
+				barrier.enqueue(masterLock, [&](){ return flag!=SystemFlag::PAUSE; });
 				timer = std::chrono::high_resolution_clock::now();
 				break;
 			case SystemFlag::RUN:
@@ -81,8 +80,8 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 				for (auto& pool: pools) pool.second->flag = ControlFlag::RUN;
 				runningThreads.fetch_add(pools.size());
 
-				monitor.notify_all();
-				for (auto& it: masterModules) moduleController(*(it.get()));
+				barrier.notify();
+				for (auto& it: masterPoolModules) moduleController(*(it.get()));
 
 				if (flag==SystemFlag::STEP) flag = SystemFlag::PAUSE;
 				LOG(3, "WAIT FOR THREADS AND POOLS!");
@@ -96,7 +95,6 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 	}
 
 	for (auto& pool: pools) pool.second->flag = ControlFlag::QUIT;
-	masterLock.unlock();
 	if (shutdownRequested && round==shutdownRound) bvs.shutdownHandler();
 
 	return *this;
@@ -109,7 +107,7 @@ BVS::Control& BVS::Control::sendCommand(const SystemFlag controlFlag)
 	LOG(3, "FLAG: " << (int)controlFlag);
 	flag = controlFlag;
 
-	if (controlThread.joinable()) monitor.notify_all();
+	if (controlThread.joinable()) barrier.notify();
 	else masterController(false);
 
 	if (controlFlag==SystemFlag::QUIT)
@@ -163,7 +161,7 @@ BVS::Control& BVS::Control::startModule(std::string id)
 	else
 	{
 		LOG(3, id << " -> MASTER");
-		masterModules.push_back(modules[id]);
+		masterPoolModules.push_back(modules[id]);
 	}
 
 	return *this;
@@ -178,7 +176,7 @@ BVS::Control& BVS::Control::quitModule(std::string id)
 		if (modules[id]->thread.joinable())
 		{
 			modules[id]->flag = ControlFlag::QUIT;
-			monitor.notify_all();
+			barrier.notify();
 			LOG(3, "Waiting for '" << id << "' to join!");
 			modules[id]->thread.join();
 		}
@@ -205,9 +203,9 @@ BVS::Control& BVS::Control::purgeData(const std::string& id)
 		}
 	}
 
-	if (!masterModules.empty())
-		masterModules.erase(std::remove_if
-				(masterModules.begin(), masterModules.end(),
+	if (!masterPoolModules.empty())
+		masterPoolModules.erase(std::remove_if
+				(masterPoolModules.begin(), masterPoolModules.end(),
 				 [&](std::shared_ptr<ModuleData> data)
 				 { return data->id==id; }));
 
@@ -218,8 +216,11 @@ BVS::Control& BVS::Control::purgeData(const std::string& id)
 
 BVS::Control& BVS::Control::waitUntilInactive(const std::string& id)
 {
-	while (isActive(id)) monitor.wait_for(masterLock,
-			std::chrono::milliseconds{100}, [&](){ return !isActive(id); });
+	while (isActive(id))
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds{100});
+		barrier.notify();
+	}
 
 	return *this;
 }
@@ -230,14 +231,16 @@ bool BVS::Control::isActive(const std::string& id)
 {
 	if (modules[id]->asThread)
 	{
-		if (modules[id]->flag==ControlFlag::WAIT) return false;
-		else return true;
+		//TODO fix these
+		//if (modules[id]->flag==ControlFlag::WAIT) return false;
+		//else return true;
 	}
 
 	if (!modules[id]->poolName.empty())
 	{
-		if (pools[modules[id]->poolName]->flag==ControlFlag::WAIT) return false;
-		else return true;
+		//TODO fix these
+		//if (pools[modules[id]->poolName]->flag==ControlFlag::WAIT) return false;
+		//else return true;
 	}
 
 	return false;
@@ -272,14 +275,14 @@ BVS::Control& BVS::Control::moduleController(ModuleData& data)
 BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
 {
 	nameThisThread(("[M]"+data->id).c_str());
-	std::unique_lock<std::mutex> threadLock{mutex};
+	std::unique_lock<std::mutex> threadLock{barrier.attachParty()};
 
 	while (bool(data->flag))
 	{
 		runningThreads.fetch_sub(1);
 		LOG(3, data->id << " -> WAIT!");
-		monitor.notify_all();
-		monitor.wait(threadLock, [&](){ return data->flag!=ControlFlag::WAIT; });
+		//barrier.notify();
+		barrier.enqueue(threadLock, [&](){ return data->flag!=ControlFlag::WAIT; });
 
 		moduleController(*(data.get()));
 	}
@@ -293,7 +296,7 @@ BVS::Control& BVS::Control::poolController(std::shared_ptr<PoolData> data)
 {
 	nameThisThread(("[P]"+data->poolName).c_str());
 	LOG(3, "POOL(" << data->poolName << ") STARTED!");
-	std::unique_lock<std::mutex> threadLock{mutex};
+	std::unique_lock<std::mutex> threadLock{barrier.attachParty()};
 
 	while (bool(data->flag) && !data->modules.empty())
 	{
@@ -302,8 +305,8 @@ BVS::Control& BVS::Control::poolController(std::shared_ptr<PoolData> data)
 		data->flag = ControlFlag::WAIT;
 		runningThreads.fetch_sub(1);
 		LOG(3, "POOL(" << data->poolName << ") WAIT!");
-		monitor.notify_all();
-		monitor.wait(threadLock, [&](){ return data->flag!=ControlFlag::WAIT; });
+		//barrier.notify();
+		barrier.enqueue(threadLock, [&](){ return data->flag!=ControlFlag::WAIT; });
 	}
 
 	pools.erase(pools.find(data->poolName));
