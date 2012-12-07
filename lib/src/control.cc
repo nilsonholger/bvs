@@ -15,9 +15,8 @@ BVS::Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info)
 	masterPoolModules{},
 	pools{},
 	flag{SystemFlag::PAUSE},
-	mutex{},
-	masterLock{mutex, std::defer_lock},
-	monitor{},
+	barrier{},
+	masterLock{barrier.attachParty()},
 	controlThread{},
 	round{0},
 	shutdownRequested{false},
@@ -39,10 +38,8 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 		nameThisThread("masterControl");
 
 		// startup sync
-		monitor.notify_all();
-		masterLock.lock();
-		monitor.wait(masterLock, [&](){ return runningThreads.load()==0; });
-		masterLock.unlock();
+		barrier.notify();
+		barrier.enqueue(masterLock, [&](){ return runningThreads.load()==0; });
 		runningThreads.store(0);
 	}
 
@@ -52,9 +49,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 	while (flag!=SystemFlag::QUIT)
 	{
 		// round sync
-		masterLock.lock();
-		monitor.wait(masterLock, [&](){ return runningThreads.load()==0; });
-		masterLock.unlock();
+		barrier.enqueue(masterLock, [&](){ return runningThreads.load()==0; });
 
 		info.lastRoundDuration =
 			std::chrono::duration_cast<std::chrono::milliseconds>
@@ -67,9 +62,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 			case SystemFlag::PAUSE:
 				if (!controlThread.joinable()) return *this;
 				LOG(3, "PAUSE...");
-				masterLock.lock();
-				monitor.wait(masterLock, [&](){ return flag!=SystemFlag::PAUSE; });
-				masterLock.unlock();
+				barrier.enqueue(masterLock, [&](){ return flag!=SystemFlag::PAUSE; });
 				timer = std::chrono::high_resolution_clock::now();
 				break;
 			case SystemFlag::RUN:
@@ -87,7 +80,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 				for (auto& pool: pools) pool.second->flag = ControlFlag::RUN;
 				runningThreads.fetch_add(pools.size());
 
-				monitor.notify_all();
+				barrier.notify();
 				for (auto& it: masterPoolModules) moduleController(*(it.get()));
 
 				if (flag==SystemFlag::STEP) flag = SystemFlag::PAUSE;
@@ -114,7 +107,7 @@ BVS::Control& BVS::Control::sendCommand(const SystemFlag controlFlag)
 	LOG(3, "FLAG: " << (int)controlFlag);
 	flag = controlFlag;
 
-	if (controlThread.joinable()) monitor.notify_all();
+	if (controlThread.joinable()) barrier.notify();
 	else masterController(false);
 
 	if (controlFlag==SystemFlag::QUIT)
@@ -183,7 +176,7 @@ BVS::Control& BVS::Control::quitModule(std::string id)
 		if (modules[id]->thread.joinable())
 		{
 			modules[id]->flag = ControlFlag::QUIT;
-			monitor.notify_all();
+			barrier.notify();
 			LOG(3, "Waiting for '" << id << "' to join!");
 			modules[id]->thread.join();
 		}
@@ -225,11 +218,9 @@ BVS::Control& BVS::Control::waitUntilInactive(const std::string& id)
 {
 	while (isActive(id))
 	{
-		masterLock.lock();
-		monitor.wait_for(masterLock, std::chrono::milliseconds{100}, [&](){ return !isActive(id); });
-		masterLock.unlock();
-		monitor.notify_all();
-}
+		std::this_thread::sleep_for(std::chrono::milliseconds{100});
+		barrier.notify();
+	}
 
 	return *this;
 }
@@ -284,16 +275,14 @@ BVS::Control& BVS::Control::moduleController(ModuleData& data)
 BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
 {
 	nameThisThread(("[M]"+data->id).c_str());
-	std::unique_lock<std::mutex> threadLock{mutex, std::defer_lock};
+	std::unique_lock<std::mutex> threadLock{barrier.attachParty()};
 
 	while (bool(data->flag))
 	{
 		runningThreads.fetch_sub(1);
 		LOG(3, data->id << " -> WAIT!");
-		monitor.notify_all();
-		threadLock.lock();
-		monitor.wait(threadLock, [&](){ return data->flag!=ControlFlag::WAIT; });
-		threadLock.unlock();
+		//barrier.notify();
+		barrier.enqueue(threadLock, [&](){ return data->flag!=ControlFlag::WAIT; });
 
 		moduleController(*(data.get()));
 	}
@@ -307,7 +296,7 @@ BVS::Control& BVS::Control::poolController(std::shared_ptr<PoolData> data)
 {
 	nameThisThread(("[P]"+data->poolName).c_str());
 	LOG(3, "POOL(" << data->poolName << ") STARTED!");
-	std::unique_lock<std::mutex> threadLock{mutex, std::defer_lock};
+	std::unique_lock<std::mutex> threadLock{barrier.attachParty()};
 
 	while (bool(data->flag) && !data->modules.empty())
 	{
@@ -316,10 +305,8 @@ BVS::Control& BVS::Control::poolController(std::shared_ptr<PoolData> data)
 		data->flag = ControlFlag::WAIT;
 		runningThreads.fetch_sub(1);
 		LOG(3, "POOL(" << data->poolName << ") WAIT!");
-		monitor.notify_all();
-		threadLock.lock();
-		monitor.wait(threadLock, [&](){ return data->flag!=ControlFlag::WAIT; });
-		threadLock.unlock();
+		//barrier.notify();
+		barrier.enqueue(threadLock, [&](){ return data->flag!=ControlFlag::WAIT; });
 	}
 
 	pools.erase(pools.find(data->poolName));

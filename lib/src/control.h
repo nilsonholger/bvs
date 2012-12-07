@@ -2,13 +2,12 @@
 #define BVS_CONTROL_H
 
 #include <atomic>
-#include <condition_variable>
-#include <mutex>
 #include <thread>
 
 #include "bvs/bvs.h"
 #include "bvs/info.h"
 #include "bvs/logger.h"
+#include "barrier.h"
 #include "controldata.h"
 
 
@@ -134,9 +133,8 @@ namespace BVS
 			PoolMap pools; /**< Map of pools. */
 			SystemFlag flag; /**< The active system flag used by master. */
 
-			std::mutex mutex; /**< Mutex for condition variable. */
+			Barrier barrier; /**< Thread synchronization barrier. */
 			std::unique_lock<std::mutex> masterLock; /**< Lock for masterController. */
-			std::condition_variable monitor; /**< Condition variable for masterController. */
 			std::thread controlThread; /**< Thread (if active) of masterController. */
 
 			unsigned long long round; /**< System round counter. */
