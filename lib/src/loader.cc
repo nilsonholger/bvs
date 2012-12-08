@@ -159,7 +159,7 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 		}
 
 		module->connectors[input]->pointer = modules[targetModule]->connectors[targetOutput]->pointer;
-		module->connectors[input]->mutex = modules[targetModule]->connectors[targetOutput]->mutex;
+		module->connectors[input]->lock = std::unique_lock<std::mutex>{modules[targetModule]->connectors[targetOutput]->mutex, std::defer_lock};
 		LOG(3, "Connected: " << module->id << "." << module->connectors[input]->id << " <- " << modules[targetModule]->id << "." << modules[targetModule]->connectors[targetOutput]->id);
 	}
 
@@ -181,7 +181,6 @@ BVS::Loader& BVS::Loader::disconnectModule(const std::string& id)
 				if (connector.second->pointer==targetConnector.second->pointer)
 				{
 					targetConnector.second->active = false;
-					targetConnector.second->mutex = nullptr;
 					targetConnector.second->pointer = nullptr;
 				}
 			}
