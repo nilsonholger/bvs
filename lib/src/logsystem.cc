@@ -46,8 +46,6 @@ BVS::LogSystem::LogSystem()
 
 std::ostream& BVS::LogSystem::out(const Logger& logger, int level)
 {
-	outMutex.lock();
-
 	// convert name to lowercase
 	tmpName = logger.name;
 	std::transform(tmpName.begin(), tmpName.end(), tmpName.begin(), ::tolower);
@@ -80,6 +78,8 @@ std::ostream& BVS::LogSystem::out(const Logger& logger, int level)
 			break;
 	}
 
+	outMutex.lock();
+
 	// prepare log output
 	*out << "[" << level << "|" << std::setw(namePadding) << std::left << logger.name << "] ";
 
@@ -107,6 +107,7 @@ BVS::LogSystem& BVS::LogSystem::setSystemVerbosity(int verbosity)
 
 BVS::LogSystem& BVS::LogSystem::announce(const Logger& logger)
 {
+	outMutex.lock();
 	// update padding size for fancy (aligned) output
 	if (logger.name.length() > namePadding)
 	{
@@ -121,6 +122,8 @@ BVS::LogSystem& BVS::LogSystem::announce(const Logger& logger)
 	{
 		loggerLevels[tmpName] = logger.verbosity;
 	}
+
+	outMutex.unlock();
 
 	return *this;
 }
