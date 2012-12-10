@@ -157,7 +157,8 @@ BVS::BVS& BVS::BVS::unloadModule(const std::string& id)
 	if (state!=SystemFlag::QUIT) control->sendCommand(SystemFlag::PAUSE);
 
 	control->waitUntilInactive(id);
-	control->purgeData(id);
+	//TODO fix purgeData, eventually causes segfaults
+	//control->purgeData(id);
 	control->quitModule(id);
 	loader->unload(id);
 
