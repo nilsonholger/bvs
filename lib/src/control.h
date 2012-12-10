@@ -64,9 +64,10 @@ namespace BVS
 			SystemFlag queryActiveFlag();
 
 			/** Start a module.
-			 * This will start a module. It will act according to its metadata,
-			 * so it will be controlled either by the master, separate as a
-			 * thread or be part of a module pool.
+			 * This will start a module. It will be added according to its
+			 * metadata.  Therefore it will be controlled either by the
+			 * masterPool, start its own pool or become a member of another
+			 * pool.
 			 * @param[in] id Module id to start.
 			 * @return Reference to object.
 			 */
@@ -94,8 +95,7 @@ namespace BVS
 			Control& waitUntilInactive(const std::string& id);
 
 			/** Check if module is active.
-			 * Check if the given module is being actively run by the master, a
-			 * thread or as part of a pool as of RIGHT AT THAT MOMENT!
+			 * Check if the given module is being actively run by a(ny) pool.
 			 * @param[in] id Module id to check status for.
 			 * @return True if active, false if not.
 			 */
@@ -109,12 +109,6 @@ namespace BVS
 			 * @return Reference to object.
 			 */
 			Control& moduleController(ModuleData& data);
-
-			/** Controls a module started as a thread.
-			 * @param[in] data Module meta data.
-			 * @return Reference to object.
-			 */
-			Control& threadController(std::shared_ptr<ModuleData> data);
 
 			/** Control a module pool.
 			 * @param[in] data Pool meta data.

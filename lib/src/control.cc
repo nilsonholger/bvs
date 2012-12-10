@@ -75,7 +75,6 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 					if (module.second->status!=Status::OK)
 						checkModuleStatus(module.second);
 					module.second->flag = ControlFlag::RUN;
-					if (module.second->asThread) activePools.fetch_add(1);
 				}
 				for (auto& pool: pools) pool.second->flag = ControlFlag::RUN;
 				activePools.fetch_add(pools.size());
@@ -152,12 +151,6 @@ BVS::Control& BVS::Control::startModule(std::string id)
 			pools[data->poolName]->modules.push_back(modules[id]);
 		}
 	}
-	else if (data->asThread)
-	{
-		LOG(3, id << " -> THREAD");
-		activePools.fetch_add(1);
-		data->thread = std::thread{&Control::threadController, this, data};
-	}
 	else
 	{
 		LOG(3, id << " -> MASTER");
@@ -171,7 +164,9 @@ BVS::Control& BVS::Control::startModule(std::string id)
 
 BVS::Control& BVS::Control::quitModule(std::string id)
 {
-	if (modules[id]->asThread==true)
+	(void) id;
+	// TODO has no function now..., check if pool is running instead
+	/*if (modules[id]->asThread==true)
 	{
 		if (modules[id]->thread.joinable())
 		{
@@ -180,7 +175,7 @@ BVS::Control& BVS::Control::quitModule(std::string id)
 			LOG(3, "Waiting for '" << id << "' to join!");
 			modules[id]->thread.join();
 		}
-	}
+	}*/
 
 	return *this;
 }
@@ -229,13 +224,6 @@ BVS::Control& BVS::Control::waitUntilInactive(const std::string& id)
 
 bool BVS::Control::isActive(const std::string& id)
 {
-	if (modules[id]->asThread)
-	{
-		//TODO fix these
-		//if (modules[id]->flag==ControlFlag::WAIT) return false;
-		//else return true;
-	}
-
 	if (!modules[id]->poolName.empty())
 	{
 		//TODO fix these
@@ -266,26 +254,6 @@ BVS::Control& BVS::Control::moduleController(ModuleData& data)
 	info.moduleDurations[data.id] =
 		std::chrono::duration_cast<std::chrono::milliseconds>
 		(std::chrono::high_resolution_clock::now() - modTimer);
-
-	return *this;
-}
-
-
-
-BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
-{
-	nameThisThread(("[M]"+data->id).c_str());
-	std::unique_lock<std::mutex> threadLock{barrier.attachParty()};
-
-	while (bool(data->flag))
-	{
-		activePools.fetch_sub(1);
-		LOG(3, data->id << " -> WAIT!");
-		//barrier.notify();
-		barrier.enqueue(threadLock, [&](){ return data->flag!=ControlFlag::WAIT; });
-
-		moduleController(*(data.get()));
-	}
 
 	return *this;
 }

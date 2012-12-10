@@ -58,7 +58,7 @@ BVS::BVS& BVS::BVS::loadModules()
 		asThread = false;
 		poolName.clear();
 
-		// check for thread selection ('+' prefix) and system settings
+		// check for pool selection ('+' prefix or '[...]') and system settings
 		if (it[0]=='+')
 		{
 			it.erase(0, 1);
@@ -69,8 +69,7 @@ BVS::BVS& BVS::BVS::loadModules()
 			}
 			asThread = true;
 		}
-
-		if (it[0]=='[')
+		else if (it[0]=='[')
 		{
 			size_t pos = it.find_first_of(']');
 			poolName = it.substr(1, pos-1);
@@ -124,9 +123,10 @@ BVS::BVS& BVS::BVS::loadModule(const std::string& moduleTraits, bool asThread, s
 	}
 	if (library.empty()) library = id;
 	if (configuration.empty()) configuration = id;
+	if (poolName.empty() && asThread) poolName = id;
 
 	// load
-	loader->load(id, library, configuration, options, asThread, poolName);
+	loader->load(id, library, configuration, options, poolName);
 	control->startModule(id);
 	moduleStack.push(id);
 

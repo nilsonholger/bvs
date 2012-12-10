@@ -37,13 +37,13 @@ void BVS::Loader::registerModule(const std::string& id, Module* module, bool hot
 	else
 	{
 		modules[id] = std::shared_ptr<ModuleData>{new ModuleData{id, {}, {}, {},
-			module, nullptr, false, {}, ControlFlag::WAIT, Status::OK, {}}};
+			module, nullptr, {}, ControlFlag::WAIT, Status::OK, {}}};
 	}
 }
 
 
 
-BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library, const std::string& configuration, const std::string& options, const bool asThread, const std::string& poolName)
+BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library, const std::string& configuration, const std::string& options, const std::string& poolName)
 {
 	if (modules.find(id)!=modules.end())
 	{
@@ -75,7 +75,6 @@ BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library
 
 	// get connectors
 	modules[id]->connectors = std::move(ConnectorDataCollector::connectors);
-	modules[id]->asThread = asThread;
 	modules[id]->poolName = poolName;
 
 	LOG(2, "Loading '" << id << "' successfull!");
