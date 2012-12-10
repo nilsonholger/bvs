@@ -52,8 +52,6 @@ namespace BVS
 		 * @param[in] pointer Void pointer to contained object.
 		 * @param[in] typeIDHash Hash code of templated type.
 		 * @param[in] typeIDName Type of template instantiation.
-		 * @param[in] mutex Mutex to lock resource.
-		 * @param[in] lock Lock to use with mutex.
 		 * @param[in] locked If connection is locked.
 		 */
 		ConnectorData(std::string id, ConnectorType type, bool active, std::shared_ptr<void> pointer,
