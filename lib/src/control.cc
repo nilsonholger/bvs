@@ -11,7 +11,7 @@ BVS::Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info)
 	bvs(bvs),
 	info(info),
 	logger{"Control"},
-	runningThreads{0},
+	activePools{0},
 	masterPoolModules{},
 	pools{},
 	flag{SystemFlag::PAUSE},
@@ -39,8 +39,8 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 
 		// startup sync
 		barrier.notify();
-		barrier.enqueue(masterLock, [&](){ return runningThreads.load()==0; });
-		runningThreads.store(0);
+		barrier.enqueue(masterLock, [&](){ return activePools.load()==0; });
+		activePools.store(0);
 	}
 
 	std::chrono::time_point<std::chrono::high_resolution_clock> timer =
@@ -49,7 +49,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 	while (flag!=SystemFlag::QUIT)
 	{
 		// round sync
-		barrier.enqueue(masterLock, [&](){ return runningThreads.load()==0; });
+		barrier.enqueue(masterLock, [&](){ return activePools.load()==0; });
 
 		info.lastRoundDuration =
 			std::chrono::duration_cast<std::chrono::milliseconds>
@@ -75,10 +75,10 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 					if (module.second->status!=Status::OK)
 						checkModuleStatus(module.second);
 					module.second->flag = ControlFlag::RUN;
-					if (module.second->asThread) runningThreads.fetch_add(1);
+					if (module.second->asThread) activePools.fetch_add(1);
 				}
 				for (auto& pool: pools) pool.second->flag = ControlFlag::RUN;
-				runningThreads.fetch_add(pools.size());
+				activePools.fetch_add(pools.size());
 
 				barrier.notify();
 				for (auto& it: masterPoolModules) moduleController(*(it.get()));
@@ -145,7 +145,7 @@ BVS::Control& BVS::Control::startModule(std::string id)
 			pools[data->poolName]->modules.push_back(modules[id]);
 			pools[data->poolName]->thread = std::thread
 				{&Control::poolController, this, pools[data->poolName]};
-			runningThreads.fetch_add(1);
+			activePools.fetch_add(1);
 		}
 		else
 		{
@@ -155,7 +155,7 @@ BVS::Control& BVS::Control::startModule(std::string id)
 	else if (data->asThread)
 	{
 		LOG(3, id << " -> THREAD");
-		runningThreads.fetch_add(1);
+		activePools.fetch_add(1);
 		data->thread = std::thread{&Control::threadController, this, data};
 	}
 	else
@@ -279,7 +279,7 @@ BVS::Control& BVS::Control::threadController(std::shared_ptr<ModuleData> data)
 
 	while (bool(data->flag))
 	{
-		runningThreads.fetch_sub(1);
+		activePools.fetch_sub(1);
 		LOG(3, data->id << " -> WAIT!");
 		//barrier.notify();
 		barrier.enqueue(threadLock, [&](){ return data->flag!=ControlFlag::WAIT; });
@@ -303,7 +303,7 @@ BVS::Control& BVS::Control::poolController(std::shared_ptr<PoolData> data)
 		for (auto& module: data->modules) moduleController(*(module.get()));
 
 		data->flag = ControlFlag::WAIT;
-		runningThreads.fetch_sub(1);
+		activePools.fetch_sub(1);
 		LOG(3, "POOL(" << data->poolName << ") WAIT!");
 		//barrier.notify();
 		barrier.enqueue(threadLock, [&](){ return data->flag!=ControlFlag::WAIT; });
