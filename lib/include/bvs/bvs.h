@@ -56,9 +56,10 @@ namespace BVS
 	 * # modules [+]= [+|poolName]id[(library[.configuration])][.connectorOptions]
 	 * #
 	 * # [+] -> append the module list
-	 * # [+|poolName] -> load module inside its own thread ('+') or add/create to a
-	 * #             module pool of name 'poolName' which also runs inside its own
-	 * #             thread and executes added modules in the given order
+	 * # [+|[poolName]] -> Load module inside its own pool ('+') or add/create to a
+	 * #             module pool of name '[poolName]' which also runs inside its own
+	 * #             thread and executes added modules in the given order.
+	 * #             '+' is effectively a shorthand for '[id]id'.
 	 * # [(library...)] -> use as module library, useful more multiple modules from
 	 * #                   one library
 	 * # [.configuration] -> use this configuration for the module, useful so the
@@ -105,13 +106,12 @@ namespace BVS
 			BVS& loadModules();
 
 			/** Load selected module given by name.
-			 * If a pool name is given, asThread has no effect.
 			 * @param[in] moduleTraits The module id, library name and connector settings, formatted as: "id(library).connector(source.connector)..."
-			 * @param[in] asThread Select, if the module should run in it's own thread.
+			 * @param[in] singlePool Select, if the module should run in it's own pool(thread).
 			 * @param[in] poolName Select, if desired, the module pool to execute this module.
 			 * @return Reference to object.
 			 */
-			BVS& loadModule(const std::string& moduleTraits, bool asThread = false, std::string poolName = std::string());
+			BVS& loadModule(const std::string& moduleTraits, bool singlePool = false, std::string poolName = std::string());
 
 			/** Unload all modules.
 			 * @return Reference to object.

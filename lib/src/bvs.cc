@@ -52,10 +52,10 @@ BVS::BVS& BVS::BVS::loadModules()
 	}
 
 	// load all selected modules
-	bool asThread;
+	bool singlePool;
 	for (auto& it : moduleList)
 	{
-		asThread = false;
+		singlePool = false;
 		poolName.clear();
 
 		// check for pool selection ('+' prefix or '[...]') and system settings
@@ -67,7 +67,7 @@ BVS::BVS& BVS::BVS::loadModules()
 				LOG(0, "Cannot start module in thread AND pool!");
 				exit(1);
 			}
-			asThread = true;
+			singlePool = true;
 		}
 		else if (it[0]=='[')
 		{
@@ -76,7 +76,7 @@ BVS::BVS& BVS::BVS::loadModules()
 			it.erase(0, pos+1);
 		}
 
-		loadModule(it , asThread, poolName);
+		loadModule(it , singlePool, poolName);
 	}
 
 	return *this;
@@ -84,7 +84,7 @@ BVS::BVS& BVS::BVS::loadModules()
 
 
 
-BVS::BVS& BVS::BVS::loadModule(const std::string& moduleTraits, bool asThread, std::string poolName)
+BVS::BVS& BVS::BVS::loadModule(const std::string& moduleTraits, bool singlePool, std::string poolName)
 {
 	std::string id;
 	std::string library;
@@ -96,8 +96,8 @@ BVS::BVS& BVS::BVS::loadModule(const std::string& moduleTraits, bool asThread, s
 	bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads", bvs_module_force_threads);
 	bool modulePools = config.getValue<bool>("BVS.modulePools", bvs_module_pools);
 
-	if (forceModuleThreads) asThread = true;
-	if (!moduleThreads) asThread = false;
+	if (forceModuleThreads) singlePool = true;
+	if (!moduleThreads) singlePool = false;
 	if (!modulePools) poolName.clear();
 
 	// separate id, library, configuration and options
@@ -123,7 +123,7 @@ BVS::BVS& BVS::BVS::loadModule(const std::string& moduleTraits, bool asThread, s
 	}
 	if (library.empty()) library = id;
 	if (configuration.empty()) configuration = id;
-	if (poolName.empty() && asThread) poolName = id;
+	if (poolName.empty() && singlePool) poolName = id;
 
 	// load
 	loader->load(id, library, configuration, options, poolName);
