@@ -273,7 +273,6 @@ BVS::Control& BVS::Control::poolController(std::shared_ptr<PoolData> data)
 		data->flag = ControlFlag::WAIT;
 		activePools.fetch_sub(1);
 		LOG(3, "POOL(" << data->poolName << ") WAIT!");
-		//barrier.notify();
 		barrier.enqueue(threadLock, [&](){ return data->flag!=ControlFlag::WAIT; });
 	}
 
