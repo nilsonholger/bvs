@@ -262,7 +262,7 @@ BVS::Control& BVS::Control::moduleController(ModuleData& data)
 
 BVS::Control& BVS::Control::poolController(std::shared_ptr<PoolData> data)
 {
-	nameThisThread(("[P]"+data->poolName).c_str());
+	nameThisThread(("["+data->poolName+"]").c_str());
 	LOG(3, "POOL(" << data->poolName << ") STARTED!");
 	std::unique_lock<std::mutex> threadLock{barrier.attachParty()};
 
