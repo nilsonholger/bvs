@@ -265,13 +265,19 @@ BVS::Control& BVS::Control::poolController(std::shared_ptr<PoolData> data)
 	nameThisThread(("["+data->poolName+"]").c_str());
 	LOG(3, "POOL(" << data->poolName << ") STARTED!");
 	std::unique_lock<std::mutex> threadLock{barrier.attachParty()};
+	std::chrono::time_point<std::chrono::high_resolution_clock> poolTimer =
+		std::chrono::high_resolution_clock::now();
 
 	while (bool(data->flag) && !data->modules.empty())
 	{
+		poolTimer = std::chrono::high_resolution_clock::now();
 		for (auto& module: data->modules) moduleController(*(module.get()));
 
 		data->flag = ControlFlag::WAIT;
 		activePools.fetch_sub(1);
+		info.poolDurations[data->poolName] =
+			std::chrono::duration_cast<std::chrono::milliseconds>
+			(std::chrono::high_resolution_clock::now() - poolTimer);
 		LOG(3, "POOL(" << data->poolName << ") WAIT!");
 		barrier.enqueue(threadLock, [&](){ return data->flag!=ControlFlag::WAIT; });
 	}

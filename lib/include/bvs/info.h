@@ -28,6 +28,9 @@ namespace BVS
 		/** Module durations of last round. */
 		std::map<std::string, std::chrono::duration<unsigned int, std::milli>> moduleDurations;
 
+		/** Pool durations of last round. */
+		std::map<std::string, std::chrono::duration<unsigned int, std::milli>> poolDurations;
+
 		/** Calculate frames per second.
 		 * @return FPS as string.
 		 */
