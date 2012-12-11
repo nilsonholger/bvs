@@ -12,7 +12,6 @@ BVS::Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info)
 	info(info),
 	logger{"Control"},
 	activePools{0},
-	masterPoolModules{},
 	pools{},
 	flag{SystemFlag::PAUSE},
 	barrier{},
@@ -21,7 +20,9 @@ BVS::Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info)
 	round{0},
 	shutdownRequested{false},
 	shutdownRound{0}
-{ }
+{
+	pools["master"] = std::make_shared<PoolData>("master", ControlFlag::WAIT);
+}
 
 
 
@@ -77,10 +78,10 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 					module.second->flag = ControlFlag::RUN;
 				}
 				for (auto& pool: pools) pool.second->flag = ControlFlag::RUN;
-				activePools.fetch_add(pools.size());
+				activePools.fetch_add(pools.size()-1); //exclude "master" pool
 
 				barrier.notify();
-				for (auto& it: masterPoolModules) moduleController(*(it.get()));
+				for (auto& it: pools["master"]->modules) moduleController(*(it.get()));
 
 				if (flag==SystemFlag::STEP) flag = SystemFlag::PAUSE;
 				LOG(3, "WAIT FOR THREADS AND POOLS!");
@@ -132,7 +133,9 @@ BVS::SystemFlag BVS::Control::queryActiveFlag()
 
 BVS::Control& BVS::Control::startModule(std::string id)
 {
-	std::shared_ptr<ModuleData> data = modules[id];
+	auto data = modules[id];
+
+	if (data->poolName.empty()) data->poolName = "master";
 
 	LOG(3, id << " -> POOL(" << data->poolName << ")");
 	if (pools.find(data->poolName)==pools.end())

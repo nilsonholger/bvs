@@ -117,7 +117,6 @@ namespace BVS
 			Info& info; /**< Info reference. */
 			Logger logger; /**< Logger metadata. */
 			std::atomic<int> activePools; /**< The number of active pools. */
-			ModuleDataVector masterPoolModules; /**< Vector of modules executed by master (default pool). */
 			PoolMap pools; /**< Map of pools. */
 			SystemFlag flag; /**< The active system flag used by master. */
 
