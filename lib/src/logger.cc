@@ -4,9 +4,11 @@
 #include "logsystem.h"
 #endif
 
+using BVS::Logger;
 
 
-BVS::Logger::Logger(const std::string& name, unsigned short verbosity, LogTarget target)
+
+Logger::Logger(const std::string& name, unsigned short verbosity, LogTarget target)
 	: name{name},
 	verbosity{verbosity},
 	target{target}
@@ -21,7 +23,7 @@ BVS::Logger::Logger(const std::string& name, unsigned short verbosity, LogTarget
 
 
 
-std::ostream& BVS::Logger::out(const int level)
+std::ostream& Logger::out(const int level)
 {
 #ifdef BVS_LOG_SYSTEM
 	return logSystem->out(*this, level);
@@ -32,7 +34,7 @@ std::ostream& BVS::Logger::out(const int level)
 
 
 
-void BVS::Logger::endl()
+void Logger::endl()
 {
 #ifdef BVS_LOG_SYSTEM
 	logSystem->endl();
