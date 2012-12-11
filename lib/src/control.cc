@@ -134,27 +134,18 @@ BVS::Control& BVS::Control::startModule(std::string id)
 {
 	std::shared_ptr<ModuleData> data = modules[id];
 
-	if (!data->poolName.empty())
+	LOG(3, id << " -> POOL(" << data->poolName << ")");
+	if (pools.find(data->poolName)==pools.end())
 	{
-		LOG(3, id << " -> POOL(" << data->poolName << ")");
-		if (pools.find(data->poolName)==pools.end())
-		{
-			pools[data->poolName] = std::make_shared<PoolData>
-				(data->poolName, ControlFlag::WAIT);
-			pools[data->poolName]->modules.push_back(modules[id]);
-			pools[data->poolName]->thread = std::thread
-				{&Control::poolController, this, pools[data->poolName]};
-			activePools.fetch_add(1);
-		}
-		else
-		{
-			pools[data->poolName]->modules.push_back(modules[id]);
-		}
+		pools[data->poolName] = std::make_shared<PoolData>(data->poolName, ControlFlag::WAIT);
+		pools[data->poolName]->thread = std::thread{&Control::poolController, this, pools[data->poolName]};
+		activePools.fetch_add(1);
+		waitUntilInactive(id);
+		pools[data->poolName]->modules.push_back(modules[id]);
 	}
 	else
 	{
-		LOG(3, id << " -> MASTER");
-		masterPoolModules.push_back(modules[id]);
+		pools[data->poolName]->modules.push_back(modules[id]);
 	}
 
 	return *this;
@@ -162,47 +153,27 @@ BVS::Control& BVS::Control::startModule(std::string id)
 
 
 
-BVS::Control& BVS::Control::quitModule(std::string id)
+BVS::Control& BVS::Control::stopModule(std::string id)
 {
-	(void) id;
-	// TODO has no function now..., check if pool is running instead
-	/*if (modules[id]->asThread==true)
-	{
-		if (modules[id]->thread.joinable())
-		{
-			modules[id]->flag = ControlFlag::QUIT;
-			barrier.notify();
-			LOG(3, "Waiting for '" << id << "' to join!");
-			modules[id]->thread.join();
-		}
-	}*/
+	// search for pool
+	if (modules.find(id)==modules.end()) return *this;
+	auto poolName = modules[id]->poolName;
+	if (pools.find(poolName)==pools.end()) return *this;
+	auto pool = pools[poolName];
 
-	return *this;
-}
+	// stop pool
+	auto flag = pool->flag;
+	pool->flag = ControlFlag::WAIT;
+	waitUntilInactive(id);
 
+	// remove module from pool modules
+	auto& poolModules = pools[poolName]->modules;
+	if (!poolModules.empty())
+		poolModules.erase(std::remove_if (poolModules.begin(), poolModules.end(),
+				 [&](std::shared_ptr<ModuleData> data) { return data->id==id; }));
 
-
-BVS::Control& BVS::Control::purgeData(const std::string& id)
-{
-	if (!pools.empty())
-	{
-		std::string pool = modules[id]->poolName;
-		if (!pool.empty())
-		{
-			ModuleDataVector& poolModules = pools[pool]->modules;
-			if (!poolModules.empty())
-				poolModules.erase(std::remove_if
-						(poolModules.begin(), poolModules.end(),
-						 [&](std::shared_ptr<ModuleData> data)
-						 { return data->id==id; }));
-		}
-	}
-
-	if (!masterPoolModules.empty())
-		masterPoolModules.erase(std::remove_if
-				(masterPoolModules.begin(), masterPoolModules.end(),
-				 [&](std::shared_ptr<ModuleData> data)
-				 { return data->id==id; }));
+	pool->flag = flag;
+	barrier.notify();
 
 	return *this;
 }
@@ -226,9 +197,10 @@ bool BVS::Control::isActive(const std::string& id)
 {
 	if (!modules[id]->poolName.empty())
 	{
-		//TODO fix these
-		//if (pools[modules[id]->poolName]->flag==ControlFlag::WAIT) return false;
-		//else return true;
+		if (modules.find(id)==modules.end()) return false;
+		if (pools.find(modules[id]->poolName)==pools.end()) return false;
+		if (pools[modules[id]->poolName]->flag!=ControlFlag::WAIT) return true;
+		else return false;
 	}
 
 	return false;

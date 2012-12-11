@@ -78,13 +78,7 @@ namespace BVS
 			 * @param[in] id Module id to signal quit to.
 			 * @return Reference to object.
 			 */
-			Control& quitModule(std::string id);
-
-			/** Purge module from internal data.
-			 * @param[in] id Name of module to remove from internal data.
-			 * @return Reference to object.
-			 */
-			Control& purgeData(const std::string& id);
+			Control& stopModule(std::string id);
 
 			/** Wait until given module is inactive.
 			 * Wait until the given module is inactive. If this never happens,

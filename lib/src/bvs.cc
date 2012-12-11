@@ -156,10 +156,7 @@ BVS::BVS& BVS::BVS::unloadModule(const std::string& id)
 	SystemFlag state = control->queryActiveFlag();
 	if (state!=SystemFlag::QUIT) control->sendCommand(SystemFlag::PAUSE);
 
-	control->waitUntilInactive(id);
-	//TODO fix purgeData, eventually causes segfaults
-	//control->purgeData(id);
-	control->quitModule(id);
+	control->stopModule(id);
 	loader->unload(id);
 
 	if (state!=SystemFlag::QUIT) control->sendCommand(state);
@@ -330,3 +327,4 @@ BVS::BVS& BVS::BVS::quit()
 
 	return *this;
 }
+
