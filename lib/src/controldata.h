@@ -101,7 +101,7 @@ namespace BVS
 		/** Desctructor. */
 		~PoolData()
 		{
-			thread.detach();
+			if (thread.joinable()) thread.detach();
 		}
 
 		std::string poolName; /**< Pool name. */
