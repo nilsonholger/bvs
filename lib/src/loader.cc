@@ -2,17 +2,22 @@
 
 #include "loader.h"
 
-
-
-BVS::ModuleDataMap BVS::Loader::modules;
-
-
-
-BVS::ModuleVector* BVS::Loader::hotSwapGraveYard = nullptr;
+using BVS::Loader;
+using BVS::ModuleDataMap;
+using BVS::ModuleVector;
+using BVS::LibHandle;
 
 
 
-BVS::Loader::Loader(const Info& info, std::function<void()> errorHandler)
+ModuleDataMap Loader::modules;
+
+
+
+ModuleVector* Loader::hotSwapGraveYard = nullptr;
+
+
+
+Loader::Loader(const Info& info, std::function<void()> errorHandler)
 	: logger{"Loader"},
 	info(info),
 	errorHandler(errorHandler)
@@ -20,7 +25,7 @@ BVS::Loader::Loader(const Info& info, std::function<void()> errorHandler)
 
 
 
-void BVS::Loader::registerModule(const std::string& id, Module* module, bool hotSwap)
+void Loader::registerModule(const std::string& id, Module* module, bool hotSwap)
 {
 	if (hotSwap)
 	{
@@ -43,7 +48,7 @@ void BVS::Loader::registerModule(const std::string& id, Module* module, bool hot
 
 
 
-BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library, const std::string& configuration, const std::string& options, const std::string& poolName)
+Loader& Loader::load(const std::string& id, const std::string& library, const std::string& configuration, const std::string& options, const std::string& poolName)
 {
 	if (modules.find(id)!=modules.end())
 	{
@@ -84,7 +89,7 @@ BVS::Loader& BVS::Loader::load(const std::string& id, const std::string& library
 
 
 
-BVS::Loader& BVS::Loader::unload(const std::string& id)
+Loader& Loader::unload(const std::string& id)
 {
 	disconnectModule(id);
 	modules[id]->connectors.clear();
@@ -97,7 +102,7 @@ BVS::Loader& BVS::Loader::unload(const std::string& id)
 
 
 
-BVS::Loader& BVS::Loader::connectAllModules(const bool connectorTypeMatching)
+Loader& Loader::connectAllModules(const bool connectorTypeMatching)
 {
 	for (auto& it: modules) connectModule(it.second->id, connectorTypeMatching);
 
@@ -106,7 +111,7 @@ BVS::Loader& BVS::Loader::connectAllModules(const bool connectorTypeMatching)
 
 
 
-BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connectorTypeMatching)
+Loader& Loader::connectModule(const std::string& id, const bool connectorTypeMatching)
 {
 	ModuleData* module = modules[id].get();
 	std::string options = module->options;
@@ -167,7 +172,7 @@ BVS::Loader& BVS::Loader::connectModule(const std::string& id, const bool connec
 
 
 
-BVS::Loader& BVS::Loader::disconnectModule(const std::string& id)
+Loader& Loader::disconnectModule(const std::string& id)
 {
 	for (auto& connector: modules[id]->connectors)
 	{
@@ -193,12 +198,12 @@ BVS::Loader& BVS::Loader::disconnectModule(const std::string& id)
 
 
 #ifdef BVS_MODULE_HOTSWAP
-BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
+Loader& Loader::hotSwapModule(const std::string& id)
 {
 	unloadLibrary(id);
 	LibHandle dlib = loadLibrary(id, modules[id]->library);
 
-	typedef void (*bvsHotSwapModule_t)(const std::string& id, BVS::Module* module);
+	typedef void (*bvsHotSwapModule_t)(const std::string& id, Module* module);
 	bvsHotSwapModule_t bvsHotSwapModule;
 	*reinterpret_cast<void**>(&bvsHotSwapModule)=dlsym(dlib, "bvsHotSwapModule");
 
@@ -220,7 +225,7 @@ BVS::Loader& BVS::Loader::hotSwapModule(const std::string& id)
 
 
 
-BVS::LibHandle BVS::Loader::loadLibrary(const std::string& id, const std::string& library)
+LibHandle Loader::loadLibrary(const std::string& id, const std::string& library)
 {
 	std::string modulePath = "lib" + library + ".so";
 	LibHandle dlib = dlopen(modulePath.c_str(), RTLD_NOW);
@@ -250,7 +255,7 @@ BVS::LibHandle BVS::Loader::loadLibrary(const std::string& id, const std::string
 
 
 
-BVS::Loader& BVS::Loader::unloadLibrary(const std::string& id)
+Loader& Loader::unloadLibrary(const std::string& id)
 {
 #ifndef BVS_OSX_ANOMALIES
 	std::string modulePath = "./lib" + modules[id]->library + ".so";
@@ -277,7 +282,7 @@ BVS::Loader& BVS::Loader::unloadLibrary(const std::string& id)
 
 
 
-BVS::Loader& BVS::Loader::checkModuleInput(const ModuleData* module, const std::string& inputName)
+Loader& Loader::checkModuleInput(const ModuleData* module, const std::string& inputName)
 {
 	auto input = module->connectors.find(inputName);
 
@@ -299,7 +304,7 @@ BVS::Loader& BVS::Loader::checkModuleInput(const ModuleData* module, const std::
 
 
 
-BVS::Loader& BVS::Loader::checkModuleOutput(const ModuleData* module, const std::string& targetModule, const std::string& targetOutput)
+Loader& Loader::checkModuleOutput(const ModuleData* module, const std::string& targetModule, const std::string& targetOutput)
 {
 	auto target = modules.find(targetModule);
 	if (target == modules.end())
@@ -321,7 +326,7 @@ BVS::Loader& BVS::Loader::checkModuleOutput(const ModuleData* module, const std:
 
 
 
-BVS::Loader& BVS::Loader::printModuleConnectors(const ModuleData* module)
+Loader& Loader::printModuleConnectors(const ModuleData* module)
 {
 	if (module->connectors.size()==0)
 	{
