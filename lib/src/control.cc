@@ -4,9 +4,12 @@
 #include "control.h"
 #include "bvs/archutils.h"
 
+using BVS::Control;
+using BVS::SystemFlag;
 
 
-BVS::Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info)
+
+Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info)
 	: modules(modules),
 	bvs(bvs),
 	info(info),
@@ -26,7 +29,7 @@ BVS::Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info)
 
 
 
-BVS::Control& BVS::Control::masterController(const bool forkMasterController)
+Control& Control::masterController(const bool forkMasterController)
 {
 	if (forkMasterController)
 	{
@@ -102,7 +105,7 @@ BVS::Control& BVS::Control::masterController(const bool forkMasterController)
 
 
 
-BVS::Control& BVS::Control::sendCommand(const SystemFlag controlFlag)
+Control& Control::sendCommand(const SystemFlag controlFlag)
 {
 	LOG(3, "FLAG: " << (int)controlFlag);
 	flag = controlFlag;
@@ -124,14 +127,14 @@ BVS::Control& BVS::Control::sendCommand(const SystemFlag controlFlag)
 
 
 
-BVS::SystemFlag BVS::Control::queryActiveFlag()
+SystemFlag Control::queryActiveFlag()
 {
 	return flag;
 }
 
 
 
-BVS::Control& BVS::Control::startModule(std::string id)
+Control& Control::startModule(std::string id)
 {
 	auto data = modules[id];
 
@@ -156,7 +159,7 @@ BVS::Control& BVS::Control::startModule(std::string id)
 
 
 
-BVS::Control& BVS::Control::stopModule(std::string id)
+Control& Control::stopModule(std::string id)
 {
 	// search for pool
 	if (modules.find(id)==modules.end()) return *this;
@@ -183,7 +186,7 @@ BVS::Control& BVS::Control::stopModule(std::string id)
 
 
 
-BVS::Control& BVS::Control::waitUntilInactive(const std::string& id)
+Control& Control::waitUntilInactive(const std::string& id)
 {
 	while (isActive(id))
 	{
@@ -196,7 +199,7 @@ BVS::Control& BVS::Control::waitUntilInactive(const std::string& id)
 
 
 
-bool BVS::Control::isActive(const std::string& id)
+bool Control::isActive(const std::string& id)
 {
 	if (!modules[id]->poolName.empty())
 	{
@@ -211,7 +214,7 @@ bool BVS::Control::isActive(const std::string& id)
 
 
 
-BVS::Control& BVS::Control::moduleController(ModuleData& data)
+Control& Control::moduleController(ModuleData& data)
 {
 	std::chrono::time_point<std::chrono::high_resolution_clock> modTimer =
 		std::chrono::high_resolution_clock::now();
@@ -235,7 +238,7 @@ BVS::Control& BVS::Control::moduleController(ModuleData& data)
 
 
 
-BVS::Control& BVS::Control::poolController(std::shared_ptr<PoolData> data)
+Control& Control::poolController(std::shared_ptr<PoolData> data)
 {
 	nameThisThread(("["+data->poolName+"]").c_str());
 	LOG(3, "POOL(" << data->poolName << ") STARTED!");
@@ -265,7 +268,7 @@ BVS::Control& BVS::Control::poolController(std::shared_ptr<PoolData> data)
 
 
 
-BVS::Control& BVS::Control::checkModuleStatus(std::shared_ptr<ModuleData> data)
+Control& Control::checkModuleStatus(std::shared_ptr<ModuleData> data)
 {
 	switch (data->status)
 	{
