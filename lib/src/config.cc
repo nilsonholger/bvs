@@ -4,9 +4,11 @@
 
 #include "bvs/config.h"
 
+using BVS::Config;
 
 
-BVS::Config::Config(const std::string& name, int argc, char** argv)
+
+Config::Config(const std::string& name, int argc, char** argv)
 	: name{name},
 	mutex{},
 	optionStore{},
@@ -18,7 +20,7 @@ BVS::Config::Config(const std::string& name, int argc, char** argv)
 
 
 
-std::map<std::string, std::string> BVS::Config::dumpOptionStore()
+std::map<std::string, std::string> Config::dumpOptionStore()
 {
 	std::lock_guard<std::recursive_mutex> lock(mutex);
 
@@ -29,7 +31,7 @@ std::map<std::string, std::string> BVS::Config::dumpOptionStore()
 
 
 
-BVS::Config& BVS::Config::loadCommandLine(int argc, char** argv)
+Config& Config::loadCommandLine(int argc, char** argv)
 {
 	/* algorithm:
 	 *  FOR EACH command line argument
@@ -102,7 +104,7 @@ BVS::Config& BVS::Config::loadCommandLine(int argc, char** argv)
 
 
 
-BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
+Config& Config::loadConfigFile(const std::string& configFile)
 {
 	std::ifstream file{configFile.c_str(), std::ifstream::in};
 
@@ -229,7 +231,7 @@ BVS::Config& BVS::Config::loadConfigFile(const std::string& configFile)
 
 
 
-std::string BVS::Config::searchOption(std::string option) const
+std::string Config::searchOption(std::string option) const
 {
 	std::transform(option.begin(), option.end(), option.begin(), ::tolower);
 
@@ -261,7 +263,7 @@ std::string BVS::Config::searchOption(std::string option) const
 
 
 
-inline void BVS::Config::error(const std::string& configFile, int lineNumber, const std::string& line, const std::string& message) const
+inline void Config::error(const std::string& configFile, int lineNumber, const std::string& line, const std::string& message) const
 {
 	std::cerr << "[ERROR|Config] " << configFile << ":" << lineNumber << ": " << line << " <=== " << message <<  std::endl;
 	exit(1);
@@ -269,7 +271,7 @@ inline void BVS::Config::error(const std::string& configFile, int lineNumber, co
 
 
 
-template<> const BVS::Config& BVS::Config::convertStringTo<std::string>(const std::string& input, std::string& output) const
+template<> const Config& Config::convertStringTo<std::string>(const std::string& input, std::string& output) const
 {
 	output = input;
 
@@ -278,7 +280,7 @@ template<> const BVS::Config& BVS::Config::convertStringTo<std::string>(const st
 
 
 
-template<> const BVS::Config& BVS::Config::convertStringTo<bool>(const std::string& input, bool& b) const
+template<> const Config& Config::convertStringTo<bool>(const std::string& input, bool& b) const
 {
 	// check for possible matches to various versions meaning true
 	if (input=="1"

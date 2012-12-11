@@ -1,3 +1,19 @@
+2012-12-11  NilsonHolger <nilsonholger@hyve.org>
+
+	* v0.3.2
+	* Internal plumbing:
+	This is mainly a bugfix release. There are no changes to the user
+	interface for clients and modules as well as no usage changes. However, it
+	is worth mentioning that what used to be 'threaded' modules now appear as
+	pools (containing only a single module). This change in behaviour has been
+	introduced to significantly ease a possible transition of modules between
+	pools further down the road (no more thread handling/starting/stopping
+	needed as pools are designed to manage this themselves) as well as
+	simplify source code, improve deduplication and reduce clutter.
+	* Pool timings:
+	In addition to module times, pool times can now also be retrieved through
+	usage of the 'info.poolDurations' object.
+
 2012-12-07  NilsonHolger <nilsonholger@hyve.org>
 
 	* v0.3.1

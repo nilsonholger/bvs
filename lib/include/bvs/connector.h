@@ -116,7 +116,6 @@ namespace BVS
 						nullptr,
 						typeid(T).hash_code(),
 						typeid(T).name(),
-						nullptr,
 						false}}}
 	{
 		if (ConnectorDataCollector::connectors.find(connectorName)==ConnectorDataCollector::connectors.end())
@@ -134,7 +133,7 @@ namespace BVS
 			connection = std::make_shared<T>();
 			data->pointer = connection;
 			data->active = true;
-			data->mutex = std::make_shared<std::mutex>();
+			data->lock = std::unique_lock<std::mutex>{data->mutex, std::defer_lock};
 		}
 	}
 
@@ -161,9 +160,9 @@ namespace BVS
 			exit(1);
 		}
 
-		if (data->active && !data->locked) data->mutex->lock();
+		if (data->active && !data->locked) data->lock.lock();
 		*connection = t;
-		if (data->active && !data->locked) data->mutex->unlock();
+		if (data->active && !data->locked) data->lock.unlock();
 	}
 
 
@@ -179,9 +178,9 @@ namespace BVS
 
 		if (!data->active && !activate()) return false;
 
-		if (data->active && !data->locked) data->mutex->lock();
+		if (data->active && !data->locked) data->lock.lock();
 		t = *connection;
-		if (data->active && !data->locked) data->mutex->unlock();
+		if (data->active && !data->locked) data->lock.unlock();
 
 		return data->active;
 	}
@@ -210,7 +209,7 @@ namespace BVS
 	{
 		if (data->active)
 		{
-			data->mutex->lock();
+			data->lock.lock();
 			data->locked = true;
 		}
 	}
@@ -221,7 +220,7 @@ namespace BVS
 	{
 		if (data->active)
 		{
-			data->mutex->unlock();
+			data->lock.unlock();
 			data->locked = false;
 		}
 	}

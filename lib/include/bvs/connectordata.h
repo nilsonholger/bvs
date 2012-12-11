@@ -52,18 +52,18 @@ namespace BVS
 		 * @param[in] pointer Void pointer to contained object.
 		 * @param[in] typeIDHash Hash code of templated type.
 		 * @param[in] typeIDName Type of template instantiation.
-		 * @param[in] mutex Mutex to lock resource.
 		 * @param[in] locked If connection is locked.
 		 */
 		ConnectorData(std::string id, ConnectorType type, bool active, std::shared_ptr<void> pointer,
-				size_t typeIDHash, std::string typeIDName, std::mutex* mutex, bool locked)
+				size_t typeIDHash, std::string typeIDName, bool locked)
 			: id{id},
 			type{type},
 			active{active},
 			pointer{pointer},
 			typeIDHash{typeIDHash},
 			typeIDName{typeIDName},
-			mutex{mutex},
+			mutex{},
+			lock{},
 			locked{locked}
 		{ }
 
@@ -73,8 +73,9 @@ namespace BVS
 		std::shared_ptr<void> pointer; /**< Void pointer to contained object. */
 		size_t typeIDHash; /**< Hash code of templated type. */
 		std::string typeIDName; /**< Type of template instantiation. */
-		std::shared_ptr<std::mutex> mutex; /**< Mutex to lock resource. */
-		bool locked; /** If connection is locked. */
+		std::mutex mutex; /**< Mutex to lock resource. */
+		std::unique_lock<std::mutex> lock; /**< Lock to use with mutex. */
+		bool locked; /**< If connection is locked. */
 
 		ConnectorData(const ConnectorData&) = delete; /**< -Weffc++ */
 		ConnectorData& operator=(const ConnectorData&) = delete; /**< -Weffc++ */

@@ -64,9 +64,10 @@ namespace BVS
 			SystemFlag queryActiveFlag();
 
 			/** Start a module.
-			 * This will start a module. It will act according to its metadata,
-			 * so it will be controlled either by the master, separate as a
-			 * thread or be part of a module pool.
+			 * This will start a module. It will be added according to its
+			 * metadata.  Therefore it will be controlled either by the
+			 * masterPool, start its own pool or become a member of another
+			 * pool.
 			 * @param[in] id Module id to start.
 			 * @return Reference to object.
 			 */
@@ -77,13 +78,7 @@ namespace BVS
 			 * @param[in] id Module id to signal quit to.
 			 * @return Reference to object.
 			 */
-			Control& quitModule(std::string id);
-
-			/** Purge module from internal data.
-			 * @param[in] id Name of module to remove from internal data.
-			 * @return Reference to object.
-			 */
-			Control& purgeData(const std::string& id);
+			Control& stopModule(std::string id);
 
 			/** Wait until given module is inactive.
 			 * Wait until the given module is inactive. If this never happens,
@@ -94,8 +89,7 @@ namespace BVS
 			Control& waitUntilInactive(const std::string& id);
 
 			/** Check if module is active.
-			 * Check if the given module is being actively run by the master, a
-			 * thread or as part of a pool as of RIGHT AT THAT MOMENT!
+			 * Check if the given module is being actively run by a(ny) pool.
 			 * @param[in] id Module id to check status for.
 			 * @return True if active, false if not.
 			 */
@@ -110,12 +104,6 @@ namespace BVS
 			 */
 			Control& moduleController(ModuleData& data);
 
-			/** Controls a module started as a thread.
-			 * @param[in] data Module meta data.
-			 * @return Reference to object.
-			 */
-			Control& threadController(std::shared_ptr<ModuleData> data);
-
 			/** Control a module pool.
 			 * @param[in] data Pool meta data.
 			 * @return Reference to object.
@@ -128,12 +116,11 @@ namespace BVS
 			BVS& bvs; /**< BVS reference. */
 			Info& info; /**< Info reference. */
 			Logger logger; /**< Logger metadata. */
-			std::atomic<int> runningThreads; /**< The number of actively running threads. */
-			ModuleDataVector masterPoolModules; /**< Vector of modules executed by master (default pool). */
+			std::atomic<int> activePools; /**< The number of active pools. */
 			PoolMap pools; /**< Map of pools. */
 			SystemFlag flag; /**< The active system flag used by master. */
 
-			Barrier barrier; /**< Thread synchronization barrier. */
+			Barrier barrier; /**< Pool synchronization barrier. */
 			std::unique_lock<std::mutex> masterLock; /**< Lock for masterController. */
 			std::thread controlThread; /**< Thread (if active) of masterController. */
 

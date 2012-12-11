@@ -1,8 +1,10 @@
 #include "barrier.h"
 
+using BVS::Barrier;
 
 
-BVS::Barrier::Barrier()
+
+Barrier::Barrier()
 	: mutex{},
 	cv{},
 	parties{0},
@@ -11,7 +13,7 @@ BVS::Barrier::Barrier()
 
 
 
-std::unique_lock<std::mutex> BVS::Barrier::attachParty()
+std::unique_lock<std::mutex> Barrier::attachParty()
 {
 	parties.fetch_add(1);
 
@@ -20,7 +22,7 @@ std::unique_lock<std::mutex> BVS::Barrier::attachParty()
 
 
 
-BVS::Barrier& BVS::Barrier::detachParty()
+Barrier& Barrier::detachParty()
 {
 	parties.fetch_sub(1);
 
@@ -29,7 +31,7 @@ BVS::Barrier& BVS::Barrier::detachParty()
 
 
 
-BVS::Barrier& BVS::Barrier::enqueue(std::unique_lock<std::mutex>& lock)
+Barrier& Barrier::enqueue(std::unique_lock<std::mutex>& lock)
 {
 	enqueue(lock, [&](){ return queued.load()==parties.load(); });
 
@@ -38,7 +40,7 @@ BVS::Barrier& BVS::Barrier::enqueue(std::unique_lock<std::mutex>& lock)
 
 
 
-BVS::Barrier& BVS::Barrier::enqueue(std::unique_lock<std::mutex>& lock, std::function<bool()> predicate)
+Barrier& Barrier::enqueue(std::unique_lock<std::mutex>& lock, std::function<bool()> predicate)
 {
 	lock.lock();
 	queued.fetch_add(1);
@@ -52,7 +54,7 @@ BVS::Barrier& BVS::Barrier::enqueue(std::unique_lock<std::mutex>& lock, std::fun
 
 
 
-BVS::Barrier& BVS::Barrier::notify()
+Barrier& Barrier::notify()
 {
 	cv.notify_all();
 
