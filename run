@@ -65,7 +65,7 @@ maintenance flags:
   -u|--update                  -- pull updates for all submodules
 
 targets:
-  [config]     -- run 'bvsd' with the given config (default:BVSConfig.txt)
+  [config]     -- run 'bvsd' with the given config (default:bvs.conf)
   -d|--debug   -- run 'bvsd' in gdb session
   -f|--fifo    -- run 'bvsd' reading input from 'bvsd-fifo'
 EOF
@@ -118,8 +118,8 @@ fi
 cd modules/$MOD_PATH
 mv $ORIG.h $MOD.h
 mv $ORIG.cc $MOD.cc
-mv ${ORIG}Config.txt ${MOD}Config.txt
-FILES=(CMakeLists.txt $MOD.h $MOD.cc ${MOD}Config.txt)
+mv ${ORIG}.conf ${MOD}.conf
+FILES=(CMakeLists.txt $MOD.h $MOD.cc ${MOD}.conf)
 sed -i -e "s/$ORIG/$MOD/g" ${FILES[@]}
 sed -i -e "s/$ORIGC/$MODC/g" ${FILES[@]}
 cd - > /dev/null
@@ -186,10 +186,10 @@ echo
 
 # run
 function bvs_run {
-[ -r $BASE_DIR/bvsd ] && BIN_DIR="."
-[ -r $BASE_DIR/bin/bvsd ] && BIN_DIR="bin"
-[ -r $BASE_DIR/build/bin/bvsd ] && BIN_DIR="build/bin"
-[ -z $BIN_DIR ] && echo "bvsd executable not found, run make first... (or use '--help' to show possible usage)" && exit
+[ -f $BASE_DIR/bvsd ] && BIN_DIR="."
+[ -f $BASE_DIR/bin/bvsd ] && BIN_DIR="bin"
+[ -f $BASE_DIR/build/bin/bvsd ] && BIN_DIR="build/bin"
+[ -z $BIN_DIR ] && echo ">>> BVSD: executable not found, must build it first!" && exit
 
 for i in $@
 do
@@ -208,7 +208,7 @@ do
 done
 
 [ -n "$GDB" -a -r /usr/local/bin/gdb ] && GDB="/usr/local/bin/gdb"
-[ $# = 0 ] && CONFIG="BVSConfig.txt" || CONFIG=$1
+[ $# = 0 ] && CONFIG="bvs.conf" || CONFIG=$1
 
 [ -n "$FIFO" ] && cat << EOF
 >>> FIFO ACTIVATED!!!

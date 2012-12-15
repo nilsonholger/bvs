@@ -12,7 +12,7 @@
 BVS::BVS::BVS(int argc, char** argv, std::function<void()>shutdownHandler)
 	: config{"bvs", argc, argv},
 	shutdownHandler(shutdownHandler),
-	info(Info{config, 0, {}, {}}),
+	info(Info{config, 0, {}, {}, {}}),
 #ifdef BVS_LOG_SYSTEM
 	logSystem{LogSystem::connectToLogSystem()},
 	logger{"BVS"},
@@ -52,13 +52,13 @@ BVS::BVS& BVS::BVS::loadModules()
 	}
 
 	// load all selected modules
-	bool asThread;
+	bool singlePool;
 	for (auto& it : moduleList)
 	{
-		asThread = false;
+		singlePool = false;
 		poolName.clear();
 
-		// check for thread selection ('+' prefix) and system settings
+		// check for pool selection ('+' prefix or '[...]') and system settings
 		if (it[0]=='+')
 		{
 			it.erase(0, 1);
@@ -67,17 +67,16 @@ BVS::BVS& BVS::BVS::loadModules()
 				LOG(0, "Cannot start module in thread AND pool!");
 				exit(1);
 			}
-			asThread = true;
+			singlePool = true;
 		}
-
-		if (it[0]=='[')
+		else if (it[0]=='[')
 		{
 			size_t pos = it.find_first_of(']');
 			poolName = it.substr(1, pos-1);
 			it.erase(0, pos+1);
 		}
 
-		loadModule(it , asThread, poolName);
+		loadModule(it , singlePool, poolName);
 	}
 
 	return *this;
@@ -85,7 +84,7 @@ BVS::BVS& BVS::BVS::loadModules()
 
 
 
-BVS::BVS& BVS::BVS::loadModule(const std::string& moduleTraits, bool asThread, std::string poolName)
+BVS::BVS& BVS::BVS::loadModule(const std::string& moduleTraits, bool singlePool, std::string poolName)
 {
 	std::string id;
 	std::string library;
@@ -97,8 +96,8 @@ BVS::BVS& BVS::BVS::loadModule(const std::string& moduleTraits, bool asThread, s
 	bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads", bvs_module_force_threads);
 	bool modulePools = config.getValue<bool>("BVS.modulePools", bvs_module_pools);
 
-	if (forceModuleThreads) asThread = true;
-	if (!moduleThreads) asThread = false;
+	if (forceModuleThreads) singlePool = true;
+	if (!moduleThreads) singlePool = false;
 	if (!modulePools) poolName.clear();
 
 	// separate id, library, configuration and options
@@ -124,9 +123,10 @@ BVS::BVS& BVS::BVS::loadModule(const std::string& moduleTraits, bool asThread, s
 	}
 	if (library.empty()) library = id;
 	if (configuration.empty()) configuration = id;
+	if (poolName.empty() && singlePool) poolName = id;
 
 	// load
-	loader->load(id, library, configuration, options, asThread, poolName);
+	loader->load(id, library, configuration, options, poolName);
 	control->startModule(id);
 	moduleStack.push(id);
 
@@ -154,14 +154,9 @@ BVS::BVS& BVS::BVS::unloadModules()
 BVS::BVS& BVS::BVS::unloadModule(const std::string& id)
 {
 	SystemFlag state = control->queryActiveFlag();
-	if (state!=SystemFlag::QUIT)
-	{
-		control->sendCommand(SystemFlag::PAUSE);
-		control->waitUntilInactive(id);
-	}
+	if (state!=SystemFlag::QUIT) control->sendCommand(SystemFlag::PAUSE);
 
-	control->purgeData(id);
-	control->quitModule(id);
+	control->stopModule(id);
 	loader->unload(id);
 
 	if (state!=SystemFlag::QUIT) control->sendCommand(state);
@@ -332,3 +327,4 @@ BVS::BVS& BVS::BVS::quit()
 
 	return *this;
 }
+

@@ -21,21 +21,25 @@ endif()
 
 # WARNINGS
 set(COMPILER_WARNINGS ON CACHE BOOL "Enable all/pedantic/effc++ compiler errors/warnings.")
+mark_as_advanced(COMPILER_WARNINGS)
 if(COMPILER_WARNINGS)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Weffc++ -pedantic -pedantic-errors")
 endif()
 
 # WARNINGS MACRO
 set(COMPILER_WARNINGS_MACRO ON CACHE BOOL "Macro to allow selective disabling of compiler warnings: disable_compiler_warnings([RECURSE] GLOB_LIST).")
+mark_as_advanced(COMPILER_WARNINGS_MACRO)
 
 # CPU/ARCH TUNING
 set(COMPILER_TUNING OFF CACHE BOOL "Enable automatic architecture and cpu tuning.")
+mark_as_advanced(COMPILER_TUNING)
 if(COMPILER_TUNING)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 endif()
 
 # PROFILING
 set(COMPILER_PROFILING OFF CACHE BOOL "Create profiled build for gprof.")
+mark_as_advanced(COMPILER_PROFILING)
 if(COMPILER_PROFILING)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
 endif()

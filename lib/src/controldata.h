@@ -36,14 +36,13 @@ namespace BVS
 		 * @param[in] options Module options.
 		 * @param[in] module Pointer to the module.
 		 * @param[in] dlib Dlib handle to module's lib.
-		 * @param[in] asThread Determines if module runs in its own thread.
 		 * @param[in] poolName The pool name executing this module (if any).
 		 * @param[in] flag System control flag for module.
 		 * @param[in] status Return Status of module functions.
 		 * @param[in] connectors Connector map.
 		 */
 		ModuleData(std::string id, std::string library, std::string configuration,
-				std::string options, Module* module, LibHandle dlib, bool asThread,
+				std::string options, Module* module, LibHandle dlib,
 				std::string poolName, ControlFlag flag, Status status, ConnectorMap connectors)
 			: id{id},
 			library{library},
@@ -51,8 +50,6 @@ namespace BVS
 			options{options},
 			module{module},
 			dlib{dlib},
-			thread{},
-			asThread{asThread},
 			poolName{poolName},
 			flag{flag},
 			status{status},
@@ -65,8 +62,6 @@ namespace BVS
 		std::string options; /**< Module options. */
 		std::shared_ptr<Module> module; /**< Pointer to the module. */
 		LibHandle dlib; /**< Dlib handle to module's lib. */
-		std::thread thread; /**< Thread handle of module. */
-		bool asThread; /**< Determines if module runs in its own thread. */
 		std::string poolName; /** The pool name executing this module (if any). */
 		ControlFlag flag; /**< System control flag for module. */
 		Status status; /**< Return Status of module functions. */
@@ -106,7 +101,7 @@ namespace BVS
 		/** Desctructor. */
 		~PoolData()
 		{
-			thread.detach();
+			if (thread.joinable()) thread.detach();
 		}
 
 		std::string poolName; /**< Pool name. */

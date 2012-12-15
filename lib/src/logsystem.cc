@@ -4,17 +4,19 @@
 #include "logsystem.h"
 #include "bvs/traits.h"
 
+using BVS::LogSystem;
+using BVS::NullStream;
 
 
-BVS::NullStream BVS::LogSystem::nullStream;
-
-
-
-std::shared_ptr<BVS::LogSystem> BVS::LogSystem::instance = nullptr;
+NullStream LogSystem::nullStream;
 
 
 
-std::shared_ptr<BVS::LogSystem> BVS::LogSystem::connectToLogSystem()
+std::shared_ptr<LogSystem> LogSystem::instance = nullptr;
+
+
+
+std::shared_ptr<LogSystem> LogSystem::connectToLogSystem()
 {
 	// check if system exists, if not create first
 	if (instance == nullptr)
@@ -26,11 +28,12 @@ std::shared_ptr<BVS::LogSystem> BVS::LogSystem::connectToLogSystem()
 
 
 
-BVS::LogSystem::LogSystem()
+LogSystem::LogSystem()
 	: loggerLevels{},
 	tmpName{},
 	namePadding{0},
 	systemVerbosity{3},
+	outMutex{},
 	outCLI{std::clog.rdbuf()},
 	outFile{},
 	outBoth{outCLI, outFile}
@@ -43,8 +46,10 @@ BVS::LogSystem::LogSystem()
 
 
 
-std::ostream& BVS::LogSystem::out(const Logger& logger, int level)
+std::ostream& LogSystem::out(const Logger& logger, int level)
 {
+	outMutex.lock();
+
 	// convert name to lowercase
 	tmpName = logger.name;
 	std::transform(tmpName.begin(), tmpName.end(), tmpName.begin(), ::tolower);
@@ -86,7 +91,14 @@ std::ostream& BVS::LogSystem::out(const Logger& logger, int level)
 
 
 
-BVS::LogSystem& BVS::LogSystem::setSystemVerbosity(int verbosity)
+void LogSystem::endl()
+{
+	outMutex.unlock();
+}
+
+
+
+LogSystem& LogSystem::setSystemVerbosity(int verbosity)
 {
 	systemVerbosity = verbosity;
 
@@ -95,8 +107,9 @@ BVS::LogSystem& BVS::LogSystem::setSystemVerbosity(int verbosity)
 
 
 
-BVS::LogSystem& BVS::LogSystem::announce(const Logger& logger)
+LogSystem& LogSystem::announce(const Logger& logger)
 {
+	outMutex.lock();
 	// update padding size for fancy (aligned) output
 	if (logger.name.length() > namePadding)
 	{
@@ -112,12 +125,14 @@ BVS::LogSystem& BVS::LogSystem::announce(const Logger& logger)
 		loggerLevels[tmpName] = logger.verbosity;
 	}
 
+	outMutex.unlock();
+
 	return *this;
 }
 
 
 
-BVS::LogSystem& BVS::LogSystem::enableLogFile(const std::string& file, bool append)
+LogSystem& LogSystem::enableLogFile(const std::string& file, bool append)
 {
 	if (outFile.is_open()) outFile.close();
 
@@ -136,7 +151,7 @@ BVS::LogSystem& BVS::LogSystem::enableLogFile(const std::string& file, bool appe
 
 
 
-BVS::LogSystem& BVS::LogSystem::disableLogFile()
+LogSystem& LogSystem::disableLogFile()
 {
 	outFile.close();
 
@@ -145,7 +160,7 @@ BVS::LogSystem& BVS::LogSystem::disableLogFile()
 
 
 
-BVS::LogSystem& BVS::LogSystem::enableLogConsole(const std::ostream& out)
+LogSystem& LogSystem::enableLogConsole(const std::ostream& out)
 {
 	// set internals to use given stream's buffer
 	outCLI.rdbuf(out.rdbuf());
@@ -155,7 +170,7 @@ BVS::LogSystem& BVS::LogSystem::enableLogConsole(const std::ostream& out)
 
 
 
-BVS::LogSystem& BVS::LogSystem::disableLogConsole()
+LogSystem& LogSystem::disableLogConsole()
 {
 	// set internals to log to nirvana
 	outCLI.rdbuf(nullStream.rdbuf());
@@ -165,7 +180,7 @@ BVS::LogSystem& BVS::LogSystem::disableLogConsole()
 
 
 
-BVS::LogSystem& BVS::LogSystem::updateSettings(Config& config)
+LogSystem& LogSystem::updateSettings(Config& config)
 {
 	// disable log system
 	if(config.getValue<bool>("BVS.logSystem", bvs_log_system)==false && bvs_log_system)
@@ -204,7 +219,7 @@ BVS::LogSystem& BVS::LogSystem::updateSettings(Config& config)
 
 
 
-BVS::LogSystem& BVS::LogSystem::updateLoggerLevels(Config& config)
+LogSystem& LogSystem::updateLoggerLevels(Config& config)
 {
 	// check for LOGLEVEL.* variables and update logger levels
 	for (auto& it : config.dumpOptionStore())

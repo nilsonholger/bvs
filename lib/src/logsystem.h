@@ -1,8 +1,9 @@
 #ifndef BVS_LOGSYSTEM_H
 #define BVS_LOGSYSTEM_H
 
-#include <fstream>
-#include <memory>
+#include<fstream>
+#include<memory>
+#include<mutex>
 
 #include "bvs/config.h"
 #include "streams.h"
@@ -39,6 +40,10 @@ namespace BVS
 			 * @return Outstream to log to.
 			 */
 			std::ostream& out(const Logger& logger, int level);
+
+			/** Ends output log by appending std::endl and releasing the log mutex.
+			*/
+			void endl();
 
 			/** Set the system verbosity level.
 			 * @param[in] verbosity The desired verbosity level.
@@ -128,6 +133,7 @@ namespace BVS
 			unsigned short systemVerbosity;
 
 			static std::shared_ptr<LogSystem> instance; /**< Logging system instance. */
+			std::mutex outMutex; /**< Output mutex, needed for threaded scenarios. */
 
 			static NullStream nullStream; /**< Stream pointing to nirvana */
 			std::ostream outCLI; /**< Stream pointing to Command Line Interface. */

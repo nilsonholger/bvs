@@ -1,3 +1,49 @@
+2012-12-11  NilsonHolger <nilsonholger@hyve.org>
+
+	* v0.3.2
+	* Internal plumbing:
+	This is mainly a bugfix release. There are no changes to the user
+	interface for clients and modules as well as no usage changes. However, it
+	is worth mentioning that what used to be 'threaded' modules now appear as
+	pools (containing only a single module). This change in behaviour has been
+	introduced to significantly ease a possible transition of modules between
+	pools further down the road (no more thread handling/starting/stopping
+	needed as pools are designed to manage this themselves) as well as
+	simplify source code, improve deduplication and reduce clutter.
+	* Pool timings:
+	In addition to module times, pool times can now also be retrieved through
+	usage of the 'info.poolDurations' object.
+
+2012-12-07  NilsonHolger <nilsonholger@hyve.org>
+
+	* v0.3.1
+	* Concurrency fix:
+	There was a bug in the synchronization elements used which caused quite a
+	few segfaults a while ago. During fixing this bug, concurrency was
+	actually removed from the system, the code was performing as it should,
+	but the code design was faulty causing the system to mostly run
+	sequentially (threads as well as modules). This has been fixed now,
+	so concurrency is back at full speed utilizing all available if cores.
+	Alas, there still are eventual crashes possible, but these should occur
+	only on system startup or shutdown.
+	* Logging:
+	A while ago the logging system was changed to use lockless logging. This
+	seemed to work just as well as locked logging, but that fact was due to
+	the bug mentioned above. As a consequence, there has been a regression
+	back to locked logging (which shouldn't hurt performance that much, but
+	might actually do so in heavy logging situations, you have been advised).
+
+2012-12-03  NilsonHolger <nilsonholger@hyve.org>
+
+	* v0.3
+	* Rename configs:
+	Rename configs from '*Config.txt' to '*.conf'. This should be helpful to
+	editors displaying these config files in a sane manner (e.g., colors).
+	Also adapt scripts and module template to changes, one possibly needs to
+	rebuild, so cmake can create the new symlinks in the bin directory. It is
+	NOT necessary to rename all exsiting configs, but it might be a good idea
+	to do so anyway in order to obtain consistency.
+
 2012-11-23  NilsonHolger <nilsonholger@hyve.org>
 
 	* v0.2.1
@@ -61,7 +107,7 @@
 	of change propagation to older modules, with the new macro this will be
 	improved upon, to adapt to these changes, please remove the 'extern "C"'
 	block from the 'YourModule.cc' file and add
-	'BVS_MODULE_UTILITIES(YourModule)' to the 'YourModule.h' file (these
+	'BVS_MODULE_UTILITIES(YourModule)' to the 'YourModule.cc' file (these
 	changes can also be seen in the example module)
 
 2012-10-26  NilsonHolger <nilsonholger@hyve.org>
