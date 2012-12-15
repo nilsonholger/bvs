@@ -85,6 +85,9 @@ Control& Control::masterController(const bool forkMasterController)
 
 				barrier.notify();
 				for (auto& it: pools["master"]->modules) moduleController(*(it.get()));
+				info.poolDurations["master"] =
+					std::chrono::duration_cast<std::chrono::milliseconds>
+					(std::chrono::high_resolution_clock::now() - timer);
 
 				if (flag==SystemFlag::STEP) flag = SystemFlag::PAUSE;
 				LOG(3, "WAIT FOR THREADS AND POOLS!");
