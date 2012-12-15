@@ -13,7 +13,8 @@
 #ifdef BVS_LOG_SYSTEM
 #define LOG(level, args) { logger.out(level) << args << std::endl; logger.endl(); };
 #else
-#define LOG(level, args) { };
+//TODO rather inefficient, leave for now
+#define LOG(level, args) { std::ostream nirvana(0); nirvana << level << args;};
 #endif
 
 
