@@ -11,10 +11,10 @@
 
 
 
-int BVS::nameThisThread(const char* threadName)
+int BVS::nameThisThread(std::string threadName)
 {
 #if (defined __unix__ && defined BVS_THREAD_NAMES)
-	prctl(PR_SET_NAME, threadName);
+	prctl(PR_SET_NAME, ("bvs:"+threadName).c_str());
 	if (errno)
 	{
 		std::cerr << "[ERROR|BVS] unable to set thread name, error: " << errno << std::endl;
