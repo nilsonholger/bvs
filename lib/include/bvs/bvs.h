@@ -77,14 +77,22 @@ namespace BVS
 	 * modules += [pool]id4.input(id3.output)
 	 * @endcode
 	 *
-	 *
 	 * To set the verbosity level of different/any logger instance (belongs to section [Logger]):
 	 * @code
+	 * [Logger]
 	 * BVS = 0
 	 * Daemon = 0
 	 * Master = 0
 	 * YourLogger = ...
 	 * @endcode
+	 *
+	 * If you want to override configuration options on the command line, make sure
+	 * to pass argc and argv to BVS. Then you can override command line options with:
+	 * @code
+	 * --bvs.options=section.option1=value1:section.option2=value2
+	 * @endcode
+	 * For more information, please see Config (note that $NAME in this case will be
+	 * 'bvs').
 	 */
 	class BVS_PUBLIC BVS
 	{
