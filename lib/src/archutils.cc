@@ -2,6 +2,13 @@
 
 #include "bvs/archutils.h"
 
+#ifdef __unix__
+#ifdef BVS_THREAD_NAMES
+#include <sys/prctl.h>
+#include <error.h>
+#endif //BVS_THREAD_NAMES
+#endif //__unix__
+
 
 
 int BVS::nameThisThread(const char* threadName)

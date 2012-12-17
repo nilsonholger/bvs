@@ -3,13 +3,6 @@
 
 #include "bvs/traits.h"
 
-#ifdef __unix__
-#ifdef BVS_THREAD_NAMES
-#include <sys/prctl.h>
-#include <error.h>
-#endif //BVS_THREAD_NAMES
-#endif //__unix__
-
 
 
 /** BVS namespace, contains all library stuff. */
