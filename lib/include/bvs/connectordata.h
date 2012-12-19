@@ -34,8 +34,9 @@ namespace BVS
 			case ConnectorType::OUTPUT:
 				os << "OUTPUT";
 				break;
-			default:
+			case ConnectorType::NOOP:
 				os << "UNDEFINED";
+				break;
 		}
 		return os;
 	}
