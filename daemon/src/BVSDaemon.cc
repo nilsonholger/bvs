@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 	bvs->run();
 
 	std::string input;
-	while (input != "q" && input != "quit")
+	while (true)
 	{
 		std::getline(std::cin, input);
 
@@ -95,6 +95,7 @@ int main(int argc, char** argv)
 			LOG(2, "quitting...");
 			bvs->quit();
 			LOG(2, "finished!");
+			break;
 		}
 		else if (input == "h" || input == "help")
 		{
@@ -126,6 +127,7 @@ void mainSignal(int sig)
 	LOG(1,"Catched signal: " << sig << " (Ctrl-C), quitting!");
 	signal(SIGINT, SIG_DFL);
 	bvs->quit();
+	delete bvs;
 	exit(0);
 }
 
@@ -135,6 +137,7 @@ void shutdownFunction()
 {
 	LOG(1,"daemon exit caused by bvs shutdown request!");
 	bvs->quit();
+	delete bvs;
 	exit(0);
 }
 
