@@ -224,9 +224,10 @@ LogSystem& LogSystem::updateLoggerLevels(Config& config)
 	// check for LOGLEVEL.* variables and update logger levels
 	for (auto& it : config.dumpOptionStore())
 	{
-		if (it.first.substr(0, 10)=="logger.")
+		std::string section = "logger.";
+		if (it.first.substr(0, section.length())==section)
 		{
-			loggerLevels[it.first.substr(10, std::string::npos)] = config.getValue<unsigned short>(it.first, bvs_log_client_default_verbosity);
+			loggerLevels[it.first.substr(section.length(), std::string::npos)] = config.getValue<unsigned short>(it.first, bvs_log_client_default_verbosity);
 		}
 	}
 
