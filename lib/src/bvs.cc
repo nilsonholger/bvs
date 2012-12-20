@@ -12,7 +12,7 @@
 BVS::BVS::BVS(int argc, char** argv, std::function<void()>shutdownHandler)
 	: config{"bvs", argc, argv},
 	shutdownHandler(shutdownHandler),
-	info(Info{"v0.3.2", config, 0, {}, {}, {}}),
+	info(Info{"v0.3.3 \"o-kristmus-dri\"", config, 0, {}, {}, {}}),
 #ifdef BVS_LOG_SYSTEM
 	logSystem{LogSystem::connectToLogSystem()},
 	logger{"BVS"},
@@ -24,7 +24,7 @@ BVS::BVS::BVS(int argc, char** argv, std::function<void()>shutdownHandler)
 #ifdef BVS_LOG_SYSTEM
 	logSystem->updateSettings(config);
 	logSystem->updateLoggerLevels(config);
-	LOG(2, "bvs-" << info.version);
+	LOG(2, "bvs " << info.version);
 #endif
 }
 
@@ -34,7 +34,7 @@ BVS::BVS::~BVS()
 {
 	delete control;
 	delete loader;
-	LOG(2, "bvs-" << info.version);
+	LOG(2, "bvs " << info.version);
 }
 
 
