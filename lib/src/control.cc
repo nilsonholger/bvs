@@ -39,7 +39,7 @@ Control& Control::masterController(const bool forkMasterController)
 	}
 	else
 	{
-		nameThisThread("masterControl");
+		nameThisThread("master");
 
 		// startup sync
 		barrier.notify();
@@ -243,7 +243,7 @@ Control& Control::moduleController(ModuleData& data)
 
 Control& Control::poolController(std::shared_ptr<PoolData> data)
 {
-	nameThisThread(("["+data->poolName+"]").c_str());
+	nameThisThread((data->poolName).c_str());
 	LOG(3, "POOL(" << data->poolName << ") STARTED!");
 	std::unique_lock<std::mutex> threadLock{barrier.attachParty()};
 	std::chrono::time_point<std::chrono::high_resolution_clock> poolTimer =

@@ -50,24 +50,51 @@ cd $_PWD
 
 
 
+# reset to version
+function bvs_reset {
+TAG=$1
+git tag | grep -q -E "^$TAG$" || echo ">>> $TAG does not exist (list available tags with 'git tag')!"
+git tag | grep -q -E "^$TAG$" || exit 1
+
+STATUS=`git status --porcelain --ignore-submodules=all`
+[ -n "$STATUS" ] && echo ">>> UNCOMMITED LOCAL CHANGES, ABORTING (THEY WOULD BE LOST OTHERWISE)!" && exit 1
+
+BRANCH=`git rev-parse --abbrev-ref HEAD`
+REMOTE_BRANCH=`git rev-parse --abbrev-ref $BRANCH@{upstream}`
+LOCAL_COMMITS=`git rev-list --reverse $REMOTE_BRANCH..HEAD`
+
+echo ">>> STORING `echo \"$LOCAL_COMMITS\" | wc -l` LOCAL COMMIT(S)!"
+echo ">>> RESETTING TO $TAG!"
+git reset --hard $TAG
+echo ">>> CHERRY PICKING LOCAL COMMIT(S)!"
+echo "$LOCAL_COMMITS" | git cherry-pick --stdin
+echo ">>> DONE!"
+}
+
+
+
 # help
 function bvs_help {
 cat << EOF
 usage: $0 [--flags [\$arg]]
        $0 [--debug] [config]
 
-maintenance flags:
+main flags:
   -c|--clean                   -- run make clean and remove all CMake generated content (for in source builds)
   -h|-?|--help                 -- display this text
   -n|--new-module \$name        -- create new module blank/frame with given name
-  -r|--rename-module \$old \$new -- rename module (path relative to ./modules/)
-  -s|--setup                   -- initialize all submodules
+  -s|--setup                   -- initialize all (selected) submodules
   -u|--update                  -- pull updates for all submodules
+
+advanced flags:
+  --rename-module \$old \$new    -- rename module (path relative to ./modules/)
+  --reset \$tag                 -- reset (rollback) to specific version (tag)
 
 targets:
   [config]     -- run 'bvsd' with the given config (default:bvs.conf)
   -d|--debug   -- run 'bvsd' in gdb session
   -f|--fifo    -- run 'bvsd' reading input from 'bvsd-fifo'
+
 EOF
 }
 
@@ -268,8 +295,9 @@ case $1 in
 	'-c'|'--clean') bvs_clean;;
 	'-h'|'-?'|'--help') bvs_help;;
 	'-n'|'--new-module') bvs_module "BVSExampleModule" $2;;
-	'-r'|'--rename-module') bvs_module $2 $3;;
 	'-s'|'--setup') bvs_setup;;
 	'-u'|'--update') bvs_update;;
+	'--rename-module') bvs_module $2 $3;;
+	'--reset') bvs_reset $2;;
 	""|*) bvs_run "$@";;
 esac

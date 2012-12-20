@@ -1,3 +1,20 @@
+2012-12-20  NilsonHolger <nilsonholger@hyve.org>
+
+	* v0.3.3 "o-kristmus-dri"
+	* Version reset/rollback:
+	Add './run --reset $TAG' function to reset/rollback to given framework
+	version. WARNING: this will do a HARD reset on your directory, so it won't
+	work if you have uncommitted changes. Furthermore, this tries to keep your
+	local commits (for example from './run --setup'). Be careful when going
+	back as any version before this one does not have the reset functionality
+	build in, so you will then have to do the reset manually.
+	* Fixes:
+	- bug in logsystem preventing to mute logger instance in config
+	- handle all cases in connectortype operator<<, no more default needed
+	- some documentation fixes to improve clarity, e.g. setting config options
+	  using the command line and module specifications
+	- add 'bvs:' prefix to thread names
+
 2012-12-11  NilsonHolger <nilsonholger@hyve.org>
 
 	* v0.3.2

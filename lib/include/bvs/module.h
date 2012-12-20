@@ -34,9 +34,9 @@ namespace BVS
 	class BVS_PUBLIC Module
 	{
 		public:
-			Module(); /**< Base module constructor. */
+			Module() = default; /**< Base module constructor. */
 
-			virtual ~Module(); /**< Base module destructor. */
+			virtual ~Module() { } /**< Base module destructor. */
 			virtual Status execute() = 0; /**< Execute function doing all the work. */
 			virtual Status debugDisplay() = 0; /**< UNUSED */
 

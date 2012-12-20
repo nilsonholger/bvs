@@ -16,6 +16,9 @@ namespace BVS
 	/** Info meta data stuff. */
 	struct BVS_PUBLIC Info
 	{
+		/** BVS version info. */
+		const std::string version;
+
 		/** Reference to config system. */
 		const Config& config;
 

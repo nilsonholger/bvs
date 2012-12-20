@@ -2,12 +2,19 @@
 
 #include "bvs/archutils.h"
 
+#ifdef __unix__
+#ifdef BVS_THREAD_NAMES
+#include <sys/prctl.h>
+#include <error.h>
+#endif //BVS_THREAD_NAMES
+#endif //__unix__
 
 
-int BVS::nameThisThread(const char* threadName)
+
+int BVS::nameThisThread(std::string threadName)
 {
 #if (defined __unix__ && defined BVS_THREAD_NAMES)
-	prctl(PR_SET_NAME, threadName);
+	prctl(PR_SET_NAME, ("bvs:"+threadName).c_str());
 	if (errno)
 	{
 		std::cerr << "[ERROR|BVS] unable to set thread name, error: " << errno << std::endl;
@@ -15,8 +22,9 @@ int BVS::nameThisThread(const char* threadName)
 	}
 
 	return errno;
-#endif //__unix__ && BVS_THREAD_NAMES
+#else
 	(void) threadName;
+#endif //__unix__ && BVS_THREAD_NAMES
 
 	return 0;
 }
