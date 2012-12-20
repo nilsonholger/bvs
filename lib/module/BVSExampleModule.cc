@@ -36,37 +36,31 @@ BVS::Status BVSExampleModule::execute()
 	// to log messages to console or file, use the LOG(...) macro
 	//LOG(3, "Execution of " << info.id << "!");
 
-	// Various settings and information
-	// in some config:
-	// [moduleConfiguration]
-	// foo = 42
-	//int foo = bvs.getValue<int>(conf + ".myInteger, 23);
-	//unsigned long long round = bvs.round;
-	//int lastRoundModuleDuration = bvs.moduleDurations.find(info.id)->second.count();
-	//int lastRoundDuration = bvs.lastRoundDuration.count();
+	// VARIOUS INFORMATION FROM BVS
+	/*
+	unsigned long long round = bvs.round;
+	int lastRoundModuleDuration = bvs.moduleDurations.find(info.id)->second.count();
+	int lastRoundDuration = bvs.lastRoundDuration.count();
+	*/
 
-	// Simple Connector Example
-	//int incoming;
-	//std::string message;
-	//if (input.receive(incoming))
-	//{
-	//	message = "received" + std::to_string(incoming);
-	//}
-	//else
-	//{
-	//	message = "no input received!";
-	//}
-	//output.send(message);
+	// SIMPLE CONNECTOR EXAMPLE (it is always a good idea to check input, twice)
+	/*
+	int incoming;
+	if (!input.receive(incoming)) return BVS::Status::NOINPUT;
+	if (incoming==int()) return BVS::Status::NOINPUT;
 
-	// Advanced Connector Example (do not forget to unlock the connection or
-	// you will cause deadlocks)
-	//std::string s2 = "This";
-	//output.lockConnection();
-	//*output = s2;
-	//*output = *output + " is an";
-	//s2 = " example!";
-	//*output += s2;
-	//output.unlockConnection();
+	std::string message = "received " + std::to_string(incoming);
+	output.send(message);
+	*/
+
+	// ADVANCED CONNECTOR EXAMPLE (not unlocking the connection will cause deadlock!)
+	/*
+	output.lockConnection();
+	*output = "This";
+	*output = *output + " is an";
+	*output += "example!";
+	output.unlockConnection();
+	*/
 
 	return BVS::Status::OK;
 }
