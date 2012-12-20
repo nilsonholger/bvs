@@ -22,8 +22,9 @@ int BVS::nameThisThread(std::string threadName)
 	}
 
 	return errno;
-#endif //__unix__ && BVS_THREAD_NAMES
+#else
 	(void) threadName;
+#endif //__unix__ && BVS_THREAD_NAMES
 
 	return 0;
 }

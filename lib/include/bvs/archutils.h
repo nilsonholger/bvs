@@ -1,6 +1,8 @@
 #ifndef BVS_ARCHUTILS_H
 #define BVS_ARCHUTILS_H
 
+#include <string>
+
 #include "bvs/traits.h"
 
 
