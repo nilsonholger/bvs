@@ -254,7 +254,7 @@ Control& Control::poolController(std::shared_ptr<PoolData> data)
 		poolTimer = std::chrono::high_resolution_clock::now();
 		for (auto& module: data->modules) moduleController(*(module.get()));
 
-		data->flag = ControlFlag::WAIT;
+		if (data->flag!=ControlFlag::QUIT) data->flag = ControlFlag::WAIT;
 		activePools.fetch_sub(1);
 		info.poolDurations[data->poolName] =
 			std::chrono::duration_cast<std::chrono::milliseconds>
