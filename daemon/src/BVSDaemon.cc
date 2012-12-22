@@ -1,4 +1,8 @@
 #include <csignal>
+#include <execinfo.h>
+#include <cstdio>
+#include <cstring>
+#include <unistd.h>
 #include "bvs/bvs.h"
 
 
@@ -43,6 +47,8 @@ namespace BVSD
 int main(int argc, char** argv)
 {
 	signal(SIGINT, mainSignal);
+	signal(SIGSEGV, mainSignal);
+	signal(SIGALRM, mainSignal);
 
 	LOG(2, "starting!");
 	bvs = new BVS::BVS(argc, argv, &shutdownFunction);
@@ -122,23 +128,53 @@ int main(int argc, char** argv)
 
 
 
+/** Signal function, handles occurence of several system signals.
+ * This function handles occurence of signals passed on by itself (for example
+ * through the shutdownFunction) or by the system (for example pressing
+ * 'Ctrl-C') as well as prints a stack trace (upon segmentation faults).
+ * @param[in] sig System signal.
+ */
 void mainSignal(int sig)
 {
-	LOG(1,"Catched signal: " << sig << " (Ctrl-C), quitting!");
-	signal(SIGINT, SIG_DFL);
-	bvs->quit();
-	delete bvs;
-	exit(0);
+	switch (sig)
+	{
+		case SIGINT:
+			LOG(2, "Caught 'Ctrl-C', quitting!");
+			break;
+		case SIGSEGV:
+			LOG(2, "Caught segmentation fault...!");
+			void *msgs[100];
+			size_t size;
+			size = backtrace(msgs, 100);
+			fprintf(stderr, "\n\n\nCaught signal %d (%s)!\n\n", sig, strsignal(sig));
+			char** messages;
+			messages = backtrace_symbols(msgs, size);
+			for (size_t i=2; i < size && messages != NULL; ++i)
+				fprintf(stderr, "[bt]: (%lu) %s\n", i-2, messages[i]);
+			free(messages);
+			break;
+		case SIGALRM:
+			LOG(2, "Shutdown requested, quitting!");
+			break;
+	}
+
+	if (sig!=SIGSEGV)
+	{
+		bvs->quit();
+		delete bvs;
+	}
+
+	exit(EXIT_FAILURE);
 }
 
 
 
+/** Shutdown function, called by BVS when shutdown requested. */
 void shutdownFunction()
 {
 	LOG(1,"daemon exit caused by bvs shutdown request!");
 	bvs->quit();
-	delete bvs;
-	exit(0);
+	alarm(1);
 }
 
 
