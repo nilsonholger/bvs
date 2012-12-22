@@ -76,7 +76,7 @@ namespace BVS
 	 * given when constructing a config object).
 	 * Command line syntax is similar to config file syntax:
 	 * @code
-	 * --$NAME.options=option1=value1:optionString="value2 with spaces":optionList=elementOne,"element Two",'element Three'
+	 * --$NAME.options=section.option1=value1:section.optionString="value2 with spaces":section.optionList=elementOne,"element Two",'element Three'
 	 * @endcode
 	 * The separator for $OPTIONS is a ':' sign, so ':' are not allowed anywhere
 	 * else, not even inside single or double quotes. Also, be careful with spaces

@@ -149,7 +149,7 @@ Config& Config::loadConfigFile(const std::string& configFile)
 		lineNumber++;
 
 		//remove all unquoted whitespace/tabs, strip inline comments
-		for (unsigned int i=0; i<line.length(); i++)
+		for (size_t i=0; i<line.length(); i++)
 		{
 			if (line[i]=='#') break;
 			if (line[i]=='\'' || line [i]=='"')

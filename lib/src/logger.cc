@@ -28,6 +28,7 @@ std::ostream& Logger::out(const int level)
 #ifdef BVS_LOG_SYSTEM
 	return logSystem->out(*this, level);
 #else
+	(void) level;
 	return std::cout;
 #endif
 }

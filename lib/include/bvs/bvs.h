@@ -55,36 +55,47 @@ namespace BVS
 	 * @code
 	 * # modules [+]= [+|poolName]id[(library[.configuration])][.connectorOptions]
 	 * #
-	 * # [+] -> append the module list
-	 * # [+|[poolName]] -> Load module inside its own pool ('+') or add/create to a
-	 * #             module pool of name '[poolName]' which also runs inside its own
+	 * # [+] -> Append to the module list.
+	 * # [+|poolName] -> Load module inside its own pool ('+') or add/create to a
+	 * #             module pool of name 'poolName' which also runs inside its own
 	 * #             thread and executes added modules in the given order.
 	 * #             '+' is effectively a shorthand for '[id]id'.
-	 * # [(library...)] -> use as module library, useful more multiple modules from
-	 * #                   one library
-	 * # [.configuration] -> use this configuration for the module, useful so the
-	 * #                     module name does not change but its configuration does
-	 * # [.connectorOptions] -> options for connectors, look as follows:
+	 * #             NOTE: 'poolName' MUST be inside '[...]', '+' MUST not.
+	 * # [(library...)] -> Use as module library, useful for multiple modules from one
+	 * #                   library.
+	 * # [.configuration] -> Use this configuration for the module, useful so the
+	 * #                     module name does not change but its configuration does.
+	 * # [.connectorOptions] -> Options for connectors, looks as follows:
 	 * #                        input(test.output)[.input2(test.output2)]...
 	 * #
-	 * # if configuration and/or library are not given, the system will use the given
-	 * # id instead
+	 * # If configuration and/or library are not given, the system will use the given
+	 * # id instead (useful as a shorthand).
 	 * #
-	 * # examples:
-	 * modules = id(library)
-	 * modules += +id2(library2).input(id.output)
-	 * modules += +id3(library2.configuration).input(id2.output)
-	 * modules += [pool]id4.input(id3.output)
+	 * # EXAMPLES:
+	 * # <shorthand>                     <verbose>
+	 * # id                              id(id.id)
+	 * # id(lib)                         id(lib.id)
+	 * # +id2(lib2)                      [id2]id2(lib2.id2)
+	 * # +id3(lib2.config).in(id2.out)   [id3]id3(lib2.config).in(id2.out)
+	 * # [pool]id4.in(id3.out)           [pool]id4(id4.id4).in(id3.out)
 	 * @endcode
-	 *
 	 *
 	 * To set the verbosity level of different/any logger instance (belongs to section [Logger]):
 	 * @code
+	 * [Logger]
 	 * BVS = 0
 	 * Daemon = 0
 	 * Master = 0
 	 * YourLogger = ...
 	 * @endcode
+	 *
+	 * If you want to override configuration options on the command line, make sure
+	 * to pass argc and argv to BVS. Then you can override command line options with:
+	 * @code
+	 * --bvs.options=section.option1=value1:section.option2=value2
+	 * @endcode
+	 * For more information, please see Config (note that $NAME in this case will be
+	 * 'bvs').
 	 */
 	class BVS_PUBLIC BVS
 	{
