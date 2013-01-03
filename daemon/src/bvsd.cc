@@ -25,6 +25,7 @@ int main(int argc, char** argv)
 	while (true)
 	{
 		std::getline(std::cin, input);
+		if (std::cin.eof()) input = "q";
 
 		if (input == "r" || input == "run" || input == "c" || input == "continue")
 		{
