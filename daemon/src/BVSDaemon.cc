@@ -158,13 +158,17 @@ void mainSignal(int sig)
 			break;
 	}
 
-	if (sig!=SIGSEGV)
+	if (sig==SIGSEGV)
+	{
+		signal(SIGSEGV, SIG_DFL);
+		raise(SIGSEGV);
+	}
+	else
 	{
 		bvs->quit();
 		delete bvs;
+		exit(EXIT_FAILURE);
 	}
-
-	exit(EXIT_FAILURE);
 }
 
 
