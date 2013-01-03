@@ -133,7 +133,7 @@ fi
 if [ $_NEW ]
 then
 	echo ">>> Copying template to 'modules/$MOD_PATH!'"
-	cp -r lib/module modules/$MOD_PATH/
+	cp lib/module/* lib/module/.gitignore modules/$MOD_PATH/
 	echo ">>> Modifying template!"
 else
 	echo ">>> Copying 'modules/$ORIG_PATH' to 'modules/$MOD_PATH!'"
