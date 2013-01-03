@@ -1,47 +1,4 @@
-#include <csignal>
-#include <execinfo.h>
-#include <cstdio>
-#include <cstring>
-#include <unistd.h>
-#include "bvs/bvs.h"
-
-
-
-BVS::BVS* bvs;
-BVS::Logger logger("Daemon");
-
-
-
-void mainSignal(int sig);
-void shutdownFunction();
-int testLogger();
-int testConfig();
-
-
-
-/** BVSD namespace, contains only the bvs daemon. */
-namespace BVSD
-{
-/** BVS framework's command line daemon.
- * This is a simple command line daemon. It serves as a client to the BVS
- * framework. It is also intended as a sample client.
- *
- * It is interactive, you can use the following commands by just entering them
- * on the command line and then pressing enter (short versions are also
- * available, enter 'help<enter>' to see them):
- *
- * @li \c run run system until paused.
- * @li \c continue same as run
- * @li \c step advance system by one step.
- * @li \c pause pause(stop) system.
- * @li \c test call test functions.
- * @li \c quit shutdown system and quit.
- * @li \c help show help.
- */
-	class BVSD
-	{
-	};
-}
+#include "bvsd.h"
 
 /** Main function, creates interactive loop. */
 int main(int argc, char** argv)
@@ -128,12 +85,6 @@ int main(int argc, char** argv)
 
 
 
-/** Signal function, handles occurence of several system signals.
- * This function handles occurence of signals passed on by itself (for example
- * through the shutdownFunction) or by the system (for example pressing
- * 'Ctrl-C') as well as prints a stack trace (upon segmentation faults).
- * @param[in] sig System signal.
- */
 void mainSignal(int sig)
 {
 	switch (sig)
@@ -173,20 +124,15 @@ void mainSignal(int sig)
 
 
 
-/** Shutdown function, called by BVS when shutdown requested. */
 void shutdownFunction()
 {
 	LOG(1,"daemon exit caused by bvs shutdown request!");
 	bvs->quit();
-	alarm(1);
+	alarm(1); // SIGALRM after 1 second so all framework/module threads have a chance to quit
 }
 
 
 
-/** Performs some logger tests.
- * This functions performs some tests on the logger system. Nothing fancy, can
- * be studied to gain some insight into using the logger system.
- */
 int testLogger()
 {
 	LOG(0, "to CLI FILE");
@@ -220,10 +166,6 @@ int testLogger()
 
 
 
-/** Performs some config tests.
- * This functions performs some tests on the config system. Nothing fancy, can
- * be studied to gain some insight into using the config system.
- */
 int testConfig()
 {
 	LOG(0, "testing...");
