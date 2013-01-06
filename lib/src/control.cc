@@ -285,9 +285,9 @@ Control& Control::checkModuleStatus(std::shared_ptr<ModuleData> data)
 		case Status::SHUTDOWN:
 			if (!shutdownRequested)
 			{
-				LOG(1, "SHUTDOWN REQUEST BY '" << data->id << "', SHUTTING DOWN IN '" << modules.size() << "' ROUNDS!");
+				LOG(1, "SHUTDOWN REQUEST BY '" << data->id << "', SHUTTING DOWN IN '" << this->pools.size() << "' ROUNDS!");
 				shutdownRequested = true;
-				shutdownRound = round + modules.size();
+				shutdownRound = round + pools.size();
 			}
 			break;
 	}
