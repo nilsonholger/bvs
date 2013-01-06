@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "bvs/archutils.h"
+#include "bvs/utils.h"
 
 #ifdef __unix__
 #ifdef BVS_THREAD_NAMES

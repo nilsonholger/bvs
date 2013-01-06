@@ -97,6 +97,8 @@ Loader& Loader::unload(const std::string& id)
 	unloadLibrary(id);
 	modules.erase(id);
 
+	LOG(2, "Unloading '" << id << "' successfull!");
+
 	return *this;
 }
 
@@ -275,7 +277,7 @@ Loader& Loader::unloadLibrary(const std::string& id)
 		LOG(0, "While closing '" << modulePath << "' following error occured: " << dlerror());
 		errorHandler();
 	}
-	LOG(2, "Library '" << modulePath << "' unloaded!");
+	LOG(3, "Library '" << modulePath << "' unloaded!");
 
 	return *this;
 }

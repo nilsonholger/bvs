@@ -12,7 +12,7 @@
 BVS::BVS::BVS(int argc, char** argv, std::function<void()>shutdownHandler)
 	: config{"bvs", argc, argv},
 	shutdownHandler(shutdownHandler),
-	info(Info{"v0.3.3 \"o-kristmus-dri\"", config, 0, {}, {}, {}}),
+	info(Info{"v0.3.4 \"header-frenzy\"", config, 0, {}, {}, {}}),
 #ifdef BVS_LOG_SYSTEM
 	logSystem{LogSystem::connectToLogSystem()},
 	logger{"BVS"},
