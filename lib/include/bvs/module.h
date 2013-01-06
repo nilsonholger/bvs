@@ -1,12 +1,12 @@
 #ifndef BVS_MODULE_H
 #define BVS_MODULE_H
 
-#include "bvs/archutils.h"
 #include "bvs/config.h"
 #include "bvs/connector.h"
 #include "bvs/info.h"
 #include "bvs/logger.h"
 #include "bvs/traits.h"
+#include "bvs/utils.h"
 
 
 
