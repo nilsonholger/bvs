@@ -14,7 +14,7 @@ _PWD=$PWD
 echo ">>> make clean"
 [ -r Makefile ] && make clean
 
-DIRS=(./ bvsd lib modules)
+DIRS=(./ daemon lib modules)
 for i in `ls -d modules/*/ modules/*/*/ 2>/dev/null`
 do
 	[ $i != "modules/CMakeFiles/" ] && DIRS[${#DIRS[@]}]="$i"
@@ -168,9 +168,6 @@ fi
 
 # setup
 function bvs_setup {
-echo ">>> SETUP daemon!"
-[ ! -d bvsd ] && git submodule add -f git@i14gitlab.anthropomatik.kit.edu:bvs_bvsd.git bvsd || echo ">>> SKIP bvsd!"
-
 echo
 echo ">>> SELECT modules to install!"
 while read LINE; do MODULES[${#MODULES[@]}]=$LINE; done < .bvsmodules
