@@ -1,3 +1,21 @@
+2013-01-15  NilsonHolger <nilsonholger@hyve.org>
+
+	* v0.4 "daemonized"
+	* BvsD (daemon) merged into base:
+	BvsD has been merged into bvs/base and is now located in './daemon/'. This
+	merge was done to simplify development and create unique tags for the
+	daemon, the lib and the accompanying infrastructure since the daemon might
+	depend on or use specific library features.
+	BvsD has been fully merged, therefore the original repository will be
+	deleted soon.
+	The only action needed by users is to delete the 'leftover' bvsd directory
+	and remove the git submodule. This can be done as follows:
+	1. 'git rm -r bvsd'
+	2. edit '.gitmodules' and '.git/config', remove the '[submodule "bvsd"]'
+	   section
+	3. 'rm -rf .git/modules/bvsd
+	4. commit your changes (should be only '.gitmodules') locally
+
 2013-01-06  NilsonHolger <nilsonholger@hyve.org>
 
 	* v0.3.3 "header-frenzy"
