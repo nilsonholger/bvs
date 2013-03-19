@@ -2,11 +2,6 @@ This is the BVS framework.
 
 
 
-LICENSE:
-Please see 'License.txt'
-
-
-
 INSTALLING:
 To set everything up, type './run --setup'. This will download the bvs library
 and its clients as well as set them up as git submodules. Furthermore you will
