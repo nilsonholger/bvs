@@ -53,15 +53,27 @@ cd $_PWD
 # run example
 function bvs_example {
 echo ">>> This is an example of the BVS framework!"
-echo ">>> Please make sure you have the 'bvsModules' installed and compiled!"
-echo ">>> (uncomment 'ExampleCV' modules in 'modules/CMakeLists.txt')"
 echo
+
+# check environment
 [ ! -f CMakeLists.txt -a ! -f Changelog.txt ] && echo ">>> Please run from BVS' base directory!" && exit 1
-[ ! -d modules/bvsModules ] && echo ">>> bvsModules not found, please 'run --setup' and install them!" && exit 1
-# check location of example config
-EXAMPLE_CONFIG="$PWD/modules/bvsModules/ExampleCV/BVS-Framework-ExampleCV.conf"
+if [ ! -d modules/bvsModules ]
+then
+	echo ">>> 'bvsModules' not found, starting setup!"
+	echo ">>> Please say 'y' to install the 'bvsModules!"
+	./run --setup
+fi
+sed -i -e "s/#add_subdirectory(bvsModules\/ExampleCV)/add_subdirectory(bvsModules\/ExampleCV)/g" modules/CMakeLists.txt
+
+# build system
+[ ! -d build ] mkdir build
+cd build
+cmake .
+make
+cd -
 
 #run example
+EXAMPLE_CONFIG="$PWD/modules/bvsModules/ExampleCV/BVS-Framework-ExampleCV.conf"
 bvs_run "$EXAMPLE_CONFIG"
 }
 
