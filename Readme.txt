@@ -84,11 +84,6 @@ This allows you to create your own remote 'origin' for delevopment whilst still
 being able to pull updates to the base repository from bvs' main development
 repository.
 
-Furthermore, you can create dedicated git repositories for each module and add
-them as git submodules to the base repository, or you can collect your modules
-in a single git repository and either symlink them to './modules/...' or modify
-'./modules/CMakeLists.txt' accordingly.
-
 
 
 BVS MODULE LIST:
