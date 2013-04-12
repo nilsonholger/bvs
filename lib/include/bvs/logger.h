@@ -14,6 +14,7 @@
 #define LOG(level, args) { logger.out(level) << args << std::endl; logger.endl(); };
 #else
 //TODO rather inefficient, leave for now
+// nirvana is used so args is evaluated in all cases
 #define LOG(level, args) { std::ostream nirvana(0); nirvana << level << args;};
 #endif
 
