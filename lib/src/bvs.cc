@@ -12,7 +12,7 @@
 BVS::BVS::BVS(int argc, char** argv, std::function<void()>shutdownHandler)
 	: config{"bvs", argc, argv},
 	shutdownHandler(shutdownHandler),
-	info(Info{"v0.4 \"daemonized\"", config, 0, {}, {}, {}}),
+	info(Info{"v0.4.1 \"daemonized\"", config, 0, {}, {}, {}}),
 #ifdef BVS_LOG_SYSTEM
 	logSystem{LogSystem::connectToLogSystem()},
 	logger{"BVS"},

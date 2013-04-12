@@ -50,25 +50,31 @@ cd $_PWD
 
 
 
-# reset to version
-function bvs_reset {
-TAG=$1
-git tag | grep -q -E "^$TAG$" || echo ">>> $TAG does not exist (list available tags with 'git tag')!"
-git tag | grep -q -E "^$TAG$" || exit 1
+# run example
+function bvs_example {
+echo ">>> This is an example of the BVS framework!"
+echo
 
-STATUS=`git status --porcelain --ignore-submodules=all`
-[ -n "$STATUS" ] && echo ">>> UNCOMMITED LOCAL CHANGES, ABORTING (THEY WOULD BE LOST OTHERWISE)!" && exit 1
+# check environment
+[ ! -f CMakeLists.txt -a ! -f Changelog.txt ] && echo ">>> Please run from BVS' base directory!" && exit 1
+if [ ! -d modules/bvsModules ]
+then
+	echo ">>> 'bvsModules' not found, starting setup!"
+	echo ">>> Please say 'y' to install the 'bvsModules!"
+	./run --setup
+fi
+sed -i -e "s/#add_subdirectory(bvsModules\/ExampleCV)/add_subdirectory(bvsModules\/ExampleCV)/g" modules/CMakeLists.txt
 
-BRANCH=`git rev-parse --abbrev-ref HEAD`
-REMOTE_BRANCH=`git rev-parse --abbrev-ref $BRANCH@{upstream}`
-LOCAL_COMMITS=`git rev-list --reverse $REMOTE_BRANCH..HEAD`
+# build system
+[ ! -d build ] mkdir build
+cd build
+cmake .
+make
+cd -
 
-echo ">>> STORING `echo \"$LOCAL_COMMITS\" | wc -l` LOCAL COMMIT(S)!"
-echo ">>> RESETTING TO $TAG!"
-git reset --hard $TAG
-echo ">>> CHERRY PICKING LOCAL COMMIT(S)!"
-echo "$LOCAL_COMMITS" | git cherry-pick --stdin
-echo ">>> DONE!"
+#run example
+EXAMPLE_CONFIG="$PWD/modules/bvsModules/ExampleCV/BVS-Framework-ExampleCV.conf"
+bvs_run "$EXAMPLE_CONFIG"
 }
 
 
@@ -79,16 +85,19 @@ cat << EOF
 usage: $0 [--flags [\$arg]]
        $0 [--debug] [config]
 
-main flags:
+basic:
   -c|--clean                   -- run make clean and remove all CMake generated content (for in source builds)
-  -h|-?|--help                 -- display this text
   -n|--new-module \$name        -- create new module blank/frame with given name
   -s|--setup                   -- initialize all (selected) submodules
   -u|--update                  -- pull updates for all submodules
 
-advanced flags:
+advanced:
   --rename-module \$old \$new    -- rename module (path relative to ./modules/)
   --reset \$tag                 -- reset (rollback) to specific version (tag)
+
+other:
+  --example    -- run 'bvsd' with framework example (requires bvsModules, OpenCV and a Camera)
+  -h|-?|--help -- display this text
 
 targets:
   [config]     -- run 'bvsd' with the given config (default:bvs.conf)
@@ -166,44 +175,25 @@ fi
 
 
 
-# setup
-function bvs_setup {
-echo
-echo ">>> SELECT modules to install!"
-while read LINE; do MODULES[${#MODULES[@]}]=$LINE; done < .bvsmodules
-for MOD in "${MODULES[@]}"
-do
-	eval MOD=($MOD)
-	NAME=${MOD[0]}
-	REPO=${MOD[1]}
-	[ -d modules/$NAME ] && echo ">>> SKIP $NAME!" && continue
-	echo
-	echo -e ">>> INSTALL $NAME ($REPO)? [y|N] \c"
-	read CMD
-	[ "$CMD"x != "yx" ] && echo ">>> SKIP $NAME!" && continue
-	git submodule add -f $REPO modules/$NAME
+# reset to version
+function bvs_reset {
+TAG=$1
+git tag | grep -q -E "^$TAG$" || echo ">>> $TAG does not exist (list available tags with 'git tag')!"
+git tag | grep -q -E "^$TAG$" || exit 1
 
-	[ ! -r modules/CMakeLists.txt ] && echo "# enable module compilation here (entries created by './run --new-module <MODULE>' or './run --setup')" > modules/CMakeLists.txt
-	if [ "${MOD[2]}" == "COLLECTION" ]
-	then
-		for i in modules/$NAME/*
-		do
-			[ ! -d $i ] && continue
-			MOD=${i/modules\/}
-			echo "#add_subdirectory($MOD)" >> modules/CMakeLists.txt
-		done
-	else
-		echo "#add_subdirectory($NAME)" >> modules/CMakeLists.txt
-	fi
-done
+STATUS=`git status --porcelain --ignore-submodules=all`
+[ -n "$STATUS" ] && echo ">>> UNCOMMITED LOCAL CHANGES, ABORTING (THEY WOULD BE LOST OTHERWISE)!" && exit 1
 
-git commit -m "WARNING: DO NOT PUSH THIS COMMIT TO THE DEVELOPMENT REPOSITORY!" &> /dev/null
+BRANCH=`git rev-parse --abbrev-ref HEAD`
+REMOTE_BRANCH=`git rev-parse --abbrev-ref $BRANCH@{upstream}`
+LOCAL_COMMITS=`git rev-list --reverse $REMOTE_BRANCH..HEAD`
 
-echo
-echo ">>> SETUP complete!"
-[ ! -d build ] && echo ">>> ADVICE: for out of source builds, consider using the directory 'build' (see Readme.txt)"
-echo ">>> ADVICE: Please modify modules/CMakeLists.txt to enable modules you want to add to compilation!"
-echo
+echo ">>> STORING `echo \"$LOCAL_COMMITS\" | wc -l` LOCAL COMMIT(S)!"
+echo ">>> RESETTING TO $TAG!"
+git reset --hard $TAG
+echo ">>> CHERRY PICKING LOCAL COMMIT(S)!"
+echo "$LOCAL_COMMITS" | git cherry-pick --stdin
+echo ">>> DONE!"
 }
 
 
@@ -242,6 +232,48 @@ done
 EOF
 
 eval "(cd $BASE_DIR/$BIN_DIR && $FIFO $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)"
+}
+
+
+
+# setup
+function bvs_setup {
+echo
+echo ">>> SELECT modules to install!"
+while read LINE; do MODULES[${#MODULES[@]}]=$LINE; done < .bvsmodules
+for MOD in "${MODULES[@]}"
+do
+	eval MOD=($MOD)
+	NAME=${MOD[0]}
+	REPO=${MOD[1]}
+	[ -d modules/$NAME ] && echo ">>> SKIP $NAME!" && continue
+	echo
+	echo -e ">>> INSTALL $NAME ($REPO)? [y|N] \c"
+	read CMD
+	[ "$CMD"x != "yx" ] && echo ">>> SKIP $NAME!" && continue
+	git submodule add -f $REPO modules/$NAME
+
+	[ ! -r modules/CMakeLists.txt ] && echo "# enable module compilation here (entries created by './run --new-module <MODULE>' or './run --setup')" > modules/CMakeLists.txt
+	if [ "${MOD[2]}" == "COLLECTION" ]
+	then
+		for i in modules/$NAME/*
+		do
+			[ ! -d $i ] && continue
+			MOD=${i/modules\/}
+			echo "#add_subdirectory($MOD)" >> modules/CMakeLists.txt
+		done
+	else
+		echo "#add_subdirectory($NAME)" >> modules/CMakeLists.txt
+	fi
+done
+
+git commit -m "WARNING: DO NOT PUSH THIS COMMIT TO THE DEVELOPMENT REPOSITORY!" &> /dev/null
+
+echo
+echo ">>> SETUP complete!"
+[ ! -d build ] && echo ">>> ADVICE: for out of source builds, consider using the directory 'build' (see Readme.txt)"
+echo ">>> ADVICE: Please modify modules/CMakeLists.txt to enable modules you want to add to compilation!"
+echo
 }
 
 
@@ -290,6 +322,7 @@ echo ">>> Please solve any merge conflicts if necessary!"
 
 case $1 in
 	'-c'|'--clean') bvs_clean;;
+	'--example') bvs_example;;
 	'-h'|'-?'|'--help') bvs_help;;
 	'-n'|'--new-module') bvs_module "BVSExampleModule" $2;;
 	'-s'|'--setup') bvs_setup;;

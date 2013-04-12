@@ -1,3 +1,9 @@
+2013-04-12  NilsonHolger <nilsonholger@hyve.org>
+
+	* v0.4.1 "daemonized"
+	* BVS Example:
+	added example using OpenCV and camera, automated setup as far as possible
+
 2013-01-15  NilsonHolger <nilsonholger@hyve.org>
 
 	* v0.4 "daemonized"

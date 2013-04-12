@@ -7,11 +7,7 @@
 
 /** This is the BVSExampleModule module.
  * Please add sufficient documentation to enable others to use it.
- * Include information about:
- * - Dependencies
- * - Inputs
- * - Outputs
- * - Configuration Options
+ * Include information about: Dependencies, Inputs, Outputs, Configuration Options...
  */
 class BVSExampleModule : public BVS::Module
 {
@@ -29,9 +25,9 @@ class BVSExampleModule : public BVS::Module
 		~BVSExampleModule();
 
 		/** Execute function doing all the work.
-		 * This function is executed exactly once and only once upon each started
-		 * round/step of the framework. It is supposed to contain the actual work
-		 * of your module.
+		 * This function is executed exactly once during each started
+		 * round/step of the framework. It is supposed to contain the actual
+		 * work of your module.
 		 */
 		BVS::Status execute();
 
