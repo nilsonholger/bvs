@@ -50,7 +50,19 @@ cd $_PWD
 
 
 
+# run example
+function bvs_example {
+echo ">>> This is an example of the BVS framework!"
+echo ">>> Please make sure you have the 'bvsModules' installed and compiled!"
+echo ">>> (uncomment 'ExampleCV' modules in 'modules/CMakeLists.txt')"
+echo
+[ ! -f CMakeLists.txt -a ! -f Changelog.txt ] && echo ">>> Please run from BVS' base directory!" && exit 1
+[ ! -d modules/bvsModules ] && echo ">>> bvsModules not found, please 'run --setup' and install them!" && exit 1
+# check location of example config
+EXAMPLE_CONFIG="$PWD/modules/bvsModules/ExampleCV/BVS-Framework-ExampleCV.conf"
 
+#run example
+bvs_run "$EXAMPLE_CONFIG"
 }
 
 
@@ -61,16 +73,19 @@ cat << EOF
 usage: $0 [--flags [\$arg]]
        $0 [--debug] [config]
 
-main flags:
+basic:
   -c|--clean                   -- run make clean and remove all CMake generated content (for in source builds)
-  -h|-?|--help                 -- display this text
   -n|--new-module \$name        -- create new module blank/frame with given name
   -s|--setup                   -- initialize all (selected) submodules
   -u|--update                  -- pull updates for all submodules
 
-advanced flags:
+advanced:
   --rename-module \$old \$new    -- rename module (path relative to ./modules/)
   --reset \$tag                 -- reset (rollback) to specific version (tag)
+
+other:
+  --example    -- run 'bvsd' with framework example (requires bvsModules, OpenCV and a Camera)
+  -h|-?|--help -- display this text
 
 targets:
   [config]     -- run 'bvsd' with the given config (default:bvs.conf)
@@ -295,6 +310,7 @@ echo ">>> Please solve any merge conflicts if necessary!"
 
 case $1 in
 	'-c'|'--clean') bvs_clean;;
+	'--example') bvs_example;;
 	'-h'|'-?'|'--help') bvs_help;;
 	'-n'|'--new-module') bvs_module "BVSExampleModule" $2;;
 	'-s'|'--setup') bvs_setup;;

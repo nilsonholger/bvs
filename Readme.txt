@@ -38,6 +38,7 @@ NOTE: Point your browser to '[build/][lib/]doc/html/index.html' for the docs.
 USAGE
 =====
 
+'./run --example'                 -> run the framework example (requires camera)
 './run'                           -> starts using 'bvs.conf'
 './run --bvs.config=$CONFIG_FILE' -> starts system with user supplied config
 './run --debug $CONFIG_FILE'      -> starts debug session
