@@ -6,10 +6,10 @@ BVS - Blind and Visullay impaired support System
 INSTALLATION and UPDATES
 ========================
 
-'./run --help' -> will list './run's capabilities
-'./run --setup' -> asks to download some known modules
+'./run --help'   -> will list './run's capabilities
+'./run --setup'  -> asks to download some known modules
 './run --update' -> updates bvs and all its (git sub-)modules
-'./run --clean' -> cleanup of ALL generated build files
+'./run --clean'  -> cleanup of ALL generated build files
 
 WARNING: '--setup' creates a commit (if new submodules were created), which
 MUST NEVER be pushed to a development repository, UNLESS you want to share your
@@ -38,11 +38,11 @@ NOTE: Point your browser to '[build/][lib/]doc/html/index.html' for the docs.
 USAGE
 =====
 
-'./run' -> starts using 'bvs.conf'
+'./run'                           -> starts using 'bvs.conf'
 './run --bvs.config=$CONFIG_FILE' -> starts system with user supplied config
-'./run --debug $CONFIG_FILE' -> starts debug session
+'./run --debug $CONFIG_FILE'      -> starts debug session
 './run --new-module $MODULE_NAME' -> creates new module
-'./run --bvs.options=...' -> additional option presets (see Config docs)
+'./run --bvs.options=...'         -> additional option presets (see Config docs)
 
 NOTE: When building the system using 'cmake', the system and all modules'
 config files will be symlinked into the '[build]/bin' directory. You can modify
