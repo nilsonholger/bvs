@@ -66,9 +66,9 @@ fi
 sed -i -e "s/#add_subdirectory(bvsModules\/ExampleCV)/add_subdirectory(bvsModules\/ExampleCV)/g" modules/CMakeLists.txt
 
 # build system
-[ ! -d build ] mkdir build
+[ ! -d build ] && mkdir build
 cd build
-cmake .
+cmake ..
 make
 cd -
 
