@@ -23,20 +23,6 @@ void mainSignal(int sig);
 /** Shutdown function, called by BVS when shutdown requested. */
 void shutdownFunction();
 
-/** Performs some logger tests.
- * This functions performs some tests on the logger system. Nothing fancy, can
- * be studied to gain some insight into using the logger system.
- * @TODO create/integrate into some full blown test suite
- */
-int testLogger();
-
-/** Performs some config tests.
- * This functions performs some tests on the config system. Nothing fancy, can
- * be studied to gain some insight into using the config system.
- * @TODO create/integrate into some full blown test suite
- */
-int testConfig();
-
 
 
 /** BVSD namespace, contains only the bvs daemon. */
