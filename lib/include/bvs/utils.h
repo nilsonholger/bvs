@@ -1,5 +1,5 @@
-#ifndef BVS_ARCHUTILS_H
-#define BVS_ARCHUTILS_H
+#ifndef BVS_UTILS_H
+#define BVS_UTILS_H
 
 #include <string>
 
@@ -20,5 +20,5 @@ namespace BVS
 
 
 
-#endif //BVS_ARCHUTILS_H
+#endif //BVS_UTILS_H
 

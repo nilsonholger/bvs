@@ -2,7 +2,7 @@
 #include <chrono>
 
 #include "control.h"
-#include "bvs/archutils.h"
+#include "bvs/utils.h"
 
 using BVS::Control;
 using BVS::SystemFlag;
@@ -254,7 +254,7 @@ Control& Control::poolController(std::shared_ptr<PoolData> data)
 		poolTimer = std::chrono::high_resolution_clock::now();
 		for (auto& module: data->modules) moduleController(*(module.get()));
 
-		data->flag = ControlFlag::WAIT;
+		if (data->flag!=ControlFlag::QUIT) data->flag = ControlFlag::WAIT;
 		activePools.fetch_sub(1);
 		info.poolDurations[data->poolName] =
 			std::chrono::duration_cast<std::chrono::milliseconds>
@@ -285,9 +285,9 @@ Control& Control::checkModuleStatus(std::shared_ptr<ModuleData> data)
 		case Status::SHUTDOWN:
 			if (!shutdownRequested)
 			{
-				LOG(1, "SHUTDOWN REQUEST BY '" << data->id << "', SHUTTING DOWN IN '" << modules.size() << "' ROUNDS!");
+				LOG(1, "SHUTDOWN REQUEST BY '" << data->id << "', SHUTTING DOWN IN '" << this->pools.size() << "' ROUNDS!");
 				shutdownRequested = true;
-				shutdownRound = round + modules.size();
+				shutdownRound = round + pools.size();
 			}
 			break;
 	}

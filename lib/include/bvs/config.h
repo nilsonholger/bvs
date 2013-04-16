@@ -62,7 +62,7 @@ namespace BVS
 	 * list += two
 	 * list += three
 	 * #list += four # commented out
-	 * list = +five
+	 * list += five
 	 * list = six # WARNING: redefiniton, will be ignored, see above
 	 * # the result of this will be: list = one,two,three,five
 	 *
