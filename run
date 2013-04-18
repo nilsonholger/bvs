@@ -87,7 +87,7 @@ usage: $0 [--flags [\$arg]]
 
 basic:
   -c|--clean                   -- run 'make clean' and remove all CMake generated content
-  -n|--new-module \$name        -- create new module blank/frame with given name
+  -n|--new-module \$[path/]name -- create new module from template (path relative to ./modules/)
   -s|--setup                   -- initialize all (selected) submodules
   -u|--update                  -- pull updates for all submodules
 
