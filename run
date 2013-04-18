@@ -169,7 +169,7 @@ then
 else
 	eval sed -i -e "s/\(${ORIG_PATH//\//\\\/}\)/\(${MOD_PATH//\//\\\/}\)/" modules/CMakeLists.txt
 	echo ">>> Renamed Module 'modules/$ORIG_PATH' to 'modules/$MOD_PATH' and modified CMakeLists.txt accordingly!"
-	echo ">>> 'modules/$ORIG_PATH' left intact, cat be deleted now!"
+	echo ">>> 'modules/$ORIG_PATH' left intact, can be deleted now!"
 fi
 }
 
