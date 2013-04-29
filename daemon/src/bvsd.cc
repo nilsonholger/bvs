@@ -1,7 +1,7 @@
 #include "bvsd.h"
 
 /** Main function, creates interactive loop. */
-int main(int argc, char** argv)
+int main(const int argc, const char** argv)
 {
 	signal(SIGINT, mainSignal);
 	signal(SIGSEGV, mainSignal);

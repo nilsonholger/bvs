@@ -8,7 +8,7 @@ using BVS::Config;
 
 
 
-Config::Config(const std::string& name, int argc, char** argv)
+Config::Config(const std::string& name, const int argc, const char** argv)
 	: name{name},
 	mutex{},
 	optionStore{},
@@ -31,7 +31,7 @@ std::map<std::string, std::string> Config::dumpOptionStore()
 
 
 
-Config& Config::loadCommandLine(int argc, char** argv)
+Config& Config::loadCommandLine(const int argc, const char** argv)
 {
 	/* algorithm:
 	 *  FOR EACH command line argument
