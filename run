@@ -88,7 +88,7 @@ basic:
   -c|--clean                   -- run 'make clean' and remove all CMake generated content
   -n|--new-module \$[path/]name -- create new module from template (path relative to modules/)
   -s|--setup                   -- initialize selected modules
-  -u|--update                  -- pull updates for all directorties in modules/
+  -u|--update                  -- pull updates for all directories in modules/
 
 advanced:
   --rename-module \$old \$new    -- rename module (path relative to modules/)
