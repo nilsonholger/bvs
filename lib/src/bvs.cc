@@ -1,5 +1,4 @@
 #include "bvs/bvs.h"
-#include "bvs/traits.h"
 #include "control.h"
 #include "loader.h"
 
@@ -12,7 +11,7 @@
 BVS::BVS::BVS(const int argc, const char** argv, std::function<void()>shutdownHandler)
 	: config{"bvs", argc, argv},
 	shutdownHandler(shutdownHandler),
-	info(Info{"v0.4.1 \"daemonized\"", config, 0, {}, {}, {}}),
+	info(Info{bvs_version, config, 0, {}, {}, {}}),
 #ifdef BVS_LOG_SYSTEM
 	logSystem{LogSystem::connectToLogSystem()},
 	logger{"BVS"},
