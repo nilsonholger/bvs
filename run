@@ -237,6 +237,8 @@ eval "(cd $BASE_DIR/$BIN_DIR && $FIFO $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)
 
 # setup
 function bvs_setup {
+ORIGIN="`git config --get remote.origin.url`"
+ORIGIN="${ORIGIN/bvs.git}"
 echo
 echo ">>> SELECT modules to install!"
 while read LINE; do MODULES[${#MODULES[@]}]=$LINE; done < .bvsmodules
@@ -245,7 +247,7 @@ for MOD in "${MODULES[@]}"
 do
 	eval MOD=($MOD)
 	NAME=${MOD[0]}
-	REPO=${MOD[1]}
+	REPO=${MOD[1]/ORIGIN:/${ORIGIN}}
 	[ -d modules/$NAME ] && echo ">>> SKIP $NAME!" && continue
 	echo
 	echo -e ">>> INSTALL $NAME ($REPO)? [y|N] \c"
