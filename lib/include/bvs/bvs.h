@@ -105,7 +105,7 @@ namespace BVS
 			 * @param[in] argv Main's argv, used to pass config options to BVS, see Config.
 			 * @param[in] shutdownHandler A function the framework calls upon shutting down.
 			 */
-			BVS(int argc, char** argv, std::function<void()> shutdownHandler = [](){ exit(0);} );
+			BVS(const int argc, const char** argv, std::function<void()> shutdownHandler = [](){ exit(0);} );
 
 			/** Destructor.
 			 */

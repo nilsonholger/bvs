@@ -93,7 +93,7 @@ namespace BVS
 			 * @param[in] argv Array of arguments.
 			 * @see loadCommandLine
 			 */
-			Config(const std::string& name, int argc = 0, char** argv = nullptr);
+			Config(const std::string& name, const int argc = 0, const char** argv = nullptr);
 
 			/** Loads the given config file (if it exists).
 			 * This checks the supplied path for a config file and if found parses
@@ -158,7 +158,7 @@ namespace BVS
 			 * @param[in] argv Array of arguments.
 			 * @return Reference to object.
 			 */
-			Config& loadCommandLine(int argc, char** argv);
+			Config& loadCommandLine(const int argc, const char** argv);
 
 			/** Log parsing error to std::cerr.
 			 * @param[in] configFile File name of parsed config file.

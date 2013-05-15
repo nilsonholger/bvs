@@ -1,3 +1,9 @@
+2013-05-15  NilsonHolger <nilsonholger@hyve.org>
+
+	* 2013.3-public-appearance
+	* Public:
+	publicize framework, general cleanup, licensing, tooling and readme update
+
 2013-04-12  NilsonHolger <nilsonholger@hyve.org>
 
 	* v0.4.1 "daemonized"

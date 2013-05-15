@@ -60,8 +60,7 @@ echo
 if [ ! -d modules/bvsModules ]
 then
 	echo ">>> 'bvsModules' not found, starting setup!"
-	echo ">>> Please say 'y' to install the 'bvsModules!"
-	./run --setup
+	yes | ./run --setup
 fi
 sed -i -e "s/#add_subdirectory(bvsModules\/ExampleCV)/add_subdirectory(bvsModules\/ExampleCV)/g" modules/CMakeLists.txt
 
@@ -86,13 +85,13 @@ usage: $0 [--flags [\$arg]]
        $0 [--debug] [config]
 
 basic:
-  -c|--clean                   -- run make clean and remove all CMake generated content (for in source builds)
-  -n|--new-module \$name        -- create new module blank/frame with given name
-  -s|--setup                   -- initialize all (selected) submodules
-  -u|--update                  -- pull updates for all submodules
+  -c|--clean                   -- run 'make clean' and remove all CMake generated content
+  -n|--new-module \$[path/]name -- create new module from template (path relative to modules/)
+  -s|--setup                   -- initialize selected modules
+  -u|--update                  -- pull updates for all directories in modules/
 
 advanced:
-  --rename-module \$old \$new    -- rename module (path relative to ./modules/)
+  --rename-module \$old \$new    -- rename module (path relative to modules/)
   --reset \$tag                 -- reset (rollback) to specific version (tag)
 
 other:
@@ -169,7 +168,7 @@ then
 else
 	eval sed -i -e "s/\(${ORIG_PATH//\//\\\/}\)/\(${MOD_PATH//\//\\\/}\)/" modules/CMakeLists.txt
 	echo ">>> Renamed Module 'modules/$ORIG_PATH' to 'modules/$MOD_PATH' and modified CMakeLists.txt accordingly!"
-	echo ">>> 'modules/$ORIG_PATH' left intact, cat be deleted now!"
+	echo ">>> 'modules/$ORIG_PATH' left intact, can be deleted now!"
 fi
 }
 
@@ -238,20 +237,23 @@ eval "(cd $BASE_DIR/$BIN_DIR && $FIFO $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)
 
 # setup
 function bvs_setup {
+ORIGIN="`git config --get remote.origin.url`"
+ORIGIN="${ORIGIN/bvs.git}"
 echo
 echo ">>> SELECT modules to install!"
 while read LINE; do MODULES[${#MODULES[@]}]=$LINE; done < .bvsmodules
+[ ! -d modules ] && mkdir modules
 for MOD in "${MODULES[@]}"
 do
 	eval MOD=($MOD)
 	NAME=${MOD[0]}
-	REPO=${MOD[1]}
+	REPO=${MOD[1]/ORIGIN:/${ORIGIN}}
 	[ -d modules/$NAME ] && echo ">>> SKIP $NAME!" && continue
 	echo
 	echo -e ">>> INSTALL $NAME ($REPO)? [y|N] \c"
 	read CMD
 	[ "$CMD"x != "yx" ] && echo ">>> SKIP $NAME!" && continue
-	git submodule add -f $REPO modules/$NAME
+	(cd modules/; git clone $REPO $NAME)
 
 	[ ! -r modules/CMakeLists.txt ] && echo "# enable module compilation here (entries created by './run --new-module <MODULE>' or './run --setup')" > modules/CMakeLists.txt
 	if [ "${MOD[2]}" == "COLLECTION" ]
@@ -267,8 +269,6 @@ do
 	fi
 done
 
-git commit -m "WARNING: DO NOT PUSH THIS COMMIT TO THE DEVELOPMENT REPOSITORY!" &> /dev/null
-
 echo
 echo ">>> SETUP complete!"
 [ ! -d build ] && echo ">>> ADVICE: for out of source builds, consider using the directory 'build' (see Readme.txt)"
@@ -282,35 +282,38 @@ echo
 function bvs_update {
 BASE=$PWD
 QUIET='--quiet'
-DIRS=(./ `git submodule $QUIET foreach --recursive 'echo " $path\c"'`)
+DIRS=(./ `\find modules -d 1`)
+i=0; for DIR in ${DIRS[@]}; do [ ! -d "$BASE/$DIR" ] && unset DIRS[i]; i=$[ i+1 ]; done
+
 STASHES=()
 echo ">>> STASHING CHANGES!"
-for i in ${DIRS[@]}
+for DIR in ${DIRS[@]}
 do
-	cd "$BASE/$i"
+	cd "$BASE/$DIR"
 	STATUS=`git status --porcelain --ignore-submodules=all`
 	if [ -z "$STATUS" ]
 	then
 		continue
 	else
-		echo ">>> -> $i"
-		STASHES[${#STASHES[@]}]="$i"
+		echo ">>> -> $DIR"
+		STASHES[${#STASHES[@]}]="$DIR"
 		git stash $QUIET
 	fi
 done
 cd $BASE
 
 echo ">>> UPDATING!"
-echo -e ">>> -> bvs: \c"
-git pull $QUIET --rebase
-git submodule $QUIET foreach --recursive 'echo ">>> -> $path: \c"; git pull $QUIET --rebase || :'
+for DIR in ${DIRS[@]}
+do
+	echo ">>> -> $DIR"
+	(cd "$DIR"; git pull $QUIET)
+done
 
 echo ">>> REAPPLYING CHANGES!"
-for i in ${STASHES[@]}
+for STASH in ${STASHES[@]}
 do
-	echo ">>> -> $i"
-	cd $BASE/$i
-	git stash pop $QUIET
+	echo ">>> -> $STASH"
+	(cd $BASE/$STASH; git stash pop $QUIET)
 done
 cd $BASE
 
