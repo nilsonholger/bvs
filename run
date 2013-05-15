@@ -57,12 +57,12 @@ echo
 
 # check environment
 [ ! -f CMakeLists.txt -a ! -f Changelog.txt ] && echo ">>> Please run from BVS' base directory!" && exit 1
-if [ ! -d modules/bvsModules ]
+if [ ! -d modules/bvs-modules ]
 then
-	echo ">>> 'bvsModules' not found, starting setup!"
+	echo ">>> 'bvs-modules' not found, starting setup!"
 	yes | ./run --setup
 fi
-sed -i -e "s/#add_subdirectory(bvsModules\/ExampleCV)/add_subdirectory(bvsModules\/ExampleCV)/g" modules/CMakeLists.txt
+sed -i -e "s/#add_subdirectory(bvs-modules\/ExampleCV)/add_subdirectory(bvs-modules\/ExampleCV)/g" modules/CMakeLists.txt
 
 # build system
 [ ! -d build ] && mkdir build
@@ -72,7 +72,7 @@ make
 cd -
 
 #run example
-EXAMPLE_CONFIG="$PWD/modules/bvsModules/ExampleCV/BVS-Framework-ExampleCV.conf"
+EXAMPLE_CONFIG="$PWD/modules/bvs-modules/ExampleCV/BVS-Framework-ExampleCV.conf"
 bvs_run "$EXAMPLE_CONFIG"
 }
 
@@ -95,7 +95,7 @@ advanced:
   --reset \$tag                 -- reset (rollback) to specific version (tag)
 
 other:
-  --example    -- run 'bvsd' with framework example (requires bvsModules, OpenCV and a Camera)
+  --example    -- run 'bvsd' with framework example (requires bvs-modules, OpenCV and a Camera)
   -h|-?|--help -- display this text
 
 targets:
