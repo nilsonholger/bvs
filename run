@@ -282,7 +282,7 @@ echo
 function bvs_update {
 BASE=$PWD
 QUIET='--quiet'
-DIRS=(./ `\find modules -d 1`)
+DIRS=(./ `\find modules -maxdepth 1`)
 i=0; for DIR in ${DIRS[@]}; do [ ! -d "$BASE/$DIR" ] && unset DIRS[i]; i=$[ i+1 ]; done
 
 STASHES=()
