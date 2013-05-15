@@ -11,10 +11,6 @@ INSTALLATION and UPDATES
 './run --update' -> updates bvs and all its (git sub-)modules
 './run --clean'  -> cleanup of ALL generated build files
 
-WARNING: '--setup' creates a commit (if new submodules were created), which
-MUST NEVER be pushed to a development repository, UNLESS you want to share your
-setup with others. This process might break things, you have been warned.
-
 NOTE: '--update' will actually run 'git stash', 'git pull' and 'git stash pop',
 so local changes can be kept intact.  Please consider reading Changelog.txt
 after doing an update, since it might contain some hints.
