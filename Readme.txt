@@ -86,15 +86,18 @@ repository.
 BVS MODULE LIST:
 The file '.bvsmodules' contains a list of known modules. Upon setup, you will
 be asked whether you want to (individually) install those.
-The format of EACH line in this file must be as follows:
+The format of each line in this file MUST be as follows:
 
 	${Module/CollectionName} ${PATH_TO_GIT_REPOSITORY} [COLLECTION]
 
 e.g.: MyBVSModule git@my.git.server.tld:mybvsmodule.git
-The first two parameters are required. The parameter 'COLLECTION' is optional.
-It indicates that a repository contains more than one module. The 'setup'
-function will then create an entry in 'modules/CMakeLists.txt' for every
-directory it encounters in the collection's toplevel hierarchy.
+
+The first two parameters are required. ${PATH_TO_GIT_REPOSITORY} can be
+'ORIGIN:${SUFFIX}', where 'ORIGIN:' will be replaced by the same origin path
+that was used for the main bvs repository.  The parameter 'COLLECTION' is
+optional.  It indicates that a repository contains more than one module. The
+'setup' function will then create an entry in 'modules/CMakeLists.txt' for
+every directory it encounters in the collection's toplevel hierarchy.
 
 
 
