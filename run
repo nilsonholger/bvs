@@ -238,6 +238,7 @@ eval "(cd $BASE_DIR/$BIN_DIR && $FIFO $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)
 # setup
 function bvs_setup {
 ORIGIN="`git config --get remote.origin.url`"
+ORIGIN=${ORIGIN:-https://github.com/nilsonholger/}
 ORIGIN="${ORIGIN/bvs.git}"
 echo
 echo ">>> SELECT modules to install!"
