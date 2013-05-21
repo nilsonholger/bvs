@@ -13,7 +13,7 @@ INSTALLATION and UPDATES
 
 **NOTE:**
 
-*--update* actually runs *git stash*, *git pull* and *git stash pop*, so local
+`--update` actually runs `git stash`, `git pull` and `git stash pop`, so local
 changes can be kept intact.  Please consider reading **Changelog.txt** after
 doing an update, since it might contain some hints. Also, manual merging might
 be necessary.
@@ -30,11 +30,11 @@ BUILDING
 
 **RECOMMENDED:**
 
-Create a *build* directoy and build there (use *cmake ..*).
+Create a `build` directoy and build there (use `cmake ..`).
 
 **NOTE:**
 
-Point your browser to *[build/][lib/]doc/html/index.html* for the docs.
+Point your browser to `[build/][lib/]doc/html/index.html` for the docs.
 
 
 
@@ -50,8 +50,8 @@ USAGE
 
 **NOTE:**
 
-When building the system using *cmake*, the system and all modules' config
-files will be symlinked into the *[build]/bin* directory. You can modify the
+When building the system using `cmake`, the system and all modules' config
+files will be symlinked into the `[build]/bin` directory. You can modify the
 original config files through these symlinks directly. You won't have to worry
 about these changes being lost if you use the provided update function.
 
@@ -83,9 +83,9 @@ ADVANCED STUFF
 ### INTENDED TREE STRUCTURE:
 
 The base repository can be detached from *origin* by renaming the remote, e.g.
-*git remote rename origin bvs-origin*, so you can create your own base
+`git remote rename origin bvs-origin`, so you can create your own base
 repository with its own upstream, or you can set its tracking branch to it,
-e.g. *git branch master --set-upstream $YOUR_UPSTREAM*.  This allows you to
+e.g. `git branch master --set-upstream $YOUR_UPSTREAM`.  This allows you to
 create your own remote *origin* for delevopment whilst still being able to pull
 updates to the base repository from bvs' main development repository.
 
@@ -93,7 +93,7 @@ updates to the base repository from bvs' main development repository.
 
 ### BVS MODULE LIST:
 
-The file *.bvsmodules* contains a list of known modules. *./run --setup* asks
+The file *.bvsmodules* contains a list of known modules. `./run --setup` asks
 whether they should be (individually) installed.  The format of each line in
 this file MUST be as follows:
 
@@ -101,21 +101,21 @@ this file MUST be as follows:
 
 e.g.: MyBVSModule git@my.git.server.tld:my-bvs-module.git
 
-The first two parameters are required. *${PATH_TO_GIT_REPOSITORY}* can be
-*ORIGIN:${SUFFIX}*, where *ORIGIN:* will be replaced by the same origin path
-that was used for the main bvs repository.  The parameter *COLLECTION* is
+The first two parameters are required. `${PATH_TO_GIT_REPOSITORY}` can be
+`ORIGIN:${SUFFIX}`, where `ORIGIN:` will be replaced by the same origin path
+that was used for the main bvs repository.  The parameter `COLLECTION` is
 optional.  It indicates that a repository contains more than one module. The
-setup function will then create an entry in *modules/CMakeLists.txt* for
+setup function will then create an entry in `modules/CMakeLists.txt` for
 every directory it encounters in the collection's toplevel hierarchy.
 
 
 
 ### FIFO CONTROL:
 
-The BVS Daemon (bvsd) can be controlled through a FIFO file (*./run -f*). This
-will (if necessary) create the special file *bin/bvsd-fifo* which can be used
-to control bvsd by sending for example *echo "h" > $BIN_DIR/bvsd-fifo*.  Using
-*cat - > $BIN_DIR/bvsd-fifo* gives you a shell as before, but now input and
+The BVS Daemon (bvsd) can be controlled through a FIFO file (`./run -f`). This
+will (if necessary) create the special file `bin/bvsd-fifo` which can be used
+to control bvsd by sending for example `echo "h" > $BIN_DIR/bvsd-fifo`.  Using
+`cat - > $BIN_DIR/bvsd-fifo` gives you a shell as before, but now input and
 output are nicely separated.  These are example maps to control bvsd from
 inside vim:
 
