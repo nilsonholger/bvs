@@ -4,12 +4,12 @@ BVS - Blind and Visullay impaired support System
 
 
 INSTALLATION and UPDATES
-========================
+------------------------
 
-'./run --help'   -> will list './run's capabilities
-'./run --setup'  -> asks to download some known modules
-'./run --update' -> updates bvs and all its (git sub-)modules
-'./run --clean'  -> cleanup of ALL generated build files
+	'./run --help'   -> will list './run's capabilities
+	'./run --setup'  -> asks to download some known modules
+	'./run --update' -> updates bvs and all its (git sub-)modules
+	'./run --clean'  -> cleanup of ALL generated build files
 
 NOTE: '--update' will actually run 'git stash', 'git pull' and 'git stash pop',
 so local changes can be kept intact.  Please consider reading Changelog.txt
@@ -18,7 +18,7 @@ after doing an update, since it might contain some hints.
 
 
 BUILDING
-========
+--------
 
 'cmake .' -> creates makefiles
 'make' -> builds system
@@ -32,7 +32,7 @@ NOTE: Point your browser to '[build/][lib/]doc/html/index.html' for the docs.
 
 
 USAGE
-=====
+-----
 
 './run --example'                 -> run the framework example (requires OpenCV and camera)
 './run'                           -> starts using 'bvs.conf'
@@ -49,7 +49,7 @@ worry about these changes being lost if you use the provided update function.
 
 
 DIRECTORIES AND FILES
-=====================
+---------------------
 
 '.'
  |_[build]: OPTIONAL directory for out of source builds
@@ -70,9 +70,9 @@ DIRECTORIES AND FILES
 
 
 ADVANCED STUFF
-==============
+--------------
 
-INTENDED TREE STRUCTURE:
+### INTENDED TREE STRUCTURE:
 You can detach the base repository from 'origin' by renaming the remote, e.g.
 'git remote rename origin bvs-origin', so you can create your own base
 repository with its own upstream, or you can set its tracking branch to it,
@@ -83,7 +83,7 @@ repository.
 
 
 
-BVS MODULE LIST:
+### BVS MODULE LIST:
 The file '.bvsmodules' contains a list of known modules. Upon setup, you will
 be asked whether you want to (individually) install those.
 The format of each line in this file MUST be as follows:
@@ -101,7 +101,7 @@ every directory it encounters in the collection's toplevel hierarchy.
 
 
 
-FIFO CONTROL:
+### FIFO CONTROL:
 If you want to control bvsd through a FIFO file, type './run -f'. This will (if
 necessary) create the special file 'bvsd-fifo' which you can use to control
 bvsd by sending for example: 'echo "h" > $BIN_DIR/bvsd-fifo'.
