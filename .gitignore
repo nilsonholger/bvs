@@ -17,3 +17,9 @@ Makefile
 Doxyfile
 Session.vim
 tags
+
+android/bin
+android/build.xml
+android/gen
+android/libs
+android/obj
