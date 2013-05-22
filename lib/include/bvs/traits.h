@@ -4,7 +4,7 @@
 #ifdef __ANDROID_API__
 #include "droid.h"
 #include <android/log.h>
-#define LOG_TAG "BvsA/"
+#define LOG_TAG "BvsAndroidLog/"
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__))
 #endif
 #include <string>
