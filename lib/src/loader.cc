@@ -64,7 +64,7 @@ Loader& Loader::load(const std::string& id, const std::string& library, const st
 	*reinterpret_cast<void**>(&bvsRegisterModule)=dlsym(dlib, "bvsRegisterModule");
 
 	const char* dlerr = dlerror();
-	if (dlerr)
+	if (dlerr && bvsRegisterModule==nullptr)
 	{
 		LOG(0, "Loading function bvsRegisterModule() in '" << library << "' resulted in: " << dlerr);
 		errorHandler();
