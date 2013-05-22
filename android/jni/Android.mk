@@ -1,8 +1,9 @@
+BVS_OPTIONS:=-DBVS_LOG_SYSTEM
 LOCAL_PATH := $(abspath $(call my-dir)/../../)
 
 include $(CLEAR_VARS)
 
-LOCAL_CPPFLAGS := -std=c++11 -pthread -frtti -fexceptions
+LOCAL_CPPFLAGS := -std=c++11 -pthread -frtti -fexceptions $(BVS_OPTIONS)
 APP_USE_CPP0X := true 
 LOCAL_ARM_MODE := arm
 LOCAL_MODULE    := BvsA
@@ -42,7 +43,7 @@ OPENCV_LIB_TYPE:=STATIC
 include $(LOCAL_PATH)/../opencvsdk/native/jni/OpenCV.mk
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/lib/include 
-LOCAL_CPPFLAGS := -std=c++11 -pthread -frtti -fexceptions
+LOCAL_CPPFLAGS := -std=c++11 -pthread -frtti -fexceptions $(BVS_OPTIONS)
 APP_USE_CPP0X := true 
 
 LOCAL_ARM_MODE := arm
@@ -62,7 +63,7 @@ OPENCV_LIB_TYPE:=STATIC
 include $(LOCAL_PATH)/../opencvsdk/native/jni/OpenCV.mk
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/lib/include 
-LOCAL_CPPFLAGS := -std=c++11 -pthread -frtti -fexceptions
+LOCAL_CPPFLAGS := -std=c++11 -pthread -frtti -fexceptions $(BVS_OPTIONS)
 APP_USE_CPP0X := true 
 
 LOCAL_ARM_MODE := arm
