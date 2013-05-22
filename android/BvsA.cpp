@@ -121,7 +121,8 @@ extern "C"
 
 		LOGD(configStrChars);
 
-		char* bvsconfig[] ={"v",const_cast<char*>(configStrChars)};
+//		char* bvsconfig[] ={"v",const_cast<char*>(configStrChars)};
+		char* bvsconfig[] ={"v",<char*>(configStrChars)};
 
 		bvs = new BVS::BVS(2,bvsconfig);
 		bvs->loadModules();

@@ -63,7 +63,7 @@ Loader& Loader::load(const std::string& id, const std::string& library, const st
 	bvsRegisterModule_t bvsRegisterModule;
 	*reinterpret_cast<void**>(&bvsRegisterModule)=dlsym(dlib, "bvsRegisterModule");
 
-	char* dlerr = dlerror();
+	const char* dlerr = dlerror();
 	if (dlerr)
 	{
 		LOG(0, "Loading function bvsRegisterModule() in '" << library << "' resulted in: " << dlerr);
@@ -271,7 +271,7 @@ Loader& Loader::unloadLibrary(const std::string& id)
 
 	dlclose(dlib);
 
-	char* dlerr = dlerror();
+	const char* dlerr = dlerror();
 	if (dlerr)
 	{
 		LOG(0, "While closing '" << modulePath << "' following error occured: " << dlerror());
