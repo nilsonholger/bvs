@@ -57,6 +57,38 @@ about these changes being lost if you use the provided update function.
 
 
 
+CREATE AND USE YOUR OWN MODULE
+------------------------------
+
+To create your own module, please use `./run --new-module $MODULE_NAME`. Then
+start putting some functionality into your module located in
+`modules/$MODULE_NAME`. To connect your module with other modules, you need to
+create `BVS::Connector`'s. This could be done for example by declaring
+Connectors in your module's header:
+
+	BVS::Connector<int> input;
+	BVS::Connector<std::string> output;
+
+as well as its corresponding declaration in the constructor's initialization
+list:
+
+	...
+	input("in", BVS::ConnectorType::INPUT),
+	output("out", BVS::ConnectorType::OUTPUT),
+	...
+
+Then, in the `execute()` function, use `input.receive(...)` and
+`output.send(...)` to recieve and send your content from/to other modules.
+
+Furthermore, in your framework configuration, you need to specify the actual
+connection between individual modules:
+
+	modules = OtherModule   # defines output with name "out"
+	modules += YourModule.in(OtherModule.out)
+	# above connects YourModule's input named "in" with OtherModule's "out"
+
+
+
 DIRECTORIES AND FILES
 ---------------------
 
