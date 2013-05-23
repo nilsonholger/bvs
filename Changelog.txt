@@ -1,6 +1,12 @@
+2013-05-23  NilsonHolger <nilsonholger@hyve.org>
+
+	* 2013.2-public-appearance
+	* readme: various updates to improve documentation
+	* fixes: small fixes in support tools
+
 2013-05-15  NilsonHolger <nilsonholger@hyve.org>
 
-	* 2013.3-public-appearance
+	* 2013.1-public-appearance
 	* Public:
 	publicize framework, general cleanup, licensing, tooling and readme update
 
