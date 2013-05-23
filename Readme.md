@@ -89,8 +89,10 @@ connection between individual modules:
 
 
 
-DIRECTORIES AND FILES
----------------------
+ADVANCED STUFF
+--------------
+
+### TREE STRUCTURE:
 
 	'.'
 	 |_[build]:        OPTIONAL directory for out of source builds
@@ -109,10 +111,7 @@ DIRECTORIES AND FILES
 
 
 
-ADVANCED STUFF
---------------
-
-### INTENDED TREE STRUCTURE:
+### DEVELOPMENT HINTS:
 
 The base repository can be detached from *origin* by renaming the remote, e.g.
 `git remote rename origin bvs-origin`, so you can create your own base
@@ -153,5 +152,4 @@ inside vim:
 
 	map <leader>ur :execute "! echo r > build/bin/bvsd-fifo"<cr><cr>
 	map <leader>uh :execute "! echo hs " . expand('%:t:r') . " > build/bin/bvsd-fifo"<cr><cr>
-
 
