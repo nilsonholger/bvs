@@ -63,6 +63,7 @@ then
 	yes | ./run --setup
 fi
 sed -i -e "s/#add_subdirectory(bvs-modules\/ExampleCV)/add_subdirectory(bvs-modules\/ExampleCV)/g" modules/CMakeLists.txt
+rm -f modules/CMakeLists.txt-e
 
 # build system
 [ ! -d build ] && mkdir build
@@ -157,6 +158,7 @@ mv ${ORIG}.conf ${MOD}.conf
 FILES=(CMakeLists.txt $MOD.h $MOD.cc ${MOD}.conf)
 sed -i -e "s/$ORIG/$MOD/g" ${FILES[@]}
 sed -i -e "s/$ORIGC/$MODC/g" ${FILES[@]}
+rm -f *-e
 cd - > /dev/null
 
 # update module cmake info
@@ -167,6 +169,7 @@ then
 	echo ">>> Created Module 'modules/$MOD_PATH'! Please modify modules/CMakeLists.txt to add it to compilation!"
 else
 	eval sed -i -e "s/\(${ORIG_PATH//\//\\\/}\)/\(${MOD_PATH//\//\\\/}\)/" modules/CMakeLists.txt
+	eval rm -f modules/CMakeLists.txt-e
 	echo ">>> Renamed Module 'modules/$ORIG_PATH' to 'modules/$MOD_PATH' and modified CMakeLists.txt accordingly!"
 	echo ">>> 'modules/$ORIG_PATH' left intact, can be deleted now!"
 fi
@@ -238,6 +241,7 @@ eval "(cd $BASE_DIR/$BIN_DIR && $FIFO $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)
 # setup
 function bvs_setup {
 ORIGIN="`git config --get remote.origin.url`"
+ORIGIN=${ORIGIN:-https://github.com/nilsonholger/}
 ORIGIN="${ORIGIN/bvs.git}"
 echo
 echo ">>> SELECT modules to install!"
