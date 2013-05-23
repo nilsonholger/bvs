@@ -23,3 +23,7 @@ android/build.xml
 android/gen
 android/libs
 android/obj
+
+android/local.properties
+android/proguard-project.txt
+android/project.properties
