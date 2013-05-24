@@ -1,14 +1,14 @@
+#DEBUG WITH $(warning ...)
 BVS_OPTIONS:=-DBVS_LOG_SYSTEM
 #LOCAL_PATH variable is needed from buildsystem
 LOCAL_PATH := $(abspath $(call my-dir)/../../)
 BVS_ROOT_PATH := $(LOCAL_PATH)
-#get location of local OPENCV.MK from seperated mk
+#get location of local OPENCV.MK from seperated mk in variable LOCAL_OPENCV
 include $(BVS_ROOT_PATH)/android/local.opencv.mk
-OPENCVMK:=$(LOCAL_OPENCV)
-#BvsA.h need opencv, but we cant link against it, because ...
-#so save the LOCAL_C_INCLUDES to a variable and CLEAR all LOCAL_Variable
-include $(OPENCVMK)
-OPENCV_C_INCLUDES:=$(LOCAL_C_INCULDES)
+#BvsA.h need opencv, but we cant link against it, linked against it twice
+#so save the LOCAL_C_INCLUDES to OPENCV_C_INCLUDES  and CLEAR_VARS
+include $(LOCAL_OPENCV)
+OPENCV_C_INCLUDES:=$(LOCAL_C_INCLUDES)
 
 include $(CLEAR_VARS)
 
@@ -22,6 +22,7 @@ include $(call all-subdir-makefiles)
 	
 LOCAL_C_INCLUDES :=$(BVS_ROOT_PATH)/lib/include 
 LOCAL_C_INCLUDES += /usr/local/include
+LOCAL_C_INCLUDES += $(OPENCV_C_INCLUDES)
 LOCAL_SRC_FILES :=lib/src/barrier.cc
 LOCAL_SRC_FILES +=lib/src/bvs.cc
 LOCAL_SRC_FILES +=lib/src/config.cc
