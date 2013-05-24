@@ -40,11 +40,11 @@ cp -r OpenCV-2.4.5-android-sdk/ ~/android/opencv
 mkdir ~/workspace
 cp -r bvs ~/workspace/bvs
 
-#change the include path on OpenCV.mk
-vi ~/workspace/bvs/android/jni/Android.mk
-per module which is linked against opencv
-include ~/androidDev/opencv/sdk/native/jni/OpenCV.mk
+#add OPENCV path
 
+vi ~/workspace/bvs/android/local.opencv.mk
+add
+LOCAL_OPENCV=~/androidDev/opencv/sdk/native/jni/OpenCV.mk
 
 
 add sdk toools, ndk build tools and sdk platformtools to PATH
@@ -54,9 +54,7 @@ export PATH=$PATH:$HOME/androidDev/sdk/tools:$HOME/androidDev/sdk/platform-tools
 
 Edit the file $(ndk_dir)build/core/build-binary.mk. Change the line
 $(cleantarget): PRIVATE_CLEAN_FILES := ($(my)OBJS)
-
 to
-
 $(cleantarget): PRIVATE_CLEAN_FILES := $($(my)OBJS)
 
 
