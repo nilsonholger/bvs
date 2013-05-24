@@ -14,7 +14,8 @@
         android:label="@string/app_name" >
         <activity
             android:name="com.cvhci.bvsa.MainActivity" 
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+		android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

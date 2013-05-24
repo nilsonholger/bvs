@@ -49,7 +49,7 @@ include $(CLEAR_VARS)
 #OPENCV_INSTALL_MODULES:=on
 #OPENCV_CAMERA_MODULES:=on
 #OPENCV_LIB_TYPE:=STATIC
-include $(BVS_ROOT_PATH)/../opencvsdk/native/jni/OpenCV.mk
+include $(LOCAL_OPENCV)
 
 LOCAL_C_INCLUDES += $(BVS_ROOT_PATH)/lib/include 
 LOCAL_CPPFLAGS := -std=c++11 -pthread -frtti -fexceptions $(BVS_OPTIONS)
@@ -71,7 +71,7 @@ include $(CLEAR_VARS)
 #OpenCV
 ##### Following line not needed if OpenCV_Manager available on device
 #OPENCV_LIB_TYPE:=STATIC
-include $(BVS_ROOT_PATH)/../opencvsdk/native/jni/OpenCV.mk
+include $(LOCAL_OPENCV)
 
 LOCAL_C_INCLUDES += $(BVS_ROOT_PATH)/lib/include 
 LOCAL_C_INCLUDES += $(BVS_ROOT_PATH)/android
