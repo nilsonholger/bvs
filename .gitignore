@@ -24,3 +24,7 @@ android/gen
 android/libs
 android/obj
 android/local.opencv.mk
+
+android/local.properties
+android/proguard-project.txt
+android/project.properties
