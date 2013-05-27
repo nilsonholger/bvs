@@ -111,12 +111,19 @@ public class MainActivity extends Activity {
 		protected void onPause() {
 			// TODO Auto-generated method stub
 			super.onPause();
-			finish();
+			//finish();
+			android.os.Process.killProcess(android.os.Process.myPid());
+		}
+	@Override
+		protected void onDestroy() {
+			super.onDestroy();
+			android.os.Process.killProcess(android.os.Process.myPid());
 		}
 
 	private void onClose() {
 		// TODO Auto-generated method stub
-		finish();
+		//finish();
+		android.os.Process.killProcess(android.os.Process.myPid());
 	}
 
 	public void drawToDisplay()
