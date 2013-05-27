@@ -23,6 +23,8 @@ find_package(Doxygen)
 if(DOXYGEN_FOUND)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 	add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMENT "Generating documentation for everything!" VERBATIM)
+else()
+	add_custom_target(doc echo "DOXYGEN NOT FOUND: it is required to build the documentation! Please consider installing it.")
 endif()
 
 # recurse
