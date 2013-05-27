@@ -40,23 +40,23 @@ void drawToAndroid()
 	*javaMat=img;
 	
 	*/
-		LOG(0,"JNI drawToAndroid");
+	//	LOG(0,"JNI drawToAndroid");
 		
 		int status;
 		JNIEnv *env;
 		bool isAttached =false;
 
 		status = gJavaVM->GetEnv((void **) &env, JNI_VERSION_1_6);
-		LOG(0,"STATUS: " << status);
+	//	LOG(0,"STATUS: " << status);
 
 
 		if(status < 0)
 		{
-			LOG(1, "callback_handler: failed to get JNI environment, assuming native thread");
+	//		LOG(1, "callback_handler: failed to get JNI environment, assuming native thread");
 			status = gJavaVM->AttachCurrentThread(&env, NULL);
 			if(status <0)
 			{
-				LOG(1, "callback_handler: failed to attach current thread");
+	//			LOG(1, "callback_handler: failed to attach current thread");
 				return;
 			}
 		}
@@ -68,7 +68,7 @@ void drawToAndroid()
 			return;
 		}
 		
-		LOG(0,"Setting methodID");
+		//LOG(0,"Setting methodID");
 		//Method takes a cv::Mat and returns nothing, void
 		//jmethodID javaMethodID= env->GetMethodID(javaClass, "drawToDisplay", "(Lorg/opencv/core/Mat;)V");
 		//jmethodID javaMethodID= env->GetMethodID(javaClass, "drawToDisplay", "([Ljava/lang/Integer;)V");
@@ -78,7 +78,7 @@ void drawToAndroid()
 			LOG(0,"GetMethodID error");
 			return;
 		}
-	LOG(0,"methodID set");
+//	LOG(0,"methodID set");
 		isAttached=true;
 
 	
