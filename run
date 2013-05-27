@@ -14,7 +14,7 @@ echo ">>> CLEAN MAKEFILE"
 [ -r Makefile ] && make clean
 
 DIRS=()
-for i in `ls -d ./ daemon lib modules modules/*/ modules/*/*/ 2>/dev/null`
+for i in `ls -d ./ android daemon lib modules modules/*/ modules/*/*/ 2>/dev/null`
 do
 	DIRS[${#DIRS[@]}]="$i"
 done
