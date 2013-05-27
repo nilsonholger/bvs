@@ -48,7 +48,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 #ANDROIDCV MODULE
 include $(CLEAR_VARS)
-include $($(BVS_MODULES_PATH)/AndroidCV/Android.mk)
+include $($(BVS_MODULES_PATH)/AndroidCV/AndroidCV.mk)
 LOCAL_MODULE    := AndroidCV
 include $(BUILD_SHARED_LIBRARY)
 
