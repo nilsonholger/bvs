@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.6)
 
-project(BVSBASE)
+project(BVS)
 set(CMAKE_BUILD_TYPE "DEBUG")
 include(lib/cmake/toolbox.cmake)
 
