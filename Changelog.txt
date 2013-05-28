@@ -1,3 +1,11 @@
+2013-05-28  NilsonHolger <nilsonholger@hyve.org>
+
+	* 2013.3
+	* example: rewrite to improve usage as a "template" for new modules, old
+	version was too confusing for beginners as all functionality was inside
+	one module, but multiple instances of the same module were used, also
+	connection between modules was unclear
+
 2013-05-23  NilsonHolger <nilsonholger@hyve.org>
 
 	* 2013.2-public-appearance
