@@ -59,6 +59,7 @@ then
 	echo ">>> 'bvs-modules' not found, starting setup!"
 	yes | ./run --setup
 fi
+sed -i -e "s/#add_subdirectory(bvs-modules\/CaptureCV)/add_subdirectory(bvs-modules\/CaptureCV)/g" modules/CMakeLists.txt
 sed -i -e "s/#add_subdirectory(bvs-modules\/ExampleCV)/add_subdirectory(bvs-modules\/ExampleCV)/g" modules/CMakeLists.txt
 rm -f modules/CMakeLists.txt-e
 
