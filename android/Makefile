@@ -1,6 +1,6 @@
 all:
 	ndk-build V=1
-	android update project --target 2 --path . --name BvsA
+	android update project --target android-17 --path . --name BvsA
 	ant debug
 	adb shell am force-stop com.cvhci.bvsa
 	adb install -r bin/BvsA-debug.apk
