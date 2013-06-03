@@ -8,44 +8,41 @@ BASE_DIR=`dirname $0`
 
 # cleanup
 function bvs_clean {
-_PWD=$PWD
-[ -d build ] && cd build && echo ">>> chdir -> 'build'"
+[ -d build ] && cd build && echo ">>> CHDIR -> 'build'"
 
-echo ">>> make clean"
+echo ">>> CLEAN MAKEFILE"
 [ -r Makefile ] && make clean
 
-DIRS=(./ daemon lib modules)
-for i in `ls -d modules/*/ modules/*/*/ 2>/dev/null`
+DIRS=()
+for i in `ls -d ./ android daemon lib modules modules/*/ modules/*/*/ 2>/dev/null`
 do
-	[ $i != "modules/CMakeFiles/" ] && DIRS[${#DIRS[@]}]="$i"
+	DIRS[${#DIRS[@]}]="$i"
 done
 
-echo -n ">>> cmake cleanup:"
+echo -n ">>> CLEAN CMAKE:"
 for i in ${DIRS[@]}
 do
-	[ -r $i/CMakeCache.txt ] && rm $i/CMakeCache.txt
-	[ -r $i/Makefile ] && rm $i/Makefile && echo -n " $i"
-	[ -r $i/cmake_install.cmake ] && rm $i/cmake_install.cmake
-	[ -r $i/CMakeFiles ] && rm -r $i/CMakeFiles
+	rm -rf $i/Makefile $i/CMakeCache.txt $i/cmake_install.cmake $i/CMakeFiles
+	echo -n " $i"
 done
 echo
 
-echo -n ">>> documentation cleanup:"
+echo -n ">>> CLEAN DOCUMENTATION:"
 for i in ${DIRS[@]}
 do
-	[ -r $i/Doxyfile ] && rm $i/Doxyfile
-	[ -r $i/doc ] && rm -r $i/doc && echo -n " $i"
+	rm -f $i/Doxyfile $i/doc
+	echo -n " $i"
 done
 echo
 
-echo -n ">>> directory cleanup:"
+echo -n ">>> CLEAN (EMPTY) DIRECTORIES:"
 for (( i = ${#DIRS[@]}-1; i>0; i-- ))
 do
 	[ -d ${DIRS[i]} ] && rmdir ${DIRS[i]} &> /dev/null && echo -n " ${DIRS[i]}"
 done
 echo
 
-cd $_PWD
+cd $BASE_DIR
 }
 
 

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.6)
 
-project(BVSBASE)
+project(BVS)
 set(CMAKE_BUILD_TYPE "DEBUG")
 include(lib/cmake/toolbox.cmake)
 
@@ -23,9 +23,18 @@ find_package(Doxygen)
 if(DOXYGEN_FOUND)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 	add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMENT "Generating documentation for everything!" VERBATIM)
+else()
+	add_custom_target(doc echo "DOXYGEN NOT FOUND: it is required to build the documentation! Please consider installing it.")
 endif()
 
 # recurse
 add_subdirectory(lib)
 add_subdirectory(daemon)
 add_subdirectory(modules)
+
+# ANDROID
+set(BVS_ANDROID_APP FALSE CACHE BOOL "Generate Android targets!")
+mark_as_advanced(BVS_ANDROID_APP)
+if(BVS_ANDROID_APP)
+	add_subdirectory(android)
+endif()
