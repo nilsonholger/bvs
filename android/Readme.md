@@ -39,15 +39,18 @@ create direcory for android development, for example in home directory
 ## BVS SETUP
 ### DOWNLOAD
 * BVS Framework from GitHub `wget https://github.com/nilsonholger/bvs/archive/master.zip`
+
 	unzip master.zip
 	rm master.zip
 
 * if needed modules `wget https://github.com/nilsonholger/bvs-modules/archive/master.zip`
+
 	unzip master.zip
 	rm master.zip
 
 
 * create workspace folder, for example in home directory
+
 	mkdir ~/workspace
 	mv -r bvs-master ~/workspace/bvs
 	mv -r bvs-modules-master ~/workspace/bvs/modules/bvs-modules
@@ -55,17 +58,22 @@ create direcory for android development, for example in home directory
 
 ### CONFIGURATION
 The following paths depends on the paths you used before
-* add OPENCV path open ~/workspace/bvs/android/local.opencv.mk
-add
-	LOCAL_OPENCV=~/androidDev/opencv/native/jni/OpenCV.mk
 
+#### PATH variable
 
-* sdk toools, ndk build tools and sdk platformtools to PATH 
+sdk toools, ndk build tools and sdk platformtools to PATH 
 platform tools not yet available, but will be installed on next step
 
 	export PATH=$PATH:$HOME/androidDev/sdk/tools:$HOME/androidDev/sdk/platform-tools:$HOME/androidDev/ndk
 
-* opencv  location for java
+
+#### OPENCV path 
+open ~/workspace/bvs/android/local.opencv.mk and add
+
+	LOCAL_OPENCV=~/androidDev/opencv/native/jni/OpenCV.mk
+
+
+#### opencv location for java
 
 open ~/workspace/bvs/android/project.properties
 add	
@@ -75,23 +83,27 @@ ATTENTION!: no shortcut like $HOME or ~  allowed, PATH HAS TO BE RELATIVE
 
 
 #### opencv java
-cd ~/androidDev/opencv/java
-android update project --target 1 --path .
 
-* start Android SDK Manager `android sdk`
+	cd ~/androidDev/opencv/java
+	android	update project --target 1 --path .
+
+#### Install Android SDK addons
+
+start Android SDK Manager `android sdk`
 
 Now, you have to check your android version on your device and install
 
-##### TOOLS
+###### TOOLS
 * Android SDK Platform-tools
 * Android SDK Build-tools
 
 And for your android version or newest if running on emulator for example
-##### Android 4.2.2(API17)
+
+###### Android 4.2.2(API17)
 * SDK Platform
 * ARM EABI v7a System IMage
 
-##### Extras
+###### Extras
 * Android support library
 
 close Android SDK Manager
@@ -108,15 +120,16 @@ on emulator: `android avd`
 
 close Android Virtual Device Manager
 
-* start new created emulator `emulator -avd nameOfEmulator &`
+start new created emulator `emulator -avd nameOfEmulator &`
 
 
 #### Install OpenCV Manager on emulator
+
 	cd ~/androidDev/opencv/apk/
 	adb install OpenCV_2.4.5_Manager_2.7_armeabi.apk
 
 
-ATTENTION!
+####ATTENTION!
 There is a bug in the android-ndk-r8e 
 with the path above, our ndk_dir is ~/androidDev/ndk/
 
