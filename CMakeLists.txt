@@ -31,10 +31,3 @@ endif()
 add_subdirectory(lib)
 add_subdirectory(daemon)
 add_subdirectory(modules)
-
-# ANDROID
-set(BVS_ANDROID_APP FALSE CACHE BOOL "Generate Android targets!")
-mark_as_advanced(BVS_ANDROID_APP)
-if(BVS_ANDROID_APP)
-	add_subdirectory(android)
-endif()
