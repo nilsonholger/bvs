@@ -33,7 +33,7 @@ create direcory for android development, for example in home directory and copy 
 	mkdir ~/androidDev
 	cp -r android-sdk-linux/ ~/androiDev/sdk
 	cp -r android-ndk-r8e/ ~/androiDev/ndk
-	cp -r OpenCV-2.4.5-android-sdk/sdk/ ~/android/opencv
+	cp -r OpenCV-2.4.5-android-sdk/ ~/android/opencv
 
 
 ## BVS SETUP
@@ -68,26 +68,10 @@ platform tools not yet available, but will be installed on next step
 
 
 #### OPENCV PATH 
-open ~/workspace/bvs/android/local.opencv.mk and add
+create and open ~/workspace/bvs/android/local.opencv.mk and add
 
-	LOCAL_OPENCV=~/androidDev/opencv/native/jni/OpenCV.mk
+	LOCAL_OPENCV=~/androidDev/opencv/sdk/native/jni/OpenCV.mk
 
-
-#### OPENCV LOCATION FOR JAVA
-
-open ~/workspace/bvs/android/project.properties
-add	
-
-	target=android-17
-	android.library.reference.1=../../../opencv/sdk/java`
-	
-ATTENTION!: no shortcut like $HOME or ~  allowed, PATH HAS TO BE RELATIVE
-
-
-#### OPENCV JAVA ANDROID PROJECT
-
-	cd ~/androidDev/opencv/java
-	android	update project --target 1 --path .
 
 #### INSTALL ANDROID SDK ADDONS
 
@@ -124,12 +108,30 @@ close Android Virtual Device Manager
 
 start new created emulator `emulator -avd nameOfEmulator &`
 
-#### Install OpenCV Manager on emulator
+#### OPENCV LOCATION FOR JAVA
+
+create and open ~/workspace/bvs/android/project.properties
+add to `target` your android version, for which you have installed the SDK Platform before, for example `android-17`
+
+	target=android-17
+	android.library.reference.1=../../../opencv/sdk/java`
+	
+ATTENTION!: no shortcut like $HOME or ~  allowed, PATH HAS TO BE RELATIVE
+
+
+#### OPENCV JAVA ANDROID PROJECT
+
+again add to `target` your android version, for example `android-17`
+
+	cd ~/androidDev/opencv/sdk/java
+	android	update project --target android-17 --path .
+
+#### Install OpenCV Manager on device / emulator
 
 	cd ~/androidDev/opencv/apk/
 	adb install OpenCV_2.4.5_Manager_2.7_armeabi.apk
 
-####ATTENTION!
+#### ATTENTION!
 There is a bug in the android-ndk-r8e 
 with the path above, our ndk_dir is ~/androidDev/ndk/
 
