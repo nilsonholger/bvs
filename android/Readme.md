@@ -59,7 +59,7 @@ create direcory for android development, for example in home directory
 ### CONFIGURATION
 The following paths depends on the paths you used before
 
-#### PATH variable
+#### PATH VARIABLE 
 
 sdk toools, ndk build tools and sdk platformtools to PATH 
 platform tools not yet available, but will be installed on next step
@@ -67,18 +67,20 @@ platform tools not yet available, but will be installed on next step
 	export PATH=$PATH:$HOME/androidDev/sdk/tools:$HOME/androidDev/sdk/platform-tools:$HOME/androidDev/ndk
 
 
-#### OPENCV path 
+#### OPENCV PATH 
 open ~/workspace/bvs/android/local.opencv.mk and add
 
 	LOCAL_OPENCV=~/androidDev/opencv/native/jni/OpenCV.mk
 
 
-#### opencv location for java
+#### OPENCV LOCATION FOR JAVA
 
 open ~/workspace/bvs/android/project.properties
 add	
+
 	target=android-17
 	android.library.reference.1=../../../opencv/sdk/java`
+	
 ATTENTION!: no shortcut like $HOME or ~  allowed, PATH HAS TO BE RELATIVE
 
 
@@ -110,8 +112,8 @@ close Android SDK Manager
 
 connect your device, or create emulator:
 on device: got to settings and activate developer mode
-
-on emulator: `android avd`
+or
+start Android Virtual Device Mangager: `android avd`
 	
 	New
 	type a name
@@ -122,12 +124,10 @@ close Android Virtual Device Manager
 
 start new created emulator `emulator -avd nameOfEmulator &`
 
-
 #### Install OpenCV Manager on emulator
 
 	cd ~/androidDev/opencv/apk/
 	adb install OpenCV_2.4.5_Manager_2.7_armeabi.apk
-
 
 ####ATTENTION!
 There is a bug in the android-ndk-r8e 
