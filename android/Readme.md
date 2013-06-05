@@ -28,7 +28,7 @@ Unpack downloaded file (they have to be executable, so do `chmod 777 filename` i
 	unzip OpenCV-2.4.5-android-sdk.zip
 
 a little clean up
-create direcory for android development, for example in home directory
+create direcory for android development, for example in home directory and copy android stuff
 
 	mkdir ~/androidDev
 	cp -r android-sdk-linux/ ~/androiDev/sdk
@@ -84,24 +84,24 @@ add
 ATTENTION!: no shortcut like $HOME or ~  allowed, PATH HAS TO BE RELATIVE
 
 
-#### opencv java
+#### OPENCV JAVA ANDROID PROJECT
 
 	cd ~/androidDev/opencv/java
 	android	update project --target 1 --path .
 
-#### Install Android SDK addons
+#### INSTALL ANDROID SDK ADDONS
 
 start Android SDK Manager `android sdk`
-
 Now, you have to check your android version on your device and install
 
 ###### TOOLS
 * Android SDK Platform-tools
 * Android SDK Build-tools
 
-And for your android version or newest if running on emulator for example
+And for your android version or use newest version if running on emulator,
+for example
 
-###### Android 4.2.2(API17)
+###### Android 4.2.2
 * SDK Platform
 * ARM EABI v7a System IMage
 
