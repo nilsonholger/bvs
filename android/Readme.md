@@ -1,19 +1,19 @@
-#BVS on Android
+# BVS on Android
 
 
-##REQUIREMENTS
+## REQUIREMENTS
 
-###Java JDK
+### Java JDK
 
 	sudo apt-get install openjdk-6-jre icedtea6-plugin
 	sudo apt-get install openjdk-6-jdk openjdk-6-source openjdk-6-jre-headless openjdk-6-jre-lib
 	sudo apt-get install ant
 
 
-###ia32 shared libraries for use on amd64 and ia64 systems
+### ia32 shared libraries for use on amd64 and ia64 systems
 	sudo apt-get install ia32-libs
 
-###Android Development 
+### Android Development 
 We do not use eclipse so download only
 
 * SDK Tools `wget http://dl.google.com/android/android-sdk_r22-linux.tgz`
@@ -36,8 +36,8 @@ create direcory for android development, for example in home directory
 	cp -r OpenCV-2.4.5-android-sdk/sdk/ ~/android/opencv
 
 
-##BVS SETUP
-###DOWNLOAD
+## BVS SETUP
+### DOWNLOAD
 * BVS Framework from GitHub `wget https://github.com/nilsonholger/bvs/archive/master.zip`
 	unzip master.zip
 	rm master.zip
@@ -74,7 +74,7 @@ add
 ATTENTION!: no shortcut like $HOME or ~  allowed, PATH HAS TO BE RELATIVE
 
 
-####opencv java
+#### opencv java
 cd ~/androidDev/opencv/java
 android update project --target 1 --path .
 
@@ -82,16 +82,16 @@ android update project --target 1 --path .
 
 Now, you have to check your android version on your device and install
 
-####TOOLS
+##### TOOLS
 * Android SDK Platform-tools
 * Android SDK Build-tools
 
 And for your android version or newest if running on emulator for example
-#### Android 4.2.2(API17)
+##### Android 4.2.2(API17)
 * SDK Platform
 * ARM EABI v7a System IMage
 
-#### Extras
+##### Extras
 * Android support library
 
 close Android SDK Manager
@@ -111,7 +111,7 @@ close Android Virtual Device Manager
 * start new created emulator `emulator -avd nameOfEmulator &`
 
 
-####Install OpenCV Manager on emulator
+#### Install OpenCV Manager on emulator
 	cd ~/androidDev/opencv/apk/
 	adb install OpenCV_2.4.5_Manager_2.7_armeabi.apk
 
@@ -124,4 +124,3 @@ Edit the file $(ndk_dir)build/core/build-binary.mk. Change the line
 $(cleantarget): PRIVATE_CLEAN_FILES := ($(my)OBJS)
 to
 $(cleantarget): PRIVATE_CLEAN_FILES := $($(my)OBJS)
-
