@@ -9,6 +9,9 @@ include_directories(lib/include)
 set(CMAKE_SKIP_RPATH ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-rpath,.")
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+set(BVS_STATIC_MODULES "")
+
 # output directory
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
@@ -28,6 +31,6 @@ else()
 endif()
 
 # recurse
+add_subdirectory(modules)
 add_subdirectory(lib)
 add_subdirectory(daemon)
-add_subdirectory(modules)

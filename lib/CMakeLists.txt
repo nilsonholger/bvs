@@ -7,6 +7,11 @@ include_directories(include src)
 add_subdir_lib(src bvs SHARED barrier.cc bvs.cc config.cc connector.cc control.cc info.cc loader.cc logger.cc logsystem.cc module.cc utils.cc)
 target_link_libraries(bvs dl pthread)
 
+set(BVS_LIBRARY_TYPE STATIC PARENT_SCOPE)
+set(BVS_LINK_LIBRARY bvs PARENT_SCOPE)
+message(STATUS "BVS modules final: $ENV{BVS_STATIC_MODULES}")
+target_link_libraries(bvs -Wl,--whole-archive $ENV{BVS_STATIC_MODULES} -Wl,--no-whole-archive)
+
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/bvs.conf ${CMAKE_BINARY_DIR}/bin/bvs.conf)
 
 # add documentation target (using doxygen)
