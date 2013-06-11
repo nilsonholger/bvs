@@ -10,7 +10,10 @@ target_link_libraries(bvs dl pthread)
 set(BVS_LIBRARY_TYPE STATIC PARENT_SCOPE)
 set(BVS_LINK_LIBRARY bvs PARENT_SCOPE)
 message(STATUS "BVS modules final: $ENV{BVS_STATIC_MODULES}")
+
+if(BVS_STATIC_MODULES)
 target_link_libraries(bvs -Wl,--whole-archive $ENV{BVS_STATIC_MODULES} -Wl,--no-whole-archive)
+endif()
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/bvs.conf ${CMAKE_BINARY_DIR}/bin/bvs.conf)
 
@@ -23,39 +26,26 @@ else()
 	add_custom_target(bvs-doc echo "DOXYGEN NOT FOUND: it is required to build the documentation! Please consider installing it.")
 endif()
 
-# BVS_LOG_SYSTEM
-set(BVS_LOG_SYSTEM ON CACHE BOOL "Enable BVS builtin log system.")
-if(BVS_LOG_SYSTEM)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBVS_LOG_SYSTEM" PARENT_SCOPE)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBVS_LOG_SYSTEM")
-endif()
-
 # BVS_MODULE_HOTSWAP
 set(BVS_MODULE_HOTSWAP OFF CACHE BOOL "Enable BVS's HotSwap(TM;-) facilities. WARNING: DEVELOPERS ONLY!")
 mark_as_advanced(BVS_MODULE_HOTSWAP)
 if(BVS_MODULE_HOTSWAP)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBVS_MODULE_HOTSWAP")
+	add_definitions(-DBVS_MODULE_HOTSWAP)
 endif()
-
-# BVS_THREAD_NAMES
-set(BVS_THREAD_NAMES ${UNIX} CACHE BOOL "Enable thread naming (htop: enable 'Show custom thread names', or try 'ps -La'). UNIX ONLY!")
-mark_as_advanced(BVS_THREAD_NAMES)
-if(BVS_THREAD_NAMES)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBVS_THREAD_NAMES" PARENT_SCOPE)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBVS_THREAD_NAMES")
+if(BVS_STATIC_MODULES)
+	set(BVS_MODULE_HOTSWAP OFF CACHE BOOL "Enable BVS's HotSwap(TM;-) facilities. WARNING: DEVELOPERS ONLY!" FORCE)
 endif()
 
 # BVS_GCC_VISIBILITY
 set(BVS_GCC_VISIBILITY ON CACHE BOOL "Enable gcc's visibility feature (reduce dynamic library load times as well as decrease library size).")
 mark_as_advanced(BVS_GCC_VISIBILITY)
 if(BVS_GCC_VISIBILITY)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBVS_GCC_VISIBILITY -fvisibility=hidden")
+	add_definitions(-DBVS_GCC_VISIBILITY -fvisibility=hidden)
 endif()
 
 # BVS_OSX_ANOMALIES
 set(BVS_OSX_ANOMALIES ${APPLE} CACHE BOOL "Enable OSX anomalies, e.g. 'so->dylib'.")
 mark_as_advanced(BVS_OSX_ANOMALIES)
 if(BVS_OSX_ANOMALIES)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBVS_OSX_ANOMALIES")
+	add_definitions(-DBVS_OSX_ANOMALIES)
 endif()
-
