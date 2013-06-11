@@ -4,7 +4,7 @@
 #include <unistd.h>
  #include <opencv2/core/core.hpp>
  #include <opencv2/imgproc/imgproc.hpp>
-#include "lib/include/bvs/bvs.h"
+#include <bvs/bvs.h>
 cv::Mat * javaMat;
 jobject  javaObj;
 

@@ -5,7 +5,11 @@
 #ifdef __unix__
 #ifdef BVS_THREAD_NAMES
 #include <sys/prctl.h>
+#ifdef __ANDROID_API__
+#include <errno.h>
+#else
 #include <error.h>
+#endif
 #endif //BVS_THREAD_NAMES
 #endif //__unix__
 

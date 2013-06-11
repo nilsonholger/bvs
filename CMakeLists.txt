@@ -6,6 +6,7 @@ include(lib/cmake/toolbox.cmake)
 
 # general settings
 include_directories(lib/include)
+
 set(CMAKE_SKIP_RPATH ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-rpath,.")
 
@@ -26,8 +27,10 @@ if(DOXYGEN_FOUND)
 else()
 	add_custom_target(doc echo "DOXYGEN NOT FOUND: it is required to build the documentation! Please consider installing it.")
 endif()
-
+#android path
+include_directories(android)
 # recurse
 add_subdirectory(lib)
 add_subdirectory(daemon)
 add_subdirectory(modules)
+add_subdirectory(android)
