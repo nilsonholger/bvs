@@ -61,8 +61,12 @@ Loader& Loader::load(const std::string& id, const std::string& library, const st
 	// execute bvsRegisterModule in loaded lib
 	typedef void (*bvsRegisterModule_t)(ModuleInfo moduleInfo, const Info& info);
 	bvsRegisterModule_t bvsRegisterModule;
-	//*reinterpret_cast<void**>(&bvsRegisterModule)=dlsym(dlib, "bvsRegisterModule");
+
+#ifndef BVS_STATIC_MODULES
+	*reinterpret_cast<void**>(&bvsRegisterModule)=dlsym(dlib, "bvsRegisterModule");
+#else
 	*reinterpret_cast<void**>(&bvsRegisterModule)=dlsym(dlib, std::string("bvsRegisterModule_" + library).c_str());
+#endif //BVS_STATIC_MODULES
 
 	char* dlerr = dlerror();
 	if (dlerr)
@@ -231,8 +235,12 @@ Loader& Loader::hotSwapModule(const std::string& id)
 LibHandle Loader::loadLibrary(const std::string& id, const std::string& library)
 {
 	std::string modulePath = "lib" + library + ".so";
-	//LibHandle dlib = dlopen(modulePath.c_str(), RTLD_NOW);
+#ifndef BVS_STATIC_MODULES
+	LibHandle dlib = dlopen(modulePath.c_str(), RTLD_NOW);
+#else
 	LibHandle dlib = dlopen(NULL, RTLD_NOW);
+#endif //BVS_STATIC_MODULES
+
 	if (dlib!=NULL)
 	{
 		LOG(3, "Loading '" << id << "' from '" << modulePath << "'!");

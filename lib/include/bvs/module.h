@@ -69,6 +69,21 @@ BVS_PUBLIC void registerModule(const std::string& id, BVS::Module* module, bool 
  *
  * \a BVS_MODULE_CLASS_NAME Name of module class.
  */
+#ifndef BVS_STATIC_MODULES
+#define BVS_MODULE_UTILITIES(BVS_MODULE_CLASS_NAME) \
+	extern "C" { \
+		int bvsRegisterModule(BVS::ModuleInfo info, BVS::Info& bvs) \
+		{ \
+			registerModule(info.id, new BVS_MODULE_CLASS_NAME(info, bvs)); \
+			return 0; \
+		} \
+		int bvsHotSwapModule(std::string id, BVS::Module* module) \
+		{ \
+			registerModule(id, reinterpret_cast<BVS_MODULE_CLASS_NAME*>(module), true); \
+			return 0; \
+		} \
+	}
+#else
 #define BVS_MODULE_UTILITIES(BVS_MODULE_CLASS_NAME) \
 	extern "C" { \
 		int bvsRegisterModule_##BVS_MODULE_CLASS_NAME(BVS::ModuleInfo info, BVS::Info& bvs) \
@@ -77,14 +92,7 @@ BVS_PUBLIC void registerModule(const std::string& id, BVS::Module* module, bool 
 			return 0; \
 		} \
 	}
-/*
-		int bvsHotSwapModule(std::string id, BVS::Module* module) \
-		{ \
-			registerModule(id, reinterpret_cast<BVS_MODULE_CLASS_NAME*>(module), true); \
-			return 0; \
-		} \
-	}
-*/
+#endif //BVS_STATIC_MODULES
 
 
 

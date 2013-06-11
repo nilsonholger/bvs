@@ -8,9 +8,7 @@ include(lib/cmake/toolbox.cmake)
 include_directories(lib/include)
 set(CMAKE_SKIP_RPATH ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-rpath,.")
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-set(BVS_STATIC_MODULES "")
 
 # output directory
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/bin)
@@ -29,6 +27,12 @@ if(DOXYGEN_FOUND)
 else()
 	add_custom_target(doc echo "DOXYGEN NOT FOUND: it is required to build the documentation! Please consider installing it.")
 endif()
+
+#set(BVS_MODULE_TYPE SHARED)
+#set(BVS_LINK_LIBRARIES bvs)
+set(BVS_MODULE_TYPE STATIC)
+set(BVS_LINK_LIBRARIES "")
+add_definitions(-DBVS_STATIC_MODULES)
 
 # recurse
 add_subdirectory(modules)
