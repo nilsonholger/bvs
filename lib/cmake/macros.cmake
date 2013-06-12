@@ -61,3 +61,33 @@ macro(disable_compiler_warnings RECURSE)
 		set_source_files_properties(${GLOB_FILES} PROPERTIES COMPILE_FLAGS -w)
 	endif()
 endmacro(disable_compiler_warnings)
+
+# disable variable depending on a condition
+#
+# CALL: disable_if(OPT COND)
+#   OPT: otpion/variable to disable
+#   COND: conditional option to use
+#
+macro(disable_if OPT COND)
+	if(${COND})
+		if(NOT __${OPT} AND ${OPT})
+			set(__${OPT} ${${OPT}} CACHE INTERNAL "INTERNAL CACHE FOR ${OPT}")
+		endif()
+		if(NOT __${OPT}_HELPSTRING)
+			get_property(__${OPT}_HELPSTRING CACHE ${OPT} PROPERTY HELPSTRING)
+			set(__${OPT}_HELPSTRING CACHE INTERNAL "${__${OPT}_HELPSTRING}")
+		endif()
+		unset(${OPT} CACHE)
+	else()
+		if(NOT __${OPT} AND ${OPT}) # AND NOT BVS_MODULE_HOTSWAP STREQUAL "")
+			set(__${OPT} ${${OPT}} CACHE INTERNAL "INTERNAL CACHE FOR ${OPT}")
+		endif()
+		if(NOT __${OPT}_HELPSTRING)
+			get_property(HELPSTRING CACHE ${OPT} PROPERTY HELPSTRING)
+			set(__${OPT}_HELPSTRING "${HELPSTRING}" CACHE INTERNAL "")
+		endif()
+		set(${OPT} ${__${OPT}} CACHE BOOL "${__${OPT}_HELPSTRING}" FORCE)
+		unset(__${OPT} CACHE)
+		unset(__${OPT}_HELPSTRING CACHE)
+	endif()
+endmacro(disable_if)
