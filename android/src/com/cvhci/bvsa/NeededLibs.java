@@ -6,7 +6,9 @@ public class NeededLibs {
 		//load shared libraries
 		System.loadLibrary("gnustl_shared");
 		System.loadLibrary("BvsA");
-		System.loadLibrary("ExampleCV");
+#		System.loadLibrary("FindBallCV");
+		System.loadLibrary("ExampleCV")
+
 		System.loadLibrary("AndroidCV");
 
 	}
