@@ -9,7 +9,6 @@ target_link_libraries(bvs dl pthread)
 
 set(BVS_LIBRARY_TYPE STATIC PARENT_SCOPE)
 set(BVS_LINK_LIBRARY bvs PARENT_SCOPE)
-message(STATUS "BVS modules final: $ENV{BVS_STATIC_MODULES}")
 
 if(BVS_STATIC_MODULES)
 target_link_libraries(bvs -Wl,--whole-archive $ENV{BVS_STATIC_MODULES} -Wl,--no-whole-archive)
