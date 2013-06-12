@@ -91,3 +91,13 @@ macro(disable_if OPT COND)
 		unset(__${OPT}_HELPSTRING CACHE)
 	endif()
 endmacro(disable_if)
+
+# display all set variables
+#
+# CALL: display_all_variables()
+macro(display_all_variables)
+	get_cmake_property(_variableNames VARIABLES)
+	foreach (_variableName ${_variableNames})
+		message(STATUS "${_variableName} = ${${_variableName}}")
+	endforeach()
+endmacro(display_all_variables)
