@@ -31,9 +31,6 @@ mark_as_advanced(BVS_MODULE_HOTSWAP)
 if(BVS_MODULE_HOTSWAP)
 	add_definitions(-DBVS_MODULE_HOTSWAP)
 endif()
-if(BVS_STATIC_MODULES)
-	set(BVS_MODULE_HOTSWAP OFF CACHE BOOL "Enable BVS's HotSwap(TM;-) facilities. WARNING: DEVELOPERS ONLY!" FORCE)
-endif()
 
 # BVS_GCC_VISIBILITY
 set(BVS_GCC_VISIBILITY ON CACHE BOOL "Enable gcc's visibility feature (reduce dynamic library load times as well as decrease library size).")
@@ -48,3 +45,8 @@ mark_as_advanced(BVS_OSX_ANOMALIES)
 if(BVS_OSX_ANOMALIES)
 	add_definitions(-DBVS_OSX_ANOMALIES)
 endif()
+
+
+
+# DEPENDENCIES
+disable_if(BVS_MODULE_HOTSWAP BVS_STATIC_MODULES)
