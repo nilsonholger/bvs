@@ -11,7 +11,11 @@ set(BVS_LIBRARY_TYPE STATIC PARENT_SCOPE)
 set(BVS_LINK_LIBRARY bvs PARENT_SCOPE)
 
 if(BVS_STATIC_MODULES)
-target_link_libraries(bvs -Wl,--whole-archive $ENV{BVS_STATIC_MODULES} -Wl,--no-whole-archive)
+	if(APPLE)
+		target_link_libraries(bvs -all_load $ENV{BVS_STATIC_MODULES})
+	else()
+		target_link_libraries(bvs -Wl,--whole-archive $ENV{BVS_STATIC_MODULES} -Wl,--no-whole-archive)
+	endif()
 endif()
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/bvs.conf ${CMAKE_BINARY_DIR}/bin/bvs.conf)
