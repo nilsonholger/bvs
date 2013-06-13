@@ -1,3 +1,32 @@
+# add dependeny between a variable and (a) condition(s)
+#
+# CALL: add_dependeny(OPT COND ...)
+#   OPT: otpion/variable to disable
+#   COND: conditional option to use
+#   ...: condition(s), must be valid cmake condition, e.g. NOT (FOO OR BAR)
+#
+macro(add_dependency OPT COND)
+	if(NOT ${COND} STREQUAL "ON_IF" AND NOT ${COND} STREQUAL "OFF_IF")
+		message(FATAL_ERROR "wrong argument, must be: ON_IF or OFF_IF!")
+	endif()
+	set(COND_LIST ${ARGV})
+	list(REMOVE_AT COND_LIST 0 1)
+	if((NOT DEFINED __${OPT}) AND (NOT ${OPT} STREQUAL "${__${OPT}}"))
+		get_property(HELPSTRING CACHE ${OPT} PROPERTY HELPSTRING)
+		set(__${OPT} ${${OPT}} CACHE INTERNAL "${HELPSTRING}")
+	endif()
+	get_property(HELPSTRING CACHE __${OPT} PROPERTY HELPSTRING)
+	if(${COND_LIST})
+		unset(${OPT} CACHE)
+		if(${COND} STREQUAL "ON_IF")
+			set(${OPT} ON CACHE INTERNAL "${HELPSTRING}" FORCE)
+		endif()
+	else()
+		set(${OPT} ${__${OPT}} CACHE BOOL "${HELPSTRING}" FORCE)
+		unset(__${OPT} CACHE)
+	endif()
+endmacro(add_dependency)
+
 # take a directory and a list of sources and prepend the directory to each source
 #
 # CALL: add_subdir(DIR SRC_LIST_NAME FILE1 [...])
