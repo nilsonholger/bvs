@@ -1,14 +1,14 @@
-
-
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
-
+#include <bvs/bvs.h>
 #include "BvsA.h"
- #include <opencv2/core/core.hpp>
- 
+#include <opencv2/core/core.hpp>
+
 static JavaVM *gJavaVM;
 static jobject gInterfaceObject;	
+BVS::BVS* bvs;
+jobject  javaObj;
 
 void shutdownFunction()
 {

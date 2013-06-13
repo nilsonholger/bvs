@@ -7,11 +7,11 @@ set(ANDROID_ABI armeabi-v7a)
 set(ANDROID_NATIVE_API_LEVEL android-14)
 set(ANDROID_STL_FORCE_FEATURES ON)
 
-set(BVS_ROOT_PATH ${CMAKE_BINARY_DIR})
+set(BVS_ROOT_PATH ${CMAKE_BINARY_DIR}/../)
 message(STATUS "BVS_ROOT_PATH:"${BVS_ROOT_PATH})
 set(APP_USE_CPP0X true)
 #set(LOCAL_ARM_MODE arm)
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic" )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic --export-dynamic" )
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti -fexceptions -DBVS_LOG_SYSTEM")
 #test for ANDROID and look for stuff not relevant to android.
 if(NOT ANDROID)
@@ -34,6 +34,12 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 add_subdir_lib(${BVS_ROOT_PATH}/lib/src BvsA SHARED barrier.cc bvs.cc config.cc connector.cc control.cc droid.cc info.cc loader.cc logger.cc logsystem.cc module.cc utils.cc ../../android/jni/BvsA.cpp)
 
 
-target_link_libraries(BvsA log ${CMAKE_BINARY_DIR}/bin/libgnustl_shared.so )
+target_link_libraries(BvsA dl log ${CMAKE_BINARY_DIR}/bin/libgnustl_shared.so )
+
+if(BVS_STATIC_MODULES)
+target_link_libraries(BvsA $ENV{BVS_STATIC_MODULES} )
+endif()
+
+
 
 # have to copy the .so file from bvs/bin to bvs/android/libs/armeabi-v7a/
