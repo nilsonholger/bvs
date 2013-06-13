@@ -62,7 +62,6 @@ mark_as_advanced(BVS_ANDROID_APP)
 if(BVS_ANDROID_APP)
 	include_directories(android)
 	add_subdirectory(android)
-#TODO: force static modules on
 endif()
 
 
