@@ -57,8 +57,9 @@ echo
 if [ ! -d modules/bvs-modules ]
 then
 	echo ">>> 'bvs-modules' not found, starting setup!"
-	yes | ./run --setup
+	echo "yNNNNNNNNNNNNN" | ./run --setup
 fi
+sed -i -e "s/#add_subdirectory(bvs-modules\/CaptureCV)/add_subdirectory(bvs-modules\/CaptureCV)/g" modules/CMakeLists.txt
 sed -i -e "s/#add_subdirectory(bvs-modules\/ExampleCV)/add_subdirectory(bvs-modules\/ExampleCV)/g" modules/CMakeLists.txt
 rm -f modules/CMakeLists.txt-e
 
@@ -252,8 +253,9 @@ do
 	[ -d modules/$NAME ] && echo ">>> SKIP $NAME!" && continue
 	echo
 	echo -e ">>> INSTALL $NAME ($REPO)? [y|N] \c"
-	read CMD
-	[ "$CMD"x != "yx" ] && echo ">>> SKIP $NAME!" && continue
+	read -n 1 CMD
+	[ "$CMD"x != "yx" ] && echo " >>> SKIP $NAME!" && continue
+	echo
 	(cd modules/; git clone $REPO $NAME)
 
 	[ ! -r modules/CMakeLists.txt ] && echo "# enable module compilation here (entries created by './run --new-module <MODULE>' or './run --setup')" > modules/CMakeLists.txt
