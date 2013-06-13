@@ -3,12 +3,29 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
-
+#include <bvs/bvs.h>
 #include "BvsA.h"
- #include <opencv2/core/core.hpp>
- 
+#include <opencv2/core/core.hpp>
+#include <iostream>
+#include <dlfcn.h>
+extern "C" {
+void testtest()
+{
+LOG(1, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXT");
+}
+}
+
+void test2(){
+void* dlib = dlopen(NULL, RTLD_NOW);
+void* test = dlsym(dlib, "testtest");
+if (test==NULL)
+LOG(1, "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+}
+
 static JavaVM *gJavaVM;
 static jobject gInterfaceObject;	
+BVS::BVS* bvs;
+jobject  javaObj;
 
 void shutdownFunction()
 {
@@ -96,6 +113,7 @@ extern "C"
 
 	jint JNI_OnLoad(JavaVM* vm, void* reserved)
 	{
+		test2();
 		gJavaVM=vm;
 		JNIEnv *env;
 		if (vm->GetEnv((void**) &env, JNI_VERSION_1_6) != JNI_OK)
