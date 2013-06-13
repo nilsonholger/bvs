@@ -91,33 +91,6 @@ macro(disable_compiler_warnings RECURSE)
 	endif()
 endmacro(disable_compiler_warnings)
 
-# disable variable depending on a condition
-#
-# CALL: disable_if(OPT COND)
-#   OPT: otpion/variable to disable
-#   COND: conditional option to use
-#
-macro(disable_if OPT COND)
-	function(cache_opt)
-		if(NOT __${OPT} AND ${OPT})
-			set(__${OPT} ${${OPT}} CACHE INTERNAL "INTERNAL CACHE FOR ${OPT}")
-		endif()
-		if(NOT __${OPT}_HELPSTRING)
-			get_property(HELPSTRING CACHE ${OPT} PROPERTY HELPSTRING)
-			set(__${OPT}_HELPSTRING "${HELPSTRING}" CACHE INTERNAL "")
-		endif()
-	endfunction()
-	if(${COND})
-		cache_opt()
-		unset(${OPT} CACHE)
-	else()
-		cache_opt()
-		set(${OPT} ${__${OPT}} CACHE BOOL "${__${OPT}_HELPSTRING}" FORCE)
-		unset(__${OPT} CACHE)
-		unset(__${OPT}_HELPSTRING CACHE)
-	endif()
-endmacro(disable_if)
-
 # display all set variables
 #
 # CALL: display_all_variables()
