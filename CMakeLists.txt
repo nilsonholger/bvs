@@ -5,13 +5,7 @@ set(CMAKE_BUILD_TYPE "DEBUG")
 include(cmake/toolbox/toolbox.cmake)
 include(cmake/bvs-options.cmake)
 
-<<<<<<< HEAD
-# general settings
-include_directories(lib/include)
-
-=======
 # dynamic library stuff
->>>>>>> 595824c... Merge branch 'devel' into android
 set(CMAKE_SKIP_RPATH ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-rpath,.")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
@@ -34,11 +28,15 @@ else()
 	add_custom_target(doc echo "DOXYGEN NOT FOUND: it is required to build the documentation! Please consider installing it.")
 endif()
 
-# add things
+# includes
 include_directories(lib/include)
-add_subdirectory(modules)
 if(BVS_ANDROID_APP)
 	include_directories(android)
+endif()
+
+# subdirectories
+add_subdirectory(modules)
+if(BVS_ANDROID_APP)
 	add_subdirectory(android)
 else()
 	add_subdirectory(lib)
