@@ -20,25 +20,11 @@ find_package(JNI REQUIRED)
 include_directories(${JNI_INCLUDE_DIRS})
 endif()
 
-
-include_directories(${BVS_ROOT_PATH}/lib/include)
-
-
-#output directory
-execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/bin)
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-
-#add_library(BvsA SHARED lib/src/barrier.cc lib/src/barrier.cc lib/src/config.cc lib/src/connector.c lib/src/control.cc lib/src/loader.cc lib/src/droid.cc lib/src/info.cc lib/src/logger.cc lib/src/logsystem.cc lib/src/module.cc lib/src/utils.cc android/jni/BvsA.cpp)
-
 add_subdir_lib(${BVS_ROOT_PATH}/lib/src BvsA SHARED barrier.cc bvs.cc config.cc connector.cc control.cc droid.cc info.cc loader.cc logger.cc logsystem.cc module.cc utils.cc ../../android/jni/BvsA.cpp)
+target_link_libraries(BvsA dl log ${CMAKE_BINARY_DIR}/bin/libgnustl_shared.so)
 
-
-target_link_libraries(BvsA dl log ${CMAKE_BINARY_DIR}/bin/libgnustl_shared.so )
-
-if(BVS_STATIC_MODULES)
-target_link_libraries(BvsA $ENV{BVS_STATIC_MODULES} )
-endif()
+add_library(bvs_modules SHARED .)
+target_link_libraries(bvs_modules BvsA dl log -Wl,--whole-archive $ENV{BVS_STATIC_MODULES} -Wl,--no-whole-archive)
 
 
 
