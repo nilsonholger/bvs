@@ -6,7 +6,6 @@
 #include <opencv2/core/core.hpp>
 
 static JavaVM *gJavaVM;
-static jobject gInterfaceObject;	
 BVS::BVS* bvs;
 jobject  javaObj;
 
@@ -94,7 +93,7 @@ void drawToAndroid()
 extern "C" 
 {
 
-	jint JNI_OnLoad(JavaVM* vm, void* reserved)
+	jint JNI_OnLoad(JavaVM* vm, void*)
 	{
 		gJavaVM=vm;
 		JNIEnv *env;
