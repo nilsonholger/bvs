@@ -28,11 +28,15 @@ else()
 	add_custom_target(doc echo "DOXYGEN NOT FOUND: it is required to build the documentation! Please consider installing it.")
 endif()
 
-# add things
+# includes
 include_directories(lib/include)
-add_subdirectory(modules)
 if(BVS_ANDROID_APP)
 	include_directories(android)
+endif()
+
+# subdirectories
+add_subdirectory(modules)
+if(BVS_ANDROID_APP)
 	add_subdirectory(android)
 else()
 	add_subdirectory(lib)
