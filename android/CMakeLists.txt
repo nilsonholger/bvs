@@ -21,7 +21,7 @@ include_directories(${JNI_INCLUDE_DIRS})
 endif()
 
 add_subdir_lib(${BVS_ROOT_PATH}/lib/src BvsA SHARED barrier.cc bvs.cc config.cc connector.cc control.cc droid.cc info.cc loader.cc logger.cc logsystem.cc module.cc utils.cc ../../android/jni/BvsA.cpp)
-target_link_libraries(BvsA dl log ${CMAKE_BINARY_DIR}/bin/libgnustl_shared.so)
+target_link_libraries(BvsA dl log)
 
 add_library(bvs_modules SHARED .)
 target_link_libraries(bvs_modules BvsA dl log -Wl,--whole-archive $ENV{BVS_STATIC_MODULES} -Wl,--no-whole-archive)
