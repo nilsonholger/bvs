@@ -49,8 +49,8 @@ add_custom_target(android-debug
 add_dependencies(android-debug android)
 
 add_custom_target(android-clean
-	COMMAND ndk-build clean
-	COMMAND ndk-build clean
+	COMMAND ant clean
+	COMMAND rm -rf libs build.xml local.properties
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	COMMENT "Clean Android directory!" VERBATIM)
 
