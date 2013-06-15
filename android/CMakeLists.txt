@@ -24,6 +24,35 @@ target_link_libraries(BvsA dl log)
 add_library(bvs_modules SHARED .)
 target_link_libraries(bvs_modules BvsA dl log -Wl,--whole-archive $ENV{BVS_STATIC_MODULES} -Wl,--no-whole-archive)
 
+add_custom_target(android-app
+	#COMMAND ndk-build V=1
+	COMMAND mkdir -p ${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}
+	COMMAND cp ${CMAKE_BINARY_DIR}/bin/libBvsA.so ${CMAKE_BINARY_DIR}/bin/libbvs_modules.so ${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}
+	COMMAND android update project --target 2 --path . --name BvsA
+	COMMAND ant debug
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	COMMENT "Build Android App!" VERBATIM)
+add_dependencies(android-app BvsA bvs_modules)
+
+add_custom_target(android-install
+	COMMAND adb shell am force-stop com.cvhci.bvsa
+	COMMAND adb install -r bin/BvsA-debug.apk
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	COMMENT "Install Android App!" VERBATIM)
+add_dependencies(android-install android-app)
+
+add_custom_target(android-debug
+	COMMAND adb logcat -c
+	COMMAND bash -c "trap 'adb shell am force-stop com.cvhci.bvsa' INT TERM;adb shell am start -n com.cvhci.bvsa/com.cvhci.bvsa.MainActivity;adb logcat"
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	COMMENT "Debug Android App!" VERBATIM)
+add_dependencies(android-debug android)
+
+add_custom_target(android-clean
+	COMMAND ndk-build clean
+	COMMAND ndk-build clean
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	COMMENT "Clean Android directory!" VERBATIM)
 
 
 # have to copy the .so file from bvs/bin to bvs/android/libs/armeabi-v7a/
