@@ -139,3 +139,15 @@ Edit the file $(ndk_dir)build/core/build-binary.mk. Change the line
 $(cleantarget): PRIVATE_CLEAN_FILES := ($(my)OBJS)
 to
 $(cleantarget): PRIVATE_CLEAN_FILES := $($(my)OBJS)
+
+
+
+Configure CMake and build, e.g.:
+cmake -DANDROID_NDK=$HOME/android/ndk -DCMAKE_TOOLCHAIN_FILE=../android/android.toolchain.cmake -DBVS_ANDROID_APP=ON ..
+make
+
+additional cmake build targets:
+android-app
+android-install
+android-debug
+android-clean

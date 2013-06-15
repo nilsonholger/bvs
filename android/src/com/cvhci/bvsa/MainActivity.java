@@ -42,8 +42,9 @@ public class MainActivity extends Activity {
 					case LoaderCallbackInterface.SUCCESS:
 						{
 							callBackMat= new Mat();
-							// call Function, File created by make
-							NeededLibs.loadLibs();
+							System.loadLibrary("gnustl_shared");
+       						        System.loadLibrary("BvsA");
+             						System.loadLibrary("bvs_modules");
 							Log.i(TAG, "OpenCV loaded successfully");
 							try {
 								// load config file from application resources

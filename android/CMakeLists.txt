@@ -2,13 +2,11 @@ cmake_minimum_required(VERSION 2.8)
 project(BvsA)
 
 set(ANDROID_TOOLCHAIN_NAME arm-linux-androideabi-4.7)
-set(ANDROID_STL gnustl_shared)
+set(ANDROID_STL gnustl_shared CACHE STRING "C++ Runtime" FORCE)
 set(ANDROID_ABI armeabi-v7a)
 set(ANDROID_NATIVE_API_LEVEL android-14)
 set(ANDROID_STL_FORCE_FEATURES ON)
 
-set(BVS_ROOT_PATH ${CMAKE_BINARY_DIR}/../)
-message(STATUS "BVS_ROOT_PATH:"${BVS_ROOT_PATH})
 set(APP_USE_CPP0X true)
 #set(LOCAL_ARM_MODE arm)
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic --export-dynamic" )
@@ -20,26 +18,41 @@ find_package(JNI REQUIRED)
 include_directories(${JNI_INCLUDE_DIRS})
 endif()
 
+add_subdir_lib(../lib/src BvsA SHARED barrier.cc bvs.cc config.cc connector.cc control.cc droid.cc info.cc loader.cc logger.cc logsystem.cc module.cc utils.cc ../../android/jni/BvsA.cpp)
+target_link_libraries(BvsA dl log)
 
-include_directories(${BVS_ROOT_PATH}/lib/include)
+add_library(bvs_modules SHARED .)
+target_link_libraries(bvs_modules BvsA dl log -Wl,--whole-archive $ENV{BVS_STATIC_MODULES} -Wl,--no-whole-archive)
 
+add_custom_target(android-app
+	#COMMAND ndk-build V=1
+	COMMAND mkdir -p ${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}
+	COMMAND cp ${CMAKE_BINARY_DIR}/bin/libBvsA.so ${CMAKE_BINARY_DIR}/bin/libbvs_modules.so ${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}
+	COMMAND android update project --target 2 --path . --name BvsA
+	COMMAND ant debug
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	COMMENT "Build Android App!" VERBATIM)
+add_dependencies(android-app BvsA bvs_modules)
 
-#output directory
-execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/bin)
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+add_custom_target(android-install
+	COMMAND adb shell am force-stop com.cvhci.bvsa
+	COMMAND adb install -r bin/BvsA-debug.apk
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	COMMENT "Install Android App!" VERBATIM)
+add_dependencies(android-install android-app)
 
-#add_library(BvsA SHARED lib/src/barrier.cc lib/src/barrier.cc lib/src/config.cc lib/src/connector.c lib/src/control.cc lib/src/loader.cc lib/src/droid.cc lib/src/info.cc lib/src/logger.cc lib/src/logsystem.cc lib/src/module.cc lib/src/utils.cc android/jni/BvsA.cpp)
+add_custom_target(android-debug
+	COMMAND adb logcat -c
+	COMMAND bash -c "trap 'adb shell am force-stop com.cvhci.bvsa' INT TERM;adb shell am start -n com.cvhci.bvsa/com.cvhci.bvsa.MainActivity;adb logcat"
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	COMMENT "Debug Android App!" VERBATIM)
+add_dependencies(android-debug android)
 
-add_subdir_lib(${BVS_ROOT_PATH}/lib/src BvsA SHARED barrier.cc bvs.cc config.cc connector.cc control.cc droid.cc info.cc loader.cc logger.cc logsystem.cc module.cc utils.cc ../../android/jni/BvsA.cpp)
-
-
-target_link_libraries(BvsA dl log ${CMAKE_BINARY_DIR}/bin/libgnustl_shared.so )
-
-if(BVS_STATIC_MODULES)
-target_link_libraries(BvsA $ENV{BVS_STATIC_MODULES} )
-endif()
-
+add_custom_target(android-clean
+	COMMAND ndk-build clean
+	COMMAND ndk-build clean
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	COMMENT "Clean Android directory!" VERBATIM)
 
 
 # have to copy the .so file from bvs/bin to bvs/android/libs/armeabi-v7a/

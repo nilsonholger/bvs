@@ -1,11 +1,10 @@
-
-
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
 #include <bvs/bvs.h>
 #include "BvsA.h"
 #include <opencv2/core/core.hpp>
+<<<<<<< HEAD
 #include <iostream>
 #include <dlfcn.h>
 extern "C" {
@@ -24,6 +23,10 @@ LOG(1, "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
 
 static JavaVM *gJavaVM;
 static jobject gInterfaceObject;	
+=======
+
+static JavaVM *gJavaVM;
+>>>>>>> b75d94cb38092f1fc527a9a1259af268a988afce
 BVS::BVS* bvs;
 jobject  javaObj;
 
@@ -111,7 +114,7 @@ void drawToAndroid()
 extern "C" 
 {
 
-	jint JNI_OnLoad(JavaVM* vm, void* reserved)
+	jint JNI_OnLoad(JavaVM* vm, void*)
 	{
 		test2();
 		gJavaVM=vm;

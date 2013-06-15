@@ -56,22 +56,29 @@ Loader& Loader::load(const std::string& id, const std::string& library, const st
 		errorHandler();
 	}
 
-	LibHandle dlib = loadLibrary(id, library);
+	std::string function = "bvsRegisterModule";
+	std::string tmpLibrary = library;
+#ifdef BVS_STATIC_MODULES
+	function += "_" + library;
+#ifdef __ANDROID_API__
+	tmpLibrary = "bvs_modules";
+#else //__ANDROID_API__
+	tmpLibrary = "bvs";
+#endif //__ANDROID_API__
+#endif //BVS_STATIC_MODULES
+
+	LibHandle dlib = loadLibrary(id, tmpLibrary);
 
 	// execute bvsRegisterModule in loaded lib
 	typedef void (*bvsRegisterModule_t)(ModuleInfo moduleInfo, const Info& info);
 	bvsRegisterModule_t bvsRegisterModule;
 
-#ifndef BVS_STATIC_MODULES
-	*reinterpret_cast<void**>(&bvsRegisterModule)=dlsym(dlib, "bvsRegisterModule");
-#else
-	*reinterpret_cast<void**>(&bvsRegisterModule)=dlsym(dlib, std::string("bvsRegisterModule_" + library).c_str());
-#endif //BVS_STATIC_MODULES
+	*reinterpret_cast<void**>(&bvsRegisterModule)=dlsym(dlib, function.c_str());
 
 	const char* dlerr = dlerror();
 	if (dlerr && bvsRegisterModule==nullptr)
 	{
-		LOG(0, "Loading function bvsRegisterModule() in '" << library << "' resulted in: " << dlerr);
+		LOG(0, "Loading function " << function << " from '" << tmpLibrary << "' resulted in: " << dlerr);
 		errorHandler();
 	}
 
@@ -80,7 +87,7 @@ Loader& Loader::load(const std::string& id, const std::string& library, const st
 
 	modules[id]->configuration = configuration;
 	modules[id]->dlib = dlib;
-	modules[id]->library = library;
+	modules[id]->library = tmpLibrary;
 	modules[id]->options = options;
 
 	// get connectors
@@ -234,12 +241,13 @@ Loader& Loader::hotSwapModule(const std::string& id)
 
 LibHandle Loader::loadLibrary(const std::string& id, const std::string& library)
 {
-	std::string modulePath = "lib" + library + ".so";
-#ifndef BVS_STATIC_MODULES
-	LibHandle dlib = dlopen(modulePath.c_str(), RTLD_NOW);
-#else
-	LibHandle dlib = dlopen(NULL, RTLD_NOW);
-#endif //BVS_STATIC_MODULES
+	std::string modulePath;
+	if (library == "bvs") modulePath = "libbvs.so";
+	else modulePath = "lib" + library + ".so";
+
+	LibHandle dlib;
+	if (modulePath == "bvs") dlib = dlopen(NULL, RTLD_NOW);
+	else dlib = dlopen(modulePath.c_str(), RTLD_NOW);
 
 	if (dlib!=NULL)
 	{
