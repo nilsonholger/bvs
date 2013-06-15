@@ -4,29 +4,7 @@
 #include <bvs/bvs.h>
 #include "BvsA.h"
 #include <opencv2/core/core.hpp>
-<<<<<<< HEAD
-#include <iostream>
-#include <dlfcn.h>
-extern "C" {
-void testtest()
-{
-LOG(1, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXT");
-}
-}
-
-void test2(){
-void* dlib = dlopen(NULL, RTLD_NOW);
-void* test = dlsym(dlib, "testtest");
-if (test==NULL)
-LOG(1, "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
-}
-
 static JavaVM *gJavaVM;
-static jobject gInterfaceObject;	
-=======
-
-static JavaVM *gJavaVM;
->>>>>>> b75d94cb38092f1fc527a9a1259af268a988afce
 BVS::BVS* bvs;
 jobject  javaObj;
 
@@ -116,7 +94,6 @@ extern "C"
 
 	jint JNI_OnLoad(JavaVM* vm, void*)
 	{
-		test2();
 		gJavaVM=vm;
 		JNIEnv *env;
 		if (vm->GetEnv((void**) &env, JNI_VERSION_1_6) != JNI_OK)
