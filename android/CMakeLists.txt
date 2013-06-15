@@ -7,8 +7,6 @@ set(ANDROID_ABI armeabi-v7a)
 set(ANDROID_NATIVE_API_LEVEL android-14)
 set(ANDROID_STL_FORCE_FEATURES ON)
 
-set(BVS_ROOT_PATH ${CMAKE_BINARY_DIR}/../)
-message(STATUS "BVS_ROOT_PATH:"${BVS_ROOT_PATH})
 set(APP_USE_CPP0X true)
 #set(LOCAL_ARM_MODE arm)
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic --export-dynamic" )
@@ -20,7 +18,7 @@ find_package(JNI REQUIRED)
 include_directories(${JNI_INCLUDE_DIRS})
 endif()
 
-add_subdir_lib(${BVS_ROOT_PATH}/lib/src BvsA SHARED barrier.cc bvs.cc config.cc connector.cc control.cc droid.cc info.cc loader.cc logger.cc logsystem.cc module.cc utils.cc ../../android/jni/BvsA.cpp)
+add_subdir_lib(../lib/src BvsA SHARED barrier.cc bvs.cc config.cc connector.cc control.cc droid.cc info.cc loader.cc logger.cc logsystem.cc module.cc utils.cc ../../android/jni/BvsA.cpp)
 target_link_libraries(BvsA dl log)
 
 add_library(bvs_modules SHARED .)
