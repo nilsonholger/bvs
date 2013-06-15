@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 project(BvsA)
 
 set(ANDROID_TOOLCHAIN_NAME arm-linux-androideabi-4.7)
-set(ANDROID_STL gnustl_shared)
+set(ANDROID_STL gnustl_shared CACHE STRING "C++ Runtime" FORCE)
 set(ANDROID_ABI armeabi-v7a)
 set(ANDROID_NATIVE_API_LEVEL android-14)
 set(ANDROID_STL_FORCE_FEATURES ON)
