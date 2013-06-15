@@ -32,9 +32,9 @@ mark_as_advanced(BVS_OSX_ANOMALIES)
 ####################
 ### DEPENDENCIES ###
 ####################
-add_dependency(BVS_STATIC_MODULES ON_IF BVS_ANDROID_APP)
-add_dependency(BVS_MODULE_HOTSWAP OFF_IF BVS_STATIC_MODULES)
-add_dependency(BVS_GCC_VISIBILITY OFF_IF BVS_ANDROID_APP)
+add_option_dependency(BVS_STATIC_MODULES ON_IF BVS_ANDROID_APP)
+add_option_dependency(BVS_MODULE_HOTSWAP OFF_IF BVS_STATIC_MODULES)
+add_option_dependency(BVS_GCC_VISIBILITY OFF_IF BVS_ANDROID_APP)
 
 
 
