@@ -25,10 +25,13 @@ target_link_libraries(BvsA dl log)
 add_library(bvs_modules SHARED .)
 target_link_libraries(bvs_modules BvsA dl log -Wl,--whole-archive $ENV{BVS_STATIC_MODULES} -Wl,--no-whole-archive)
 set_target_properties(bvs_modules PROPERTIES LINKER_LANGUAGE CXX) 
+
+
+
 add_custom_target(android-app
-	#COMMAND ndk-build V=1
 	COMMAND mkdir -p ${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}
 	COMMAND cp ${CMAKE_BINARY_DIR}/bin/libBvsA.so ${CMAKE_BINARY_DIR}/bin/libbvs_modules.so ${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}
+	COMMAND cp ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.7/libs/${ANDROID_ABI}/libgnustl_shared.so ${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}
 	COMMAND android update project --target android-17 --path . --name BvsA
 	COMMAND ant debug
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
@@ -54,6 +57,3 @@ add_custom_target(android-clean
 	COMMAND rm -rf libs build.xml local.properties
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	COMMENT "Clean Android directory!" VERBATIM)
-
-
-# have to copy the .so file from bvs/bin to bvs/android/libs/armeabi-v7a/
