@@ -47,7 +47,7 @@ add_custom_target(android-debug
 	COMMAND bash -c "trap 'adb shell am force-stop com.cvhci.bvsa' INT TERM;adb shell am start -n com.cvhci.bvsa/com.cvhci.bvsa.MainActivity;adb logcat"
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	COMMENT "Debug Android App!" VERBATIM)
-add_dependencies(android-debug android)
+add_dependencies(android-debug android-install)
 
 add_custom_target(android-clean
 	COMMAND ant clean
