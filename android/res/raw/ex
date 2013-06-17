@@ -23,17 +23,20 @@ modules = capture(CaptureCV)
 ### PROCESS AND OUTPUT
 # as above, but also connects example's input with capture's output
 # (named 'input' and 'out1', which is defined in each module's constructor)
-modules += findball(FindBall).input(capture.out1)
+modules += example(ExampleCV).input(capture.out1)
 modules += android(AndroidCV).show(example.output)
 
 
 # module (instance) configurations
 [capture]
 numNodes = 1
-CameraWidth= 320
-CameraHeigth= 240
+#CameraWidth= 320
+#CameraHeigth= 240
 
-[findball]
+[example]
+convertToGrey = ON
+blurSize = 7
+cannyThreshold = 30
 showResult = OFF
 
 

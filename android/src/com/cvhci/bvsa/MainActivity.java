@@ -48,9 +48,9 @@ public class MainActivity extends Activity {
 							Log.i(TAG, "OpenCV loaded successfully");
 							try {
 								// load config file from application resources
-								InputStream is = getResources().openRawResource(R.raw.examplecv);
+								InputStream is = getResources().openRawResource(R.raw.bvs);
 								File configDir = getDir("config", Context.MODE_PRIVATE);
-								mConfigFile = new File(configDir, "examplecv.conf");
+								mConfigFile = new File(configDir, "bvs.conf");
 								FileOutputStream os = new FileOutputStream(mConfigFile);
 
 								byte[] buffer = new byte[4096];
