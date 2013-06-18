@@ -37,25 +37,6 @@ create direcory for android development, for example in home directory and copy 
 
 
 ## BVS SETUP
-### DOWNLOAD
-* BVS Framework from GitHub `wget https://github.com/nilsonholger/bvs/archive/master.zip`
-
-	unzip master.zip
-	rm master.zip
-
-* if needed modules `wget https://github.com/nilsonholger/bvs-modules/archive/master.zip`
-
-	unzip master.zip
-	rm master.zip
-
-
-* create workspace folder, for example in home directory
-
-	mkdir ~/workspace
-	mv -r bvs-master ~/workspace/bvs
-	mv -r bvs-modules-master ~/workspace/bvs/modules/bvs-modules
-
-
 ### CONFIGURATION
 copy ~/workspace/bvs/android/config.cmake.sample to config.cmake and modify accordingly
 
@@ -67,11 +48,13 @@ copy ~/workspace/bvs/android/config.cmake.sample to config.cmake and modify acco
 
 #### PATH VARIABLE 
 
-sdk toools, ndk build tools and sdk platformtools to PATH 
+sdk toools, ndk build tools, sdk platformtools and opencv to PATH 
 platform tools not yet available, but will be installed on next step
 
-	export PATH=$PATH:$HOME/androidDev/sdk/tools:$HOME/androidDev/sdk/platform-tools:$HOME/androidDev/ndk
-
+	export PATH="$PATH:$HOME/androidDev/sdk/tools:$HOME/androidDev/sdk/platform-tools:$HOME/androidDev/ndk"
+	export C_INCLUDE_PATH="$HOME/androidDev/opencv/sdk/native/jni/include/"
+	export CPLUS_INCLUDE_PATH="$HOME/androidDev/opencv/sdk/native/jni/include/"
+~                               
 
 #### INSTALL ANDROID SDK ADDONS
 
@@ -140,12 +123,13 @@ $(cleantarget): PRIVATE_CLEAN_FILES := ($(my)OBJS)
 to
 $(cleantarget): PRIVATE_CLEAN_FILES := $($(my)OBJS)
 
+## Build the App
 
-
-Configure CMake and build, e.g.:
-cmake -DANDROID_NDK=$HOME/android/ndk -DCMAKE_TOOLCHAIN_FILE=../android/android.toolchain.cmake -DBVS_ANDROID_APP=ON ..
+### Configure CMake, e.g.:
+cmake -DANDROID_NDK=$HOME/androidDev/ndk -DCMAKE_TOOLCHAIN_FILE=../android/android.toolchain.cmake -DBVS_ANDROID_APP=ON ..
 make
 
+### Build  
 additional cmake build targets:
 android-app
 android-install
