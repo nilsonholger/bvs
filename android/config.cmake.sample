@@ -1,0 +1,4 @@
+set(ANDROID_TOOLCHAIN_NAME arm-linux-androideabi-4.7)
+set(ANDROID_ABI armeabi-v7a)
+set(ANDROID_NATIVE_API_LEVEL android-14)
+set(OPENCV_LIBRARY_PATH ${FULL_PATH_TO}/opencv/sdk/native/libs/${ANDROID_ABI})

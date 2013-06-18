@@ -23,7 +23,7 @@ android/build.xml
 android/gen
 android/libs
 android/obj
-android/local.opencv.mk
+android/config.cmake
 
 android/local.properties
 android/proguard-project.txt
