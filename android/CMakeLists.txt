@@ -3,7 +3,7 @@ project(BvsA)
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/config.cmake")
 	include("${CMAKE_CURRENT_SOURCE_DIR}/config.cmake")
-	include_directories(${OPENCV_INCLUDE_PATH}
+	include_directories(${OPENCV_INCLUDE_PATH})
 else()
 	message(FATAL_ERROR "\nconfig.cmake NOT FOUND, please copy from config.cmake.sample and modify accordingly!")
 endif()
