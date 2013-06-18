@@ -5,7 +5,7 @@
 .DS_Store
 
 bin/
-build/
+build*
 doc/
 modules/
 

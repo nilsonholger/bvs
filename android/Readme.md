@@ -126,12 +126,14 @@ $(cleantarget): PRIVATE_CLEAN_FILES := $($(my)OBJS)
 ## Build the App
 
 ### Configure CMake, e.g.:
-cmake -DANDROID_NDK=$HOME/androidDev/ndk -DCMAKE_TOOLCHAIN_FILE=../android/android.toolchain.cmake -DBVS_ANDROID_APP=ON ..
-make
+	
+	cmake -DANDROID_NDK=$HOME/androidDev/ndk -DCMAKE_TOOLCHAIN_FILE=../android/android.toolchain.cmake -DBVS_ANDROID_APP=ON ..
+
 
 ### Build  
 additional cmake build targets:
-android-app
-android-install
-android-debug
-android-clean
+
+	android-app         # Build apk
+	android-install	    # above target and install apk on device or emulator 
+	android-debug       # above target and start with logcat, <ctrl-c> to exit
+	android-clean       # clean android directory
