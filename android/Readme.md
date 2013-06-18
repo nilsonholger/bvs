@@ -37,7 +37,7 @@ create direcory for android development, for example in home directory and copy 
 
 
 ## BVS SETUP
-### CONFIGURATION
+### Configuration
 copy ~/workspace/bvs/android/config.cmake.sample to config.cmake and modify accordingly
 
 	set(ANDROID_TOOLCHAIN_NAME arm-linux-androideabi-4.7)
@@ -46,7 +46,7 @@ copy ~/workspace/bvs/android/config.cmake.sample to config.cmake and modify acco
 	set(OPENCV_LIBRARY_PATH ${FULL_PATH_TO}/opencv/sdk/native/libs/${ANDROID_ABI})
 
 
-#### PATH VARIABLE 
+#### Path Variable 
 
 sdk toools, ndk build tools, sdk platformtools and opencv to PATH 
 platform tools not yet available, but will be installed on next step
@@ -56,7 +56,7 @@ platform tools not yet available, but will be installed on next step
 	export CPLUS_INCLUDE_PATH="$HOME/androidDev/opencv/sdk/native/jni/include/"
 ~                               
 
-#### INSTALL ANDROID SDK ADDONS
+#### Install android sdk addons
 
 start Android SDK Manager `android sdk`
 Now, you have to check your android version on your device and install
@@ -91,7 +91,7 @@ close Android Virtual Device Manager
 
 start new created emulator `emulator -avd nameOfEmulator &`
 
-#### OPENCV LOCATION FOR JAVA
+#### OpenCV location for java
 
 create and open ~/workspace/bvs/android/project.properties
 add to `target` your android version, for which you have installed the SDK Platform before, for example `android-17`
@@ -102,7 +102,7 @@ add to `target` your android version, for which you have installed the SDK Platf
 ATTENTION!: no shortcut like $HOME or ~  allowed, PATH HAS TO BE RELATIVE
 
 
-#### OPENCV JAVA ANDROID PROJECT
+#### OpenCV java android project
 
 again add to `target` your android version, for example `android-17`
 
@@ -133,7 +133,11 @@ $(cleantarget): PRIVATE_CLEAN_FILES := $($(my)OBJS)
 ### Build  
 additional cmake build targets:
 
-	android-app         # Build apk
+	android-app         # build apk
 	android-install	    # above target and install apk on device or emulator 
 	android-debug       # above target and start with logcat, <ctrl-c> to exit
 	android-clean       # clean android directory
+
+### App Configuration
+used configuration file is located in `bvs/android/res/raw/bvs.conf`
+
