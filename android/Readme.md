@@ -57,7 +57,13 @@ create direcory for android development, for example in home directory and copy 
 
 
 ### CONFIGURATION
-The following paths depends on the paths you used before
+copy ~/workspace/bvs/android/config.cmake.sample to config.cmake and modify accordingly
+
+	set(ANDROID_TOOLCHAIN_NAME arm-linux-androideabi-4.7)
+	set(ANDROID_ABI armeabi-v7a)
+	set(ANDROID_NATIVE_API_LEVEL android-14)
+	set(OPENCV_LIBRARY_PATH ${FULL_PATH_TO}/opencv/sdk/native/libs/${ANDROID_ABI})
+
 
 #### PATH VARIABLE 
 
@@ -65,12 +71,6 @@ sdk toools, ndk build tools and sdk platformtools to PATH
 platform tools not yet available, but will be installed on next step
 
 	export PATH=$PATH:$HOME/androidDev/sdk/tools:$HOME/androidDev/sdk/platform-tools:$HOME/androidDev/ndk
-
-
-#### OPENCV PATH 
-create and open ~/workspace/bvs/android/local.opencv.mk and add
-
-	LOCAL_OPENCV=~/androidDev/opencv/sdk/native/jni/OpenCV.mk
 
 
 #### INSTALL ANDROID SDK ADDONS
