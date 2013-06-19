@@ -95,6 +95,7 @@ ADVANCED STUFF
 ### TREE STRUCTURE:
 
 	'.'
+	 |_android:        android client
 	 |_[build]:        OPTIONAL directory for out of source builds
 	 |_[build/]bin:    directory where all your modules/executables/settings will be
 	 |_daemon:         contains an interactive command line daemon
@@ -119,6 +120,13 @@ repository with its own upstream, or you can set its tracking branch to it,
 e.g. `git branch master --set-upstream $YOUR_UPSTREAM`.  This allows you to
 create your own remote *origin* for delevopment whilst still being able to pull
 updates to the base repository from bvs' main development repository.
+
+
+
+### ANDROID CLIENT
+
+The framework now has an android client. Further information about it's usage
+can be found in `android/Readme.md`.
 
 
 

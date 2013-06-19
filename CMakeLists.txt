@@ -2,17 +2,18 @@ cmake_minimum_required(VERSION 2.8.6)
 
 project(BVS)
 set(CMAKE_BUILD_TYPE "DEBUG")
-include(lib/cmake/toolbox.cmake)
+include(cmake/toolbox/toolbox.cmake)
+include(cmake/bvs-options.cmake)
 
-# general settings
-include_directories(lib/include)
+# dynamic library stuff
 set(CMAKE_SKIP_RPATH ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-rpath,.")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
 # output directory
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/bin)
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE PATH "" FORCE)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE PATH "" FORCE)
 
 # symlink run script
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/run ${CMAKE_BINARY_DIR}/run)
@@ -27,7 +28,17 @@ else()
 	add_custom_target(doc echo "DOXYGEN NOT FOUND: it is required to build the documentation! Please consider installing it.")
 endif()
 
-# recurse
-add_subdirectory(lib)
-add_subdirectory(daemon)
+# includes
+include_directories(lib/include)
+if(BVS_ANDROID_APP)
+	include_directories(android)
+endif()
+
+# subdirectories
 add_subdirectory(modules)
+if(BVS_ANDROID_APP)
+	add_subdirectory(android)
+else()
+	add_subdirectory(lib)
+	add_subdirectory(daemon)
+endif()

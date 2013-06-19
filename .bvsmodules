@@ -1,4 +1,2 @@
 bvs-modules ORIGIN:bvs-modules.git COLLECTION
-camGrasshopper git@i14gitlab.anthropomatik.kit.edu:bvs_camgrasshopper.git
-ImageSequencePlayer git@i14gitlab.anthropomatik.kit.edu:bvs_imagesequenceplayer.git
-gazeModules git@i14gitlab.anthropomatik.kit.edu:bvs_gazemodules.git COLLECTION
+camGrasshopper ORIGIN:camgrasshopper.git
