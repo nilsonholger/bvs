@@ -1,6 +1,12 @@
+2013-06-19  NilsonHolger <nilsonholger@hyve.org>
+
+	* 2013.4-droidified
+	* android: add new android client
+	* lib: various small fixes and changes, too numerous to list here
+
 2013-05-28  NilsonHolger <nilsonholger@hyve.org>
 
-	* 2013.3
+	* 2013.3-public-appearance
 	* example: rewrite to improve usage as a "template" for new modules, old
 	version was too confusing for beginners as all functionality was inside
 	one module, but multiple instances of the same module were used, also
