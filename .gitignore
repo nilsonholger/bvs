@@ -5,7 +5,7 @@
 .DS_Store
 
 bin/
-build/
+build*
 doc/
 modules/
 
@@ -17,3 +17,16 @@ Makefile
 Doxyfile
 Session.vim
 tags
+
+android/bin
+android/build.xml
+android/gen
+android/libs
+android/obj
+android/config.cmake
+android/res/raw/
+!android/res/raw/bvs.conf
+
+android/local.properties
+android/proguard-project.txt
+android/project.properties
