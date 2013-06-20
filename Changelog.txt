@@ -3,6 +3,10 @@
 	* 2013.4-droidified
 	* android: add new android client
 	* lib: various small fixes and changes, too numerous to list here
+	* modules: please adapt your module's CMakeLists.txt the new changes,
+	examples of what you have to do can be found in 'bvs-modules/CaptureCV'
+	or 'bvs-modules/ExampleCV', this allows to use *BVS_STATIC_MODULES* as
+	well as the Android client
 
 2013-05-28  NilsonHolger <nilsonholger@hyve.org>
 
