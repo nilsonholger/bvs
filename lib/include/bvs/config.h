@@ -190,6 +190,11 @@ namespace BVS
 
 
 
+	/** Used internally if option not found */
+	static const std::string notFound = "__OPTION__NOT__FOUND__";
+
+
+
 	template<typename T> const Config& Config::getValue(const std::string& sectionOption, T& t, T defaultValue) const
 	{
 		t = getValue(sectionOption, defaultValue);
@@ -202,7 +207,7 @@ namespace BVS
 	{
 		(void) defaultValue;
 		std::string tmp = searchOption(sectionOption);
-		if (tmp.length()!=0)
+		if (tmp!=notFound)
 		{
 			return convertStringTo<T>(tmp);
 		}
@@ -218,7 +223,7 @@ namespace BVS
 	{
 		// get list from optionStore and if empty, abort
 		std::string tmp = searchOption(sectionOption);
-		if (tmp.length()==0)
+		if (tmp==notFound)
 		{
 			return *this;
 		}
@@ -255,7 +260,9 @@ namespace BVS
 
 
 	/** IGNORE, this function does not belong here, doxygen is being weird. */
+#ifndef __ANDROID_API__ //template specialization does weird things to libc on some android version, fall back to general template
 	template<> const Config& Config::convertStringTo<std::string>(const std::string& input, std::string& output) const;
+#endif //__ANDROID_API__
 	template<> const Config& Config::convertStringTo<bool>(const std::string& input, bool& b) const;
 } // namespace BVS
 
