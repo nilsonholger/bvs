@@ -258,7 +258,7 @@ std::string Config::searchOption(std::string option) const
 		}
 	}
 
-	return std::string();
+	return notFound;
 }
 
 
@@ -271,12 +271,14 @@ inline void Config::error(const std::string& configFile, int lineNumber, const s
 
 
 
+#ifndef __ANDROID_API__
 template<> const Config& Config::convertStringTo<std::string>(const std::string& input, std::string& output) const
 {
 	output = input;
 
 	return *this;
 }
+#endif
 
 
 
