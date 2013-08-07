@@ -25,7 +25,8 @@ android/libs
 android/obj
 android/config.cmake
 android/res/raw/
-android/assets
+android/assets/
+android/assets/conf/
 !android/assets/conf/example.conf
 
 android/local.properties
