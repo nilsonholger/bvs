@@ -55,7 +55,7 @@ public class MainActivity extends ListActivity {
 		super.onListItemClick(l, v, position, id);
 		Object o = this.getListAdapter().getItem(position);
 		String element = o.toString();
-
+		v.setEnabled(false);
 		// if you can select an item, the list has more than 1 entry
 		changeIntent(element,false);
 
@@ -71,9 +71,9 @@ public class MainActivity extends ListActivity {
 		startActivity(viewIntent);
 	}
 
-
+}
 
 
 
 	
-}
+

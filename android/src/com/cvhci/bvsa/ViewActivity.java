@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -18,9 +15,6 @@ import org.opencv.core.Mat;
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -59,14 +53,10 @@ public class ViewActivity extends Activity {
 							Intent myIntent= getIntent(); // gets the previously created intent
 							String configName = myIntent.getStringExtra("configFile"); 
 							oneConfig = myIntent.getExtras().getBoolean("oneConfig");
-							Log.i("ccccccccccccccccccccccccccconfigName", configName);
 							try {
 								// load config file from application resources
 
 								InputStream is = getBaseContext().getAssets().open("conf/"+configName);
-								//Reader is = new BufferedReader(new InputStreamReader(raw, "UTF8"));
-								
-								//InputStream is = getResources().openRawResource(R.raw.bvs);
 								File configDir = getDir("config", Context.MODE_PRIVATE);
 								mConfigFile = new File(configDir, configName);
 								FileOutputStream os = new FileOutputStream(mConfigFile);
@@ -115,40 +105,38 @@ public class ViewActivity extends Activity {
 			
 		}
 
-	@Override
-		public void onResume()
-		{
-			super.onResume();
-			}
 
 	@Override
 		protected void onPause() {
 			// TODO Auto-generated method stub
 			super.onPause();
-			//finish();
+			//kill app
 			android.os.Process.killProcess(android.os.Process.myPid());
 		}
 	@Override
 		protected void onDestroy() {
 			super.onDestroy();
+			//kill app
 			android.os.Process.killProcess(android.os.Process.myPid());
 		}
 
 	private void onClose() {
 		// TODO Auto-generated method stub
-		//finish();
+		//kill app
 		android.os.Process.killProcess(android.os.Process.myPid());
 	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_BACK && oneConfig ) {
-		android.os.Process.killProcess(android.os.Process.myPid());
-        return true;
-    }
-    return super.onKeyDown(keyCode, event);
+		if (keyCode == KeyEvent.KEYCODE_BACK && oneConfig ) {
+			//moveTaskToBack and get killed by onPause
+			moveTaskToBack(true);
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
+	// method to put mat to screen from jni framework
 	public void drawToDisplay()
 	{
 
