@@ -108,9 +108,9 @@ extern "C"
 
 
 
-	JNIEXPORT void JNICALL Java_com_cvhci_bvsa_MainActivity_bvsAndroid(JNIEnv *env,	jobject  obj, jstring configFilePath,  jlong addrMat)
+	JNIEXPORT void JNICALL Java_com_cvhci_bvsa_ViewActivity_bvsAndroid(JNIEnv *env,	jobject  obj, jstring configFilePath,  jlong addrMat)
 	{
-		LOGD("Java_com_cvhci_bvsa_MainActivity_bvsAndroid enter");
+		LOGD("Java_com_cvhci_bvsa_ViewActivity_bvsAndroid enter");
 		javaMat = (cv::Mat*)addrMat;
 		LOG(1,"JNI bvsAndroid Mat Adress " << javaMat);
 		javaObj = env->NewGlobalRef(obj);
