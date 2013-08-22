@@ -13,8 +13,8 @@
 
 /** Version information. */
 static const unsigned int bvs_version_year = 2013;
-static const unsigned int bvs_version_release = 4;
-static const std::string bvs_version_nickname = "droidified";
+static const unsigned int bvs_version_release = 5;
+static const std::string bvs_version_nickname = "multidroid";
 static const std::string bvs_version = std::to_string(bvs_version_year)
 	+ "." + std::to_string(bvs_version_release)
 	+ "-" + bvs_version_nickname;

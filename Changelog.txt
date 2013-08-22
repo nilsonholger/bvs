@@ -1,3 +1,10 @@
+2013-08-22  NilsonHolger <nilsonholger@hyve.org>
+
+	* 2013.5-multidroid
+	* readme: add license/research section
+	* android: multiple config selection dialog allows to create an app with
+	multiple configurations and then select one at runtime
+
 2013-06-19  NilsonHolger <nilsonholger@hyve.org>
 
 	* 2013.4-droidified
