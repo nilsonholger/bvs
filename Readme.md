@@ -1,22 +1,20 @@
-BVS - Blind and Visullay impaired support System
+BVS - Blind and Visullay Impaired Support System
 ================================================
 
 
 
-INSTALLATION and UPDATES
-------------------------
+BASICS
+------
 
 	./run --help   -> list capabilities
 	./run --setup  -> install some known modules
-	./run --update -> update bvs and modules/*
-	./run --clean  -> cleanup of all generated build files (make and cmake)
+	./run --update -> update bvs and modules/...
+	./run --clean  -> cleanup of ALL (c)make generated build files
 
 **NOTE:**
-
-`--update` actually runs `git stash`, `git pull` and `git stash pop`, so local
-changes can be kept intact.  Please consider reading **Changelog.txt** after
-doing an update, since it might contain some hints. Also, manual merging might
-be necessary.
+`--update` runs `git stash; git pull; git stash pop` to keep local changes.
+Please consider reading **Changelog.txt** after an update, as it might contain
+some hints. Also, manual merging might be necessary.
 
 
 
@@ -28,12 +26,10 @@ BUILDING
 	make doc     -> build ALL documentation for framework and all modules
 	make bvs-doc -> build documentation for framework ONLY
 
-**RECOMMENDED:**
-
-Create a `build` directoy and build there (use `cmake ..`).
+**RECOMMENDATION:**
+Create a `build` directory and build there (`cd build; cmake ..`).
 
 **NOTE:**
-
 Point your browser to `[build/][lib/]doc/html/index.html` for the docs.
 
 
@@ -49,50 +45,70 @@ USAGE
 	./run --bvs.options=...         -> additional option presets (see BVS::Config docs)
 
 **NOTE:**
+When building the system using `cmake`, the system and all modules'
+configuration files will be symlinked into the `[build]/bin` directory. You can
+modify the original configuration files through these symlinks directly. You
+won't have to worry about these changes being lost if you use the provided
+'./run --update' function.
 
-When building the system using `cmake`, the system and all modules' config
-files will be symlinked into the `[build]/bin` directory. You can modify the
-original config files through these symlinks directly. You won't have to worry
-about these changes being lost if you use the provided update function.
 
 
+YOUR OWN MODULE
+---------------
 
-CREATE AND USE YOUR OWN MODULE
-------------------------------
+To create your own module:
 
-To create your own module, please use `./run --new-module $MODULE_NAME`. Then
-start putting some functionality into your module located in
-`modules/$MODULE_NAME`. To connect your module with other modules, you need to
-create `BVS::Connector`'s. This could be done for example by declaring
-Connectors in your module's header:
+	./run --new-module $MODULE_NAME   # creates module in 'modules/$MODULE_NAME'
 
+Then start putting some functionality into your module. To connect to/from
+other modules, you need to create `BVS::Connector` objects:
+
+	# $MODULE_NAME.h
 	BVS::Connector<int> input;
 	BVS::Connector<std::string> output;
-
-as well as its corresponding declaration in the constructor's initialization
-list:
-
-	...
+	
+	# $MODULE_NAME.cc
+	# initialization list:
 	input("in", BVS::ConnectorType::INPUT),
 	output("out", BVS::ConnectorType::OUTPUT),
-	...
-
-Then, in the `execute()` function, use `input.receive(...)` and
-`output.send(...)` to recieve and send your content from/to other modules.
+	# execute():
+	input.receive(...)
+	output.send(...)
 
 Furthermore, in your framework configuration, you need to specify the actual
 connection between individual modules:
 
 	modules = OtherModule   # defines output with name "out"
+	
+	# connects YourModule's input ("in") with OtherModule's "out"
 	modules += YourModule.in(OtherModule.out)
-	# above connects YourModule's input named "in" with OtherModule's "out"
+
+
+
+LICENSE AND RESEARCH
+--------------------
+
+For licensing, please see `License.txt`. Also, if you happen to find this
+software useful for your research, we would be happy if you cite the following
+publication:
+
+	@inproceedings{koester2013accessible,
+	  author    = {D. Koester and
+	               B. Schauerte and
+	               R. Stiefelhagen},
+	  title     = {Accessible Section Detection For Visual Guidance},
+	  booktitle = {IEEE/NSF Workshop on Multimodal and Alternative Perception for Visually Impaired People (MAP4VIP)},
+	  year      = {2013},
+	  month     = {July 15-19},
+	  address   = {San Jose, CA, USA}
+	}
 
 
 
 ADVANCED STUFF
 --------------
 
-### TREE STRUCTURE:
+### TREE STRUCTURE
 
 	'.'
 	 |_android:        android client
@@ -112,14 +128,18 @@ ADVANCED STUFF
 
 
 
-### DEVELOPMENT HINTS:
+### DEVELOPMENT HINTS
 
-The base repository can be detached from *origin* by renaming the remote, e.g.
-`git remote rename origin bvs-origin`, so you can create your own base
-repository with its own upstream, or you can set its tracking branch to it,
-e.g. `git branch master --set-upstream $YOUR_UPSTREAM`.  This allows you to
-create your own remote *origin* for delevopment whilst still being able to pull
-updates to the base repository from bvs' main development repository.
+The base repository can be detached from *origin* by renaming the remote, so
+you can create your own base/upstream repository, or you can set its tracking
+branch to it:
+
+	git remote rename origin bvs-origin
+	git branch master --set-upstream $YOUR_UPSTREAM
+
+This allows you to
+create your own remote *origin* for development whilst still being able to pull
+updates to the base repository from the main BVS development repository.
 
 
 
@@ -130,10 +150,10 @@ can be found in `android/Readme.md`.
 
 
 
-### BVS MODULE LIST:
+### BVS MODULE LIST
 
 The file *.bvsmodules* contains a list of known modules. `./run --setup` asks
-whether they should be (individually) installed.  The format of each line in
+whether they should be (individually) installed. The format of each line in
 this file MUST be as follows:
 
 	${Module/CollectionName} ${PATH_TO_GIT_REPOSITORY} [COLLECTION]
@@ -142,21 +162,21 @@ e.g.: MyBVSModule git@my.git.server.tld:my-bvs-module.git
 
 The first two parameters are required. `${PATH_TO_GIT_REPOSITORY}` can be
 `ORIGIN:${SUFFIX}`, where `ORIGIN:` will be replaced by the same origin path
-that was used for the main bvs repository.  The parameter `COLLECTION` is
-optional.  It indicates that a repository contains more than one module. The
-setup function will then create an entry in `modules/CMakeLists.txt` for
-every directory it encounters in the collection's toplevel hierarchy.
+that was used for the main bvs repository. The parameter `COLLECTION` is
+optional. It indicates that a repository contains more than one module. The
+setup function will then create an entry in `modules/CMakeLists.txt` for every
+directory it encounters in the collection's toplevel hierarchy.
 
 
 
-### FIFO CONTROL:
+### FIFO CONTROL
 
 The BVS Daemon (bvsd) can be controlled through a FIFO file (`./run -f`). This
 will (if necessary) create the special file `bin/bvsd-fifo` which can be used
-to control bvsd by sending for example `echo "h" > $BIN_DIR/bvsd-fifo`.  Using
+to control bvsd by sending for example `echo "h" > $BIN_DIR/bvsd-fifo`. Using
 `cat - > $BIN_DIR/bvsd-fifo` gives you a shell as before, but now input and
-output are nicely separated.  These are example maps to control bvsd from
-inside vim:
+output are nicely separated. These are example maps to control bvsd from inside
+vim:
 
 	map <leader>ur :execute "! echo r > build/bin/bvsd-fifo"<cr><cr>
 	map <leader>uh :execute "! echo hs " . expand('%:t:r') . " > build/bin/bvsd-fifo"<cr><cr>

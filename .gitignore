@@ -25,7 +25,9 @@ android/libs
 android/obj
 android/config.cmake
 android/res/raw/
-!android/res/raw/bvs.conf
+android/assets/
+android/assets/conf/
+!android/assets/conf/example.conf
 
 android/local.properties
 android/proguard-project.txt
