@@ -89,6 +89,26 @@ connection between individual modules:
 
 
 
+LICENSE AND RESEARCH
+--------------------
+
+For licensing, please see `License.txt`. Also, if you happen to find this
+software useful for your research, we would be happy if you cite the following
+publication:
+
+	@inproceedings{koester2013accessible,
+	  author    = {D. Koester and
+	               B. Schauerte and
+	               R. Stiefelhagen},
+	  title     = {Accessible Section Detection For Visual Guidance},
+	  booktitle = {IEEE/NSF Workshop on Multimodal and Alternative Perception for Visually Impaired People (MAP4VIP)},
+	  year      = {2013},
+	  month     = {July 15-19},
+	  address   = {San Jose, CA, USA}
+	}
+
+
+
 ADVANCED STUFF
 --------------
 
