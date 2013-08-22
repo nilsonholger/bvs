@@ -1,2 +1,2 @@
-bvs-modules ORIGIN:bvs-modules.git COLLECTION
-camGrasshopper ORIGIN:camgrasshopper.git
+bvs-modules ORIGIN:nilsonholger/bvs-modules.git COLLECTION
+camGrasshopper ORIGIN:tschneid/CamGrasshopper.git
