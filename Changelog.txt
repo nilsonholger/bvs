@@ -1,3 +1,8 @@
+2013-10-29  NilsonHolger <nilsonholger@hyve.org>
+
+	* 2013.6-rtfm
+	* readme: fix
+
 2013-08-22  NilsonHolger <nilsonholger@hyve.org>
 
 	* 2013.5-multidroid
