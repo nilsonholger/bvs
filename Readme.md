@@ -39,7 +39,7 @@ USAGE
 
 	./run --example                 -> run the framework example (requires OpenCV and camera)
 	./run                           -> start using 'bvs.conf'
-	./run --bvs.config=$CONFIG_FILE -> start system with user supplied config
+	./run $CONFIG_FILE              -> start system with user supplied config (relative to ./[build/]bin)
 	./run --debug $CONFIG_FILE      -> start debug session
 	./run --new-module $MODULE_NAME -> create new module
 	./run --bvs.options=...         -> additional option presets (see BVS::Config docs)
