@@ -73,6 +73,12 @@ static const std::string bvs_log_to_logfile = {};
  */
 static const unsigned int bvs_log_client_default_verbosity = 3;
 
+/** Whether the system shows statistics after every round.
+ *
+ * Possbile Values: true, false
+ */
+static const bool bvs_log_statistics = false;
+
 /** Whether the system allows modules to run in threads.
  *
  * Possible Values: true, false

@@ -9,10 +9,11 @@ using BVS::SystemFlag;
 
 
 
-Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info)
+Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info, bool logStatistics)
 	: modules(modules),
 	bvs(bvs),
 	info(info),
+	logStatistics(logStatistics),
 	logger{"Control"},
 	activePools{0},
 	pools{},
@@ -59,6 +60,17 @@ Control& Control::masterController(const bool forkMasterController)
 			std::chrono::duration_cast<std::chrono::milliseconds>
 			(std::chrono::high_resolution_clock::now() - timer);
 		timer = std::chrono::high_resolution_clock::now();
+
+		if (logStatistics)
+		{
+			std::stringstream stats;
+			stats << "Stats[" << info.round << "]:" << info.lastRoundDuration.count();
+			for (auto& pool: info.poolDurations)
+				stats << " [P]" << pool.first << ":" << pool.second.count();
+			for (auto& mod: info.moduleDurations)
+				stats << " [M]" << mod.first << ":" << mod.second.count();
+			LOG(0, stats.str());
+		}
 
 		switch (flag)
 		{

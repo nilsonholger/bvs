@@ -17,7 +17,7 @@ BVS::BVS::BVS(const int argc, const char** argv, std::function<void()>shutdownHa
 	logger{"BVS"},
 #endif
 	loader{new Loader{info}},
-	control{new Control{loader->modules, *this, info}},
+	control{new Control{loader->modules, *this, info, config.getValue<bool>("BVS.logStatistics", bvs_log_statistics)}},
 	moduleStack{}
 {
 #ifdef BVS_LOG_SYSTEM
