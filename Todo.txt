@@ -13,7 +13,6 @@ bvs:
 code:
 * check correct usage of 'const' and 'mutable', make all read-only functions const, add mutable where necessary
 * compact ALL objects (objects should contain DATA only), create *mostly* pure functions, make them friend functions if they need to modify private data
-* locks: use lock_guard instead of manual un-/locking
 
 testing:
 * add testing directory 'lib/t/' with scripts and *.cc files
