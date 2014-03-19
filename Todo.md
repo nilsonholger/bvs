@@ -42,7 +42,6 @@ POSTPONED
 =========
 
 * config: feature request -> meta modules [not yet]
-* gcc4.7: integrate [wait some more]
 * c++11: member default initializer [gcc>=4.7]
 * use std::regex(_match) and capture groups to check connector names and parse module lines (only alphanumeric) [C++11 suppport in gcc/clang?]
 * control: move modules between master, thread and pool [GUI required]
