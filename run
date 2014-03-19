@@ -10,7 +10,7 @@ BASE_DIR=`dirname $0`
 function bvs_clean {
 [ -d build ] && cd build && echo ">>> CHDIR -> 'build'"
 
-echo ">>> CLEAN MAKEFILE"
+echo ">>> RUNNING MAKE CLEAN"
 [ -r Makefile ] && make clean
 
 DIRS=()
@@ -19,28 +19,19 @@ do
 	DIRS[${#DIRS[@]}]="$i"
 done
 
-echo -n ">>> CLEAN CMAKE:"
-for i in ${DIRS[@]}
+echo -n ">>> REMOVING CMAKE GENERATED FILES, DOCUMENTATION AND EMPTY DIRECTORIES:"
+for (( i = ${#DIRS[@]}-1; i>=0; i-- ))
 do
-	rm -rf $i/Makefile $i/CMakeCache.txt $i/cmake_install.cmake $i/CMakeFiles
-	echo -n " $i"
+	DIR=${DIRS[i]}
+	rm -f $DIR/Makefile $DIR/CMakeCache.txt $DIR/cmake_install.cmake $DIR/CTestTestfile.cmake
+	rm -rf $DIR/CMakeFiles
+	rm -f $DIR/Doxyfile
+	rm -rf $DIR/doc
+	[ -d $DIR ] && rmdir $DIR &> /dev/null
+	echo -n " $DIR"
 done
 echo
 
-echo -n ">>> CLEAN DOCUMENTATION:"
-for i in ${DIRS[@]}
-do
-	rm -f $i/Doxyfile $i/doc
-	echo -n " $i"
-done
-echo
-
-echo -n ">>> CLEAN (EMPTY) DIRECTORIES:"
-for (( i = ${#DIRS[@]}-1; i>0; i-- ))
-do
-	[ -d ${DIRS[i]} ] && rmdir ${DIRS[i]} &> /dev/null && echo -n " ${DIRS[i]}"
-done
-echo
 
 cd $BASE_DIR
 }
