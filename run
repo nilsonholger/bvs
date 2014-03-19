@@ -32,6 +32,12 @@ do
 done
 echo
 
+echo -n ">>> REMOVING SYMLINKED CONFIG FILES:"
+for i in bin/*.conf
+do
+	[ -L $i ] && rm $i && echo -n " $i"
+done
+echo
 
 cd $BASE_DIR
 }
