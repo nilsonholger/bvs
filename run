@@ -10,7 +10,7 @@ BASE_DIR=`dirname $0`
 function bvs_clean {
 [ -d build ] && cd build && echo ">>> CHDIR -> 'build'"
 
-echo ">>> RUNNING MAKE CLEAN"
+echo ">>> RUNNING MAKE CLEAN..."
 [ -r Makefile ] && make clean
 
 DIRS=()
@@ -19,7 +19,7 @@ do
 	DIRS[${#DIRS[@]}]="$i"
 done
 
-echo -n ">>> REMOVING CMAKE GENERATED FILES, DOCUMENTATION AND EMPTY DIRECTORIES:"
+echo -n ">>> REMOVING CMAKE FILES, DOCS AND DIRS:"
 for (( i = ${#DIRS[@]}-1; i>=0; i-- ))
 do
 	DIR=${DIRS[i]}
@@ -32,7 +32,7 @@ do
 done
 echo
 
-echo -n ">>> REMOVING SYMLINKED CONFIG FILES:"
+echo -n ">>> REMOVING SYMLINKS:"
 for i in bin/*.conf
 do
 	[ -L $i ] && rm $i && echo -n " $i"
