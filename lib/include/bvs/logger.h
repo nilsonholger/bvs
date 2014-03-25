@@ -12,7 +12,7 @@
 /** Macro to use with Logger. */
 #ifdef BVS_LOG_SYSTEM
 #ifdef __ANDROID_API__
-#define LOG(level, ...) { std::stringstream ss;ss << __VA_ARGS__; std::string foo = ss.str();const char* bar = ss.str().c_str();LOGD(bar);};
+#define LOG(level, ...) { std::stringstream ss; ss << __VA_ARGS__; std::string out = ss.str(); LOGD(out.c_str());};
 #else
 #define LOG(level, args) { logger.out(level) << args << std::endl; logger.endl(); };
 #endif 

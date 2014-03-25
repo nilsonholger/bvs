@@ -109,7 +109,8 @@ LogSystem& LogSystem::setSystemVerbosity(int verbosity)
 
 LogSystem& LogSystem::announce(const Logger& logger)
 {
-	outMutex.lock();
+	std::lock_guard<std::mutex> lock(outMutex);
+
 	// update padding size for fancy (aligned) output
 	if (logger.name.length() > namePadding)
 	{
@@ -124,8 +125,6 @@ LogSystem& LogSystem::announce(const Logger& logger)
 	{
 		loggerLevels[tmpName] = logger.verbosity;
 	}
-
-	outMutex.unlock();
 
 	return *this;
 }

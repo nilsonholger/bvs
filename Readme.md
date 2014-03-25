@@ -1,5 +1,5 @@
-BVS - Blind and Visullay Impaired Support System
-================================================
+BVS - Broad Versatile Supervisor
+================================
 
 
 

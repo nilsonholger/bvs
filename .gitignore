@@ -1,34 +1,29 @@
 *.swp
-*.dylib
-*.so
 *~
-.DS_Store
+*.so
+*.dylib
+*.DS_Store
 
-bin/
 build*
-doc/
 modules/
 
 cmake_install.cmake
 CMakeCache.txt
 CMakeFiles/
+Doxyfile
 Makefile
 
-Doxyfile
-Session.vim
-tags
-
 android/bin
-android/build.xml
 android/gen
 android/libs
 android/obj
-android/config.cmake
 android/res/raw/
 android/assets/
 android/assets/conf/
-!android/assets/conf/example.conf
 
+android/build.xml
+android/config.cmake
 android/local.properties
 android/proguard-project.txt
 android/project.properties
+!android/assets/conf/example.conf

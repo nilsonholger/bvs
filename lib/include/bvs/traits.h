@@ -12,9 +12,9 @@
 
 
 /** Version information. */
-static const unsigned int bvs_version_year = 2013;
-static const unsigned int bvs_version_release = 6;
-static const std::string bvs_version_nickname = "rtfm";
+static const unsigned int bvs_version_year = 2014;
+static const unsigned int bvs_version_release = 3;
+static const std::string bvs_version_nickname = "spring-cleanup";
 static const std::string bvs_version = std::to_string(bvs_version_year)
 	+ "." + std::to_string(bvs_version_release)
 	+ "-" + bvs_version_nickname;
@@ -72,6 +72,12 @@ static const std::string bvs_log_to_logfile = {};
  * Possible Values: see bvs_log_system_verbosity
  */
 static const unsigned int bvs_log_client_default_verbosity = 3;
+
+/** Whether the system shows statistics after every round.
+ *
+ * Possbile Values: true, false
+ */
+static const bool bvs_log_statistics = false;
 
 /** Whether the system allows modules to run in threads.
  *

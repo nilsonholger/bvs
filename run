@@ -10,7 +10,7 @@ BASE_DIR=`dirname $0`
 function bvs_clean {
 [ -d build ] && cd build && echo ">>> CHDIR -> 'build'"
 
-echo ">>> CLEAN MAKEFILE"
+echo ">>> RUNNING MAKE CLEAN..."
 [ -r Makefile ] && make clean
 
 DIRS=()
@@ -19,26 +19,23 @@ do
 	DIRS[${#DIRS[@]}]="$i"
 done
 
-echo -n ">>> CLEAN CMAKE:"
-for i in ${DIRS[@]}
+echo -n ">>> REMOVING CMAKE FILES, DOCS AND DIRS:"
+for (( i = ${#DIRS[@]}-1; i>=0; i-- ))
 do
-	rm -rf $i/Makefile $i/CMakeCache.txt $i/cmake_install.cmake $i/CMakeFiles
-	echo -n " $i"
+	DIR=${DIRS[i]}
+	rm -f $DIR/Makefile $DIR/CMakeCache.txt $DIR/cmake_install.cmake $DIR/CTestTestfile.cmake
+	rm -rf $DIR/CMakeFiles
+	rm -f $DIR/Doxyfile
+	rm -rf $DIR/doc
+	[ -d $DIR ] && rmdir $DIR &> /dev/null
+	echo -n " $DIR"
 done
 echo
 
-echo -n ">>> CLEAN DOCUMENTATION:"
-for i in ${DIRS[@]}
+echo -n ">>> REMOVING SYMLINKS:"
+for i in bin/*.conf
 do
-	rm -f $i/Doxyfile $i/doc
-	echo -n " $i"
-done
-echo
-
-echo -n ">>> CLEAN (EMPTY) DIRECTORIES:"
-for (( i = ${#DIRS[@]}-1; i>0; i-- ))
-do
-	[ -d ${DIRS[i]} ] && rmdir ${DIRS[i]} &> /dev/null && echo -n " ${DIRS[i]}"
+	[ -L $i ] && rm $i && echo -n " $i"
 done
 echo
 
@@ -240,8 +237,8 @@ eval "(cd $BASE_DIR/$BIN_DIR && $FIFO $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)
 function bvs_setup {
 ORIGIN="`git config --get remote.origin.url`"
 [ -z "$ORIGIN" ] && git remote add origin https://github.com/nilsonholger/bvs.git
-ORIGIN="${ORIGIN:-https://github.com/}"
-ORIGIN="${ORIGIN/nilsonholger\/bvs.git}"
+ORIGIN="${ORIGIN:-https://github.com/nilsonholger/}"
+ORIGIN="${ORIGIN/bvs.git}"
 echo
 echo ">>> SELECT modules to install!"
 while read LINE; do MODULES[${#MODULES[@]}]=$LINE; done < .bvsmodules

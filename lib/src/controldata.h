@@ -22,7 +22,7 @@ namespace BVS
 
 
 	/** Library handle. */
-	typedef void* LibHandle;
+	using LibHandle = void*;
 
 
 
@@ -63,7 +63,7 @@ namespace BVS
 		std::shared_ptr<Module> module; /**< Pointer to the module. */
 		LibHandle dlib; /**< Dlib handle to module's lib. */
 		std::string poolName; /** The pool name executing this module (if any). */
-		ControlFlag flag; /**< System control flag for module. */
+		std::atomic<ControlFlag> flag; /**< System control flag for module. */
 		Status status; /**< Return Status of module functions. */
 		ConnectorMap connectors; /**< Connector map. */
 
@@ -74,13 +74,13 @@ namespace BVS
 
 
 	/** Module Map. */
-	typedef std::map<std::string, std::shared_ptr<ModuleData>, std::less<std::string>> ModuleDataMap;
+	using ModuleDataMap = std::map<std::string, std::shared_ptr<ModuleData>, std::less<std::string>>;
 
 	/** Module Data Vector.*/
-	typedef std::vector<std::shared_ptr<ModuleData>> ModuleDataVector;
+	using ModuleDataVector = std::vector<std::shared_ptr<ModuleData>>;
 
 	/** Module Vector. */
-	typedef std::vector<std::shared_ptr<Module>> ModuleVector;
+	using ModuleVector = std::vector<std::shared_ptr<Module>>;
 
 
 

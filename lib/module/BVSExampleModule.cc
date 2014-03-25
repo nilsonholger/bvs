@@ -7,15 +7,15 @@
 // framework actually creates your module) and the framework assigns the unique
 // identifier and gives you access to configuration data.
 BVSExampleModule::BVSExampleModule(BVS::ModuleInfo info, const BVS::Info& bvs)
-	: BVS::Module(),
-	info(info),
-	logger(info.id),
-	bvs(bvs)
-	//input("inputName", BVS::ConnectorType::INPUT),
-	//output("outputName", BVS::ConnectorType::OUTPUT)
+	: BVS::Module()
+	, info(info)
+	, logger(info.id)
+	, bvs(bvs)
+	//, input("inputName", BVS::ConnectorType::INPUT)
+	//, output("outputName", BVS::ConnectorType::OUTPUT)
 
 	// CONFIGURATION RETRIEVAL
-	//yourSwitch(bvs.config.getValue<bool>(info.conf + ".yourSwitch", false)),
+	//, yourSwitch(bvs.config.getValue<bool>(info.conf + ".yourSwitch", false))
 {
 
 }
