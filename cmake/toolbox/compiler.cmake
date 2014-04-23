@@ -7,7 +7,7 @@ if(${CMAKE_BUILD_TYPE} STREQUAL DEBUG)
 	endif()
 endif()
 
-# COMPILER DEPENDANT C++0x/C++11 FLAGS
+# COMPILER DEPENDANT C++0x/C++11/C++14 FLAGS
 execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
 if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
 	if (GCC_VERSION VERSION_GREATER 4.7)
@@ -26,6 +26,12 @@ set(COMPILER_WARNINGS ON CACHE BOOL "Enable all/pedantic/effc++ compiler errors/
 mark_as_advanced(COMPILER_WARNINGS)
 if(COMPILER_WARNINGS)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wextra -Weffc++ -Wpedantic -pedantic-errors")
+endif()
+
+set(COMPILER_ADVANCED OFF CACHE BOOL "Enable some advanced compiler options, currently: -pipe -fPIC -fstack-protector -Wl,-z,relro -Wl,-z,now")
+mark_as_advanced(COMPILER_ADVANCED)
+if(COMPILER_ADVANCED)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -fPIC -fstack-protector -Wstack-protector -Wl,-z,relro -Wl,-z,now")
 endif()
 
 # WARNINGS MACRO
