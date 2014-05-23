@@ -92,15 +92,14 @@ For licensing, please see `License.txt`. Also, if you happen to find this
 software useful for your research, we would be happy if you cite the following
 publication:
 
-	@inproceedings{koester2013accessible,
-	  author    = {D. Koester and
-	               B. Schauerte and
-	               R. Stiefelhagen},
+	@inproceedings{koesterICMEW2013accessible,
+	  author    = {Daniel Koester and Boris Schauerte and Rainer Stiefelhagen},
 	  title     = {Accessible Section Detection For Visual Guidance},
-	  booktitle = {IEEE/NSF Workshop on Multimodal and Alternative Perception for Visually Impaired People (MAP4VIP)},
+	  booktitle = {Multimedia and Expo Workshops (ICMEW), IEEE International Conference on},
 	  year      = {2013},
-	  month     = {July 15-19},
-	  address   = {San Jose, CA, USA}
+	  month     = {July},
+	  address   = {San Jose, CA},
+	  doi={http://dx.doi.org/10.1109/ICMEW.2013.6618351}
 	}
 
 
