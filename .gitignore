@@ -3,6 +3,7 @@
 *.so
 *.dylib
 *.DS_Store
+*.ycm_extra_conf.py*
 
 build*
 modules/
