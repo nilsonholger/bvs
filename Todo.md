@@ -22,7 +22,7 @@ testing
 -------
 
 * add testing directory 'lib/t/' with scripts and *.cc files
-* create (regression) test suite using cmake's CTEST
+* create (regression) test suite using cmake CTEST
 * improve code quality with gcov and valgrind
 
 config
