@@ -9,7 +9,6 @@ bvs
 * stats: add option to show stats (fps, timings) during run and when shutting down
 * hotswap: with external struct
 * logger: lock free logging in memory! and level 0 quits -> ERROR
-* module: META modules (could be config only)
 * control: when connecting modules, change error messages to be easier to identify
 * control: add mapping of thread/pool to cpu (pthread_setaffinity_np)
 
@@ -42,7 +41,6 @@ POSTPONED
 =========
 
 * config: feature request -> meta modules [not yet]
-* c++11: member default initializer [gcc>=4.7]
 * use std::regex(_match) and capture groups to check connector names and parse module lines (only alphanumeric) [C++11 suppport in gcc/clang?]
 * control: move modules between master, thread and pool [GUI required]
 * control: automagic module pooling [too much effort needed, requires deeper understanding]
