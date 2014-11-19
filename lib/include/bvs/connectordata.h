@@ -1,5 +1,5 @@
 #ifndef BVS_CONNECTORDATA_H
-#define BV__CONNECTORDATA_H
+#define BVS_CONNECTORDATA_H
 
 #include <mutex>
 #include <iostream>
