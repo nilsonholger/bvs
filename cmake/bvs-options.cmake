@@ -80,7 +80,6 @@ endif()
 
 if(BVS_OSX_ANOMALIES)
 	add_definitions(-DBVS_OSX_ANOMALIES)
-	set(CMAKE_MACOSX_RPATH ON)
 else()
 	remove_definitions(-DBVS_OSX_ANOMALIES)
 endif()
