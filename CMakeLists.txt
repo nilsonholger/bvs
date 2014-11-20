@@ -6,9 +6,13 @@ include(cmake/toolbox/toolbox.cmake)
 include(cmake/bvs-options.cmake)
 
 # dynamic library stuff
-set(CMAKE_SKIP_RPATH ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-rpath,.")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+if(${APPLE})
+	set(CMAKE_MACOSX_RPATH ON)
+else()
+	set(CMAKE_SKIP_RPATH ON)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-rpath,.")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+endif()
 
 # output directory
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/bin)

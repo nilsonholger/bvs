@@ -13,8 +13,8 @@
 
 /** Version information. */
 static const unsigned int bvs_version_year = 2014;
-static const unsigned int bvs_version_release = 3;
-static const std::string bvs_version_nickname = "spring-cleanup";
+static const unsigned int bvs_version_release = 11;
+static const std::string bvs_version_nickname = "cling-clang";
 static const std::string bvs_version = std::to_string(bvs_version_year)
 	+ "." + std::to_string(bvs_version_release)
 	+ "-" + bvs_version_nickname;

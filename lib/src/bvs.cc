@@ -11,7 +11,7 @@
 BVS::BVS::BVS(const int argc, const char** argv, std::function<void()>shutdownHandler)
 	: config{"bvs", argc, argv},
 	shutdownHandler(shutdownHandler),
-	info(Info{bvs_version, config, 0, {}, {}, {}}),
+	info(Info{bvs_version, config, 0, {}, std::map<std::string, std::chrono::duration<unsigned int, std::milli>>{}, std::map<std::string, std::chrono::duration<unsigned int, std::milli>>{}}),
 #ifdef BVS_LOG_SYSTEM
 	logSystem{LogSystem::connectToLogSystem()},
 	logger{"BVS"},

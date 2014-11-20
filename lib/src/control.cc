@@ -234,7 +234,7 @@ Control& Control::moduleController(ModuleData& data)
 	std::chrono::time_point<std::chrono::high_resolution_clock> modTimer =
 		std::chrono::high_resolution_clock::now();
 
-	switch (data.flag)
+	switch (data.flag.load())
 	{
 		case ControlFlag::QUIT: break;
 		case ControlFlag::WAIT: break;
