@@ -33,6 +33,7 @@ config
 cmake
 -----
 
+* separate toolbox into its own repository
 * add options to set -fno-exceptions and -fno-rtti (rtti needs some code changes)
 
 
