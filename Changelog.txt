@@ -1,3 +1,10 @@
+2014-11-20  NilsonHolger <nilsonholger@hyve.org>
+
+	* 2014.11-cling-clang
+	* clang: reenable support
+	* cmake: add advanced compiler options
+	* osx: small fixes regarding rpath
+
 2014-03-25  NilsonHolger <nilsonholger@hyve.org>
 
 	* 2014.3-spring-cleanup
