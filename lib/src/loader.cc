@@ -42,7 +42,7 @@ void Loader::registerModule(const std::string& id, Module* module, bool hotSwap)
 	else
 	{
 		modules[id] = std::shared_ptr<ModuleData>{new ModuleData{id, {}, {}, {},
-			module, nullptr, {}, ControlFlag::WAIT, Status::OK, {}}};
+			module, nullptr, {}, ControlFlag::WAIT, Status::OK, std::map<std::string, std::shared_ptr<ConnectorData>, std::less<std::string>>{}}};
 	}
 }
 
