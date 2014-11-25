@@ -5,6 +5,7 @@ bvs
 ---
 
 * GUI!!!
+* connectors: allow simultaneous reading of input in multiple modules connected to the same output
 * binary data dump: record/replay generic data dumps (no need to write a recorder/reader for all kinds of input data)
 * stats: add option to show stats (fps, timings) during run and when shutting down
 * hotswap: with external struct
