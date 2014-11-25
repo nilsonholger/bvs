@@ -178,6 +178,7 @@ Loader& Loader::connectModule(const std::string& id, const bool connectorTypeMat
 
 		module->connectors[input]->pointer = modules[targetModule]->connectors[targetOutput]->pointer;
 		module->connectors[input]->lock = std::unique_lock<std::mutex>{modules[targetModule]->connectors[targetOutput]->mutex, std::defer_lock};
+		modules[targetModule]->connectors[targetOutput]->active = true;
 		LOG(3, "Connected: " << module->id << "." << module->connectors[input]->id << " <- " << modules[targetModule]->id << "." << modules[targetModule]->connectors[targetOutput]->id);
 	}
 

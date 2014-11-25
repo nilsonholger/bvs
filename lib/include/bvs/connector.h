@@ -51,6 +51,12 @@ namespace BVS
 			/** Connector destructor. */
 			~Connector();
 
+			/** Connector status check.
+			 * Checks whether the connector is active/connected/used.
+			 * @return Connector status.
+			 */
+			bool active();
+
 			/** Write to output.
 			 * @param[in] t The object you want to send.
 			 */
@@ -132,7 +138,6 @@ namespace BVS
 		{
 			connection = std::make_shared<T>();
 			data->pointer = connection;
-			data->active = true;
 			data->lock = std::unique_lock<std::mutex>{data->mutex, std::defer_lock};
 		}
 	}
@@ -148,6 +153,13 @@ namespace BVS
 
 	template<typename T> Connector<T>::~Connector()
 	{ }
+
+
+
+	template<typename T> bool Connector<T>::active()
+	{
+		return data->active;
+	}
 
 
 
