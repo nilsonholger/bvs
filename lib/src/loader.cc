@@ -189,20 +189,35 @@ Loader& Loader::connectModule(const std::string& id, const bool connectorTypeMat
 
 Loader& Loader::disconnectModule(const std::string& id)
 {
-	for (auto& connector: modules[id]->connectors)
-	{
-		if (connector.second->type==ConnectorType::INPUT) continue;
-
-		for (auto& module: modules)
-		{
-			for (auto& targetConnector: module.second->connectors)
-			{
-				if (connector.second->pointer==targetConnector.second->pointer)
+	for (auto& disconnect: modules[id]->connectors) {
+		switch (disconnect.second->type) {
+			case ConnectorType::INPUT:
 				{
-					targetConnector.second->active = false;
-					targetConnector.second->pointer = nullptr;
+					bool onlyConnection = true;
+					std::shared_ptr<ConnectorData> origin;
+					for (auto& module: modules) {
+						for (auto& test: module.second->connectors) {
+							if (test.second->pointer==disconnect.second->pointer) {
+								if (test.second->type==ConnectorType::OUTPUT) origin = test.second;
+								if (test.second->type==ConnectorType::INPUT && &test!=&disconnect) onlyConnection = false;
+							}
+						}
+					}
+					if (onlyConnection) origin->active = false;
+					break;
 				}
-			}
+			case ConnectorType::OUTPUT:
+				for (auto& module: modules) {
+					for (auto& targetConnector: module.second->connectors) {
+						if (disconnect.second->pointer==targetConnector.second->pointer) {
+							targetConnector.second->active = false;
+							targetConnector.second->pointer = nullptr;
+						}
+					}
+				}
+				break;
+			case ConnectorType::NOOP:
+				break;
 		}
 	}
 
