@@ -6,8 +6,13 @@
 
 
 /** This is the BVSExampleModule module.
- * Please add sufficient documentation to enable others to use it.
- * Include information about: Dependencies, Inputs, Outputs, Configuration Options...
+ * Please add a sufficient description and documentation to enable others to
+ * properly use it.
+ *
+ * Dependencies: please list any dependencies here.
+ * Inputs: enumerate inputs
+ * Outputs: enumerate outputs
+ * Configuration Options: please see BVSExampleModule.conf
  */
 class BVSExampleModule : public BVS::Module
 {
