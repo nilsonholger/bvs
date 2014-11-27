@@ -4,6 +4,7 @@ project(BVS)
 set(CMAKE_BUILD_TYPE "DEBUG")
 include(cmake/toolbox/toolbox.cmake)
 include(cmake/bvs-options.cmake)
+include(cmake/bvs-macros.cmake)
 
 # dynamic library stuff
 if(${APPLE})
