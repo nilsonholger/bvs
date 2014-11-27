@@ -100,3 +100,14 @@ macro(display_all_variables)
 		message(STATUS "${_variableName} = ${${_variableName}}")
 	endforeach()
 endmacro(display_all_variables)
+
+# create symlink if file does not already exist
+#
+# CALL: create_symlink(SOURCE TARGET)
+#	SOURCE: source file/dir
+#	TARGET: target file/dir
+macro(create_symlink SOURCE TARGET)
+	if(NOT EXISTS ${TARGET})
+		execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${SOURCE} ${TARGET})
+	endif()
+endmacro(create_symlink)
