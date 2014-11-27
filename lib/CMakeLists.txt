@@ -10,7 +10,9 @@ if(BVS_STATIC_MODULES)
 	target_link_libraries(bvs -Wl,--whole-archive $ENV{BVS_STATIC_MODULES} -Wl,--no-whole-archive)
 endif()
 
-execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/bvs.conf ${CMAKE_BINARY_DIR}/bin/bvs.conf)
+if(NOT EXISTS ${CMAKE_BINARY_DIR}/bin/bvs.conf)
+	execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/bvs.conf ${CMAKE_BINARY_DIR}/bin/bvs.conf)
+endif()
 
 # add documentation target (using doxygen)
 find_package(Doxygen)
