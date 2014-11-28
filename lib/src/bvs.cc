@@ -244,7 +244,7 @@ BVS::BVS& BVS::BVS::disableLogConsole()
 
 BVS::BVS& BVS::BVS::connectAllModules()
 {
-	loader->connectAllModules();
+	loader->connectAllModules(config.getValue<bool>("BVS.connectorTypeMatching", bvs_connector_type_matching));
 
 	return *this;
 }
