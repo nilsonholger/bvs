@@ -172,7 +172,9 @@ Loader& Loader::connectModule(const std::string& id, const bool connectorTypeMat
 
 		if (connectorTypeMatching && module->connectors[input]->typeIDHash != modules[targetModule]->connectors[targetOutput]->typeIDHash)
 		{
-			LOG(0, "Selected input and output connector template instantiations are of different type: " << module->id << "." << selection << " -> " << module->connectors[input]->typeIDName << " != " << modules[targetModule]->connectors[targetOutput]->typeIDName);
+			LOG(0, "Selected input and output connector template instantiations are of different type: " << module->id << "." << selection << " -> "
+					<< module->connectors[input]->typeIDName << "(" << module->connectors[input]->typeIDHash << ") != "
+					<< modules[targetModule]->connectors[targetOutput]->typeIDName << "(" << modules[targetModule]->connectors[targetOutput]->typeIDHash << ")");
 			errorHandler();
 		}
 
