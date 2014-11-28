@@ -7,7 +7,6 @@ int main(const int argc, const char** argv)
 	signal(SIGSEGV, mainSignal);
 	signal(SIGALRM, mainSignal);
 
-	LOG(2, "starting!");
 	bvs = new BVS::BVS(argc, argv, &shutdownFunction);
 
 	LOG(2, "loading modules!");
