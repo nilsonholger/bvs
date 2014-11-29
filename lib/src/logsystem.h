@@ -121,6 +121,12 @@ namespace BVS
 			/** Name padding size for fancy output, updated in announce function. */
 			unsigned int namePadding;
 
+			/** Whether to output colors in the log output.
+			 * Messages to level 0 (ERROR) are red, messages to level 1 (INFO)
+			 * are yellow.
+			 */
+			bool logColors;
+
 			/** The overall system verbosity level.
 			 * The overall system verbosity level will be initialized to 3, only
 			 * messages with a level below or equal this value will be logged.

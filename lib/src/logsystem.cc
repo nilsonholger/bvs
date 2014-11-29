@@ -82,6 +82,13 @@ std::ostream& LogSystem::out(const Logger& logger, int level)
 			break;
 	}
 
+	// colorize
+	if (logColors) {
+		*out << "\033[0m";
+		if (level==0) *out << "\033[31m";
+		else if (level==1) *out << "\033[33m";
+	}
+	//
 	// prepare log output
 	*out << "[" << level << "|" << std::setw(namePadding) << std::left << logger.name << "] ";
 
@@ -209,6 +216,8 @@ LogSystem& LogSystem::updateSettings(Config& config)
 		}
 		enableLogFile(configFile, append);
 	}
+
+	logColors = config.getValue<bool>("BVS.logColors", bvs_log_colors);
 
 	// check log system verbosity
 	systemVerbosity = config.getValue<unsigned short>("BVS.logVerbosity", bvs_log_system_verbosity);

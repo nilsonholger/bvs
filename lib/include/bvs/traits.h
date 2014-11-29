@@ -65,6 +65,13 @@ static const bool bvs_log_to_console = true;
  */
 static const std::string bvs_log_to_logfile = {};
 
+/** Whether to use colors in the system log.
+ * Currently only Linux Console is supported.
+ *
+ * Possible Values: true, false
+ */
+static const bool bvs_log_colors = true;
+
 /** The logging system clients' default verbosity.
  * This verbosity level will be used for all log clients that have not
  * explicitely set one.
