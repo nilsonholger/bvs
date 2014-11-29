@@ -7,7 +7,11 @@ add_subdir_lib(src bvs SHARED barrier.cc bvs.cc config.cc connector.cc control.c
 target_link_libraries(bvs dl pthread)
 
 if(BVS_STATIC_MODULES)
-	target_link_libraries(bvs -Wl,--whole-archive $ENV{BVS_STATIC_MODULES} -Wl,--no-whole-archive)
+	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+		target_link_libraries(bvs -Wl,--whole-archive $ENV{BVS_STATIC_MODULES} -Wl,--no-whole-archive)
+	elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+		target_link_libraries(bvs -Wl,-all_load $ENV{BVS_STATIC_MODULES})
+	endif()
 endif()
 
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/bin/bvs.conf)
