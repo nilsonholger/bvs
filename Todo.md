@@ -3,47 +3,35 @@ TODO
 
 bvs
 ---
-
 * GUI!!!
-* connectors: allow simultaneous reading of input in multiple modules connected to the same output
+* control: move modules between master, thread and pool [GUI required]
+* connectors: allow simultaneous reading of input if multiple modules connect to the same output
 * binary data dump: record/replay generic data dumps (no need to write a recorder/reader for all kinds of input data)
-* stats: add option to show stats (fps, timings) during run and when shutting down
 * hotswap: with external struct
-* logger: lock free logging in memory! and level 0 quits -> ERROR
-* control: when connecting modules, change error messages to be easier to identify
+* logger: level 0 (ERROR) requests shutdown
+* logger: in memory logging -> lock free
 * control: add mapping of thread/pool to cpu (pthread_setaffinity_np)
 
 code
 ----
-
-* compact ALL objects (objects should contain DATA only), create *mostly* pure functions, make them friend functions if they need to modify private data
+* compact ALL objects (objects should be mostly DATA), create *mostly* pure functions, make them friend functions if they need to modify private data
 
 testing
 -------
-
-* add testing directory 'lib/t/' with scripts and *.cc files
+* add testing directory 'lib/t/' with scripts and .cc files
 * create (regression) test suite using cmake CTEST
 * improve code quality with gcov and valgrind
 
 config
 ------
-
 * design bug: overwrite of option (e.g. modules = ... \n modules = ...) is not caught (disabled due to pre-population on command line)
 * combine moduleThreads and forceModuleThreads, maybe even modulePools to simplify
 
-cmake
------
-
-* separate toolbox into its own repository
-* add options to set -fno-exceptions and -fno-rtti (rtti needs some code changes)
-
-
-
 POSTPONED
 =========
-
+* cmake: add options to set -fno-exceptions and -fno-rtti (rtti needs some code changes)
+* cmake: separate toolbox into its own repository
 * config: feature request -> meta modules [not yet]
-* use std::regex(_match) and capture groups to check connector names and parse module lines (only alphanumeric) [C++11 suppport in gcc/clang?]
-* control: move modules between master, thread and pool [GUI required]
-* control: automagic module pooling [too much effort needed, requires deeper understanding]
+* use std::regex_match() and capture groups to check connector names and parse module lines (only alphanumeric) [C++11 suppport in gcc/clang?]
+* control: automagic module pooling [too much effort needed, requires deeper dependency understanding]
 * control: async mode [not needed/requested so far]
