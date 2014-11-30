@@ -65,7 +65,7 @@ BVS::BVS& BVS::BVS::loadModules()
 			it.erase(0, 1);
 			if (it[0]=='[')
 			{
-				LOG(0, "Cannot start module in thread AND pool!");
+				LOG(0, "Cannot start module in thread AND pool: +" << it);
 				exit(1);
 			}
 			singlePool = true;
@@ -92,14 +92,12 @@ BVS::BVS& BVS::BVS::loadModule(const std::string& moduleTraits, bool singlePool,
 	std::string configuration;
 	std::string options;
 
-	// adapt to module thread/pools settings
-	bool moduleThreads = config.getValue<bool>("BVS.moduleThreads", bvs_module_threads);
-	bool forceModuleThreads = config.getValue<bool>("BVS.forceModuleThreads", bvs_module_force_threads);
-	bool modulePools = config.getValue<bool>("BVS.modulePools", bvs_module_pools);
+	// adapt to (forced) module thread/pools settings
+	std::string parallelism = config.getValue<std::string>("BVS.parallelism", bvs_parallelism);
 
-	if (forceModuleThreads) singlePool = true;
-	if (!moduleThreads) singlePool = false;
-	if (!modulePools) poolName.clear();
+	if (parallelism=="NONE") singlePool = false;
+	if (parallelism=="FORCE") singlePool = true;
+	if (parallelism!="ANY") poolName.clear();
 
 	// separate id, library, configuration and options
 	size_t separator = moduleTraits.find_first_of(".()");

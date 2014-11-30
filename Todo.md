@@ -25,7 +25,6 @@ testing
 config
 ------
 * design bug: overwrite of option (e.g. modules = ... \n modules = ...) is not caught (disabled due to pre-population on command line)
-* combine moduleThreads and forceModuleThreads, maybe even modulePools to simplify
 
 POSTPONED
 =========

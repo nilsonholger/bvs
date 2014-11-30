@@ -82,28 +82,15 @@ static const unsigned int bvs_log_client_default_verbosity = 3;
 
 /** Whether the system shows statistics after every round.
  *
- * Possbile Values: true, false
+ * Possibile Values: true, false
  */
 static const bool bvs_log_statistics = false;
 
-/** Whether the system allows modules to run in threads.
+/** Select parallelism level.
  *
- * Possible Values: true, false
+ * Possible Values: DISABELD, THREADS, FORCE, POOLS
  */
-static const bool bvs_module_threads = true;
-
-/** Whether the system ENFORCES modules to run in threads.
- * NOTE: this does NOT disable module pools.
- *
- * Possible Values: true, false
- */
-static const bool bvs_module_force_threads = false;
-
-/** Whether the system allows module pools.
- *
- * Possible Values: true, false
- */
-static const bool bvs_module_pools = true;
+static const std::string bvs_parallelism = "POOLS";
 
 
 

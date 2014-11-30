@@ -47,9 +47,7 @@ namespace BVS
 	 * @li \c logFile enables logging to file (""/$FILE/+$FILE, '+' appends).
 	 * @li \c logVerbosity sets the overall log verbosity (0/1/2/3...).
 	 * @li \c logStatistics enables statistics output (ON/OFF).
-	 * @li \c moduleThreads allows modules to run in dedicated threads (ON/OFF).
-	 * @li \c forceModuleThreads forces modules to run in dedicated threads (ON/OFF).
-	 * @li \c modulePools allows modules to be bundled in a pool thread (ON/OFF).
+	 * @li \c parallelism allows modules to run in dedicated (forced) threads or pools (NONE/THREAD/FORCE/ANY).
 	 * @li \c modules lists modules to load and their options.
 	 *
 	 * Module Syntax:
