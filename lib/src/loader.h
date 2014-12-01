@@ -1,7 +1,6 @@
 #ifndef BVS_LOADER_H
 #define BVS_LOADER_H
 
-#include <functional>
 #include <string>
 
 #include "bvs/config.h"
@@ -20,9 +19,8 @@ namespace BVS
 		public:
 			/** Constructor for loader.
 			 * @param[in] info Reference to info struct.
-			 * @param[in] errorHandler Callback in case an error has occured.
 			 */
-			Loader(const Info& info, std::function<void()> errorHandler = [](){ exit(0); });
+			Loader(const Info& info);
 
 			/** Registers a module.
 			 * @param[in] id Name of module.
@@ -142,7 +140,6 @@ namespace BVS
 
 			Logger logger; /**< Logger metadata. */
 			const Info& info; /**< Info reference. */
-			std::function<void()> errorHandler; /**< Function to call on errors. */
 			static ModuleVector* hotSwapGraveYard; /** GraveYard for hotswapped module pointers. */
 
 			Loader(const Loader&) = delete; /**< -Weffc++ */
