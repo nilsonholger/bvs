@@ -8,7 +8,7 @@
 
 
 
-BVS::BVS::BVS(const int argc, const char** argv, std::function<void()>shutdownHandler)
+BVS::BVS::BVS(const int argc, const char** argv, std::function<void()> shutdownHandler)
 	: config{"bvs", argc, argv},
 	shutdownHandler(shutdownHandler),
 	info(Info{bvs_version, config, 0, {}, std::map<std::string, std::chrono::duration<unsigned int, std::milli>>{}, std::map<std::string, std::chrono::duration<unsigned int, std::milli>>{}}),
@@ -21,6 +21,7 @@ BVS::BVS::BVS(const int argc, const char** argv, std::function<void()>shutdownHa
 	moduleStack{}
 {
 #ifdef BVS_LOG_SYSTEM
+	LogSystem::setErrorHandler(shutdownHandler);
 	logSystem->updateSettings(config);
 	logSystem->updateLoggerLevels(config);
 	LOG(2, "bvs " << info.version);
@@ -63,11 +64,7 @@ BVS::BVS& BVS::BVS::loadModules()
 		if (it[0]=='+')
 		{
 			it.erase(0, 1);
-			if (it[0]=='[')
-			{
-				LOG(0, "Cannot start module in thread AND pool: +" << it);
-				exit(1);
-			}
+			if (it[0]=='[') LOG(0, "Cannot start module in thread AND pool: +" << it);
 			singlePool = true;
 		}
 		else if (it[0]=='[')
