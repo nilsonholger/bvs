@@ -69,7 +69,7 @@ Control& Control::masterController(const bool forkMasterController)
 				stats << " [P]" << pool.first << ":" << pool.second.count();
 			for (auto& mod: info.moduleDurations)
 				stats << " [M]" << mod.first << ":" << mod.second.count();
-			LOG(0, stats.str());
+			LOG(2, stats.str());
 		}
 
 		switch (flag)
