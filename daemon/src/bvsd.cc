@@ -110,6 +110,7 @@ void mainSignal(int sig)
 	}
 	else
 	{
+		// TODO: BUG, causes system to hang, probably because it waits for some thread to join, investigate!
 		bvs->quit();
 		delete bvs;
 		exit(EXIT_FAILURE);
