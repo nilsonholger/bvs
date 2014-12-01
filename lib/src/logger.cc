@@ -35,10 +35,10 @@ std::ostream& Logger::out(const int level)
 
 
 
-void Logger::endl()
+void Logger::endl(const int level)
 {
 #ifdef BVS_LOG_SYSTEM
-	logSystem->endl();
+	logSystem->endl(level);
 #endif
 }
 

@@ -14,8 +14,8 @@
 #ifdef __ANDROID_API__
 #define LOG(level, ...) { std::stringstream ss; ss << __VA_ARGS__; std::string out = ss.str(); LOGD(out.c_str());};
 #else
-#define LOG(level, args) { logger.out(level) << args << std::endl; logger.endl(); };
-#endif 
+#define LOG(level, args) { logger.out(level) << args << std::endl; logger.endl(level); };
+#endif
 #else
 //TODO rather inefficient, leave for now
 // nirvana is used so args is evaluated in all cases
@@ -64,8 +64,9 @@ namespace BVS
 			std::ostream& out(const int level);
 
 			/* Ends a log line and releases the logSystem mutex, must be called after using out.
+			 * @param[in] level The messages' desired verbosity level.
 			*/
-			void endl();
+			void endl(const int level);
 
 			/** This logger instance's name.
 			 * Const to prevent changes later on, which would

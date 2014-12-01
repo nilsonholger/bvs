@@ -19,24 +19,30 @@ std::shared_ptr<LogSystem> LogSystem::instance = nullptr;
 std::shared_ptr<LogSystem> LogSystem::connectToLogSystem()
 {
 	// check if system exists, if not create first
-	if (instance == nullptr)
-	{
+	if (instance==nullptr)
 		instance = std::shared_ptr<LogSystem>{new LogSystem()};
-	}
 	return instance;
 }
 
 
 
+void LogSystem::setErrorHandler(std::function<void()> errorHandler)
+{
+	if (instance==nullptr) connectToLogSystem();
+	else instance->errorHandler = errorHandler;
+}
+
+
+
 LogSystem::LogSystem()
-	: loggerLevels{},
-	tmpName{},
-	namePadding{0},
-	systemVerbosity{3},
-	outMutex{},
-	outCLI{std::clog.rdbuf()},
-	outFile{},
-	outBoth{outCLI, outFile}
+	: loggerLevels{}
+	, tmpName{}
+	, namePadding{0}
+	, systemVerbosity{3}
+	, outMutex{}
+	, outCLI{std::clog.rdbuf()}
+	, outFile{}
+	, outBoth{outCLI, outFile}
 {
 	// show bools as "true"/"false" instead of "0"/"1"
 	outCLI.setf(outCLI.boolalpha);
@@ -98,9 +104,10 @@ std::ostream& LogSystem::out(const Logger& logger, int level)
 
 
 
-void LogSystem::endl()
+void LogSystem::endl(const int level)
 {
 	outMutex.unlock();
+	if (level==0) errorHandler();
 }
 
 
