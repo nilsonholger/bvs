@@ -7,7 +7,8 @@ int main(const int argc, const char** argv)
 	signal(SIGSEGV, mainSignal);
 	signal(SIGALRM, mainSignal);
 
-	bvs = new BVS::BVS(argc, argv, &shutdownFunction);
+	//bvs = new BVS::BVS(argc, argv, &shutdownFunction); // TODO: disable shutdown function for now, also see mainSignal
+	bvs = new BVS::BVS(argc, argv);
 
 	LOG(2, "loading modules!");
 	bvs->loadModules();
