@@ -1,5 +1,7 @@
 #include <dlfcn.h>
 
+#include <sstream>
+
 #include "loader.h"
 
 using BVS::Loader;
@@ -338,8 +340,13 @@ Loader& Loader::printModuleConnectors(const ModuleData* module)
 	}
 	else
 	{
-		LOG(0, "Module " << module->id << " defines the following connectors: ");
-		for (auto& it: module->connectors) LOG(0, it.second->type << ": " << it.second->id);
+		std::string connectors;
+		for (auto& it: module->connectors) {
+			std::stringstream ss;
+			ss << it.second->type;
+			connectors += it.second->id + "(" + ss.str() + ") ";
+		}
+		LOG(0, "Module " << module->id << " defines the following connectors: " << connectors);
 	}
 
 	return *this;
