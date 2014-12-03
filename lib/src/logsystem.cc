@@ -35,9 +35,11 @@ void LogSystem::setErrorHandler(std::function<void()> errorHandler)
 
 
 LogSystem::LogSystem()
-	: loggerLevels{}
+	: errorHandler{}
+	, loggerLevels{}
 	, tmpName{}
 	, namePadding{0}
+	, logColors{}
 	, systemVerbosity{3}
 	, outMutex{}
 	, outCLI{std::clog.rdbuf()}
