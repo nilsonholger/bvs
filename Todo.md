@@ -8,7 +8,6 @@ bvs
 * connectors: allow simultaneous reading of input if multiple modules connect to the same output
 * binary data dump: record/replay generic data dumps (no need to write a recorder/reader for all kinds of input data)
 * hotswap: with external struct
-* logger: level 0 (ERROR) requests shutdown
 * logger: in memory logging -> lock free
 * control: add mapping of thread/pool to cpu (pthread_setaffinity_np)
 
