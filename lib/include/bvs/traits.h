@@ -8,6 +8,7 @@
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__))
 #endif
 #include <string>
+#include <vector>
 
 
 
@@ -88,9 +89,10 @@ static const bool bvs_log_statistics = false;
 
 /** Select parallelism level.
  *
- * Possible Values: DISABELD, THREADS, FORCE, POOLS
+ * Possible Values: NONE, THREADS, FORCE, ANY
  */
-static const std::string bvs_parallelism = "POOLS";
+static const std::vector<std::string> bvs_parallelism_values = { "NONE", "THREADS", "FORCE", "ANY" };
+static const std::string bvs_parallelism = "ANY";
 
 
 

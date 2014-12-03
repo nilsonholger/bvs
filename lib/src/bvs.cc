@@ -91,6 +91,13 @@ BVS::BVS& BVS::BVS::loadModule(const std::string& moduleTraits, bool singlePool,
 
 	// adapt to (forced) module thread/pools settings
 	std::string parallelism = config.getValue<std::string>("BVS.parallelism", bvs_parallelism);
+	bool correct = false;
+	std::string values;
+	for (auto value: bvs_parallelism_values) {
+		if (parallelism==value) correct = true;
+		values += " " + value;
+	}
+	if (!correct) LOG(0, "Incorrect value for BVS.parallelism given: " << parallelism << " (Possible:" << values << ")");
 
 	if (parallelism=="NONE") singlePool = false;
 	if (parallelism=="FORCE") singlePool = true;
