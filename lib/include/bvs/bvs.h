@@ -259,7 +259,10 @@ namespace BVS
 #endif
 			Loader* loader; /**< BVS' module loader. */
 			Control* control; /**< BVS' module controller. */
-			std::stack<std::string> moduleStack; /** Stack of modules names. */
+			std::stack<std::string> moduleStack; /**< Stack of modules names. */
+
+			bool connectorTypeMatching; /**< Try to match connector types. */
+			std::string parallelism; /**< Type of parallism to use. */
 
 			BVS(const BVS&) = delete; /**< -Weffc++ */
 			BVS& operator=(const BVS&) = delete; /**< -Weffc++ */

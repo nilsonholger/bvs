@@ -9,16 +9,18 @@
 
 
 BVS::BVS::BVS(const int argc, const char** argv, std::function<void()> shutdownHandler)
-	: config{"bvs", argc, argv},
-	shutdownHandler(shutdownHandler),
-	info(Info{bvs_version, config, 0, {}, std::map<std::string, std::chrono::duration<unsigned int, std::milli>>{}, std::map<std::string, std::chrono::duration<unsigned int, std::milli>>{}}),
+	: config{"bvs", argc, argv}
+	, shutdownHandler(shutdownHandler)
+	, info(Info{bvs_version, config, 0, {}, std::map<std::string, std::chrono::duration<unsigned int, std::milli>>{}, std::map<std::string, std::chrono::duration<unsigned int, std::milli>>{}})
 #ifdef BVS_LOG_SYSTEM
-	logSystem{LogSystem::connectToLogSystem()},
-	logger{"BVS"},
+	, logSystem{LogSystem::connectToLogSystem()}
+	, logger{"BVS"}
 #endif
-	loader{new Loader{info}},
-	control{new Control{loader->modules, *this, info, config.getValue<bool>("BVS.logStatistics", bvs_log_statistics)}},
-	moduleStack{}
+	, loader{new Loader{info}}
+	, control{new Control{loader->modules, *this, info, config.getValue<bool>("BVS.logStatistics", bvs_log_statistics)}}
+	, moduleStack{}
+	, connectorTypeMatching{config.getValue<bool>("BVS.connectorTypeMatching", bvs_connector_type_matching)}
+	, parallelism{config.getValue<std::string>("BVS.parallelism", bvs_parallelism)}
 {
 #ifdef BVS_LOG_SYSTEM
 	LogSystem::setErrorHandler(shutdownHandler);
@@ -26,6 +28,18 @@ BVS::BVS::BVS(const int argc, const char** argv, std::function<void()> shutdownH
 	logSystem->updateLoggerLevels(config);
 	LOG(2, "bvs " << info.version);
 #endif
+
+	// check parallelism value
+	bool correct = false;
+	for (auto& value: bvs_parallelism_values) if (parallelism==value) correct = true;
+	if (!correct) {
+		std::string values;
+		for (auto& value: bvs_parallelism_values) values += " " + value;
+		LOG(1, "Incorrect value for BVS.parallelism given: " << parallelism << " (Possible:" <<
+				[]()->std::string{std::string s; for (auto& v: bvs_parallelism_values) s+=" "+v;return s;}()
+				<< ")");
+	}
+
 }
 
 
@@ -47,28 +61,23 @@ BVS::BVS& BVS::BVS::loadModules()
 	std::string poolName;
 
 	// check length
-	if (moduleList.size()==0)
-	{
+	if (moduleList.size()==0) {
 		LOG(1, "No modules specified, nothing to load!");
 		return *this;
 	}
 
 	// load all selected modules
 	bool singlePool;
-	for (auto& it : moduleList)
-	{
+	for (auto& it : moduleList) {
 		singlePool = false;
 		poolName.clear();
 
-		// check for pool selection ('+' prefix or '[...]') and system settings
-		if (it[0]=='+')
-		{
+		// check for pool selection ('+' prefix or '[...]')
+		if (it[0]=='+') {
 			it.erase(0, 1);
 			if (it[0]=='[') LOG(0, "Cannot start module in thread AND pool: +" << it);
 			singlePool = true;
-		}
-		else if (it[0]=='[')
-		{
+		} else if (it[0]=='[') {
 			size_t pos = it.find_first_of(']');
 			poolName = it.substr(1, pos-1);
 			it.erase(0, pos+1);
@@ -90,15 +99,6 @@ BVS::BVS& BVS::BVS::loadModule(const std::string& moduleTraits, bool singlePool,
 	std::string options;
 
 	// adapt to (forced) module thread/pools settings
-	std::string parallelism = config.getValue<std::string>("BVS.parallelism", bvs_parallelism);
-	bool correct = false;
-	std::string values;
-	for (auto value: bvs_parallelism_values) {
-		if (parallelism==value) correct = true;
-		values += " " + value;
-	}
-	if (!correct) LOG(0, "Incorrect value for BVS.parallelism given: " << parallelism << " (Possible:" << values << ")");
-
 	if (parallelism=="NONE") singlePool = false;
 	if (parallelism=="FORCE") singlePool = true;
 	if (parallelism!="ANY") poolName.clear();
@@ -246,7 +246,7 @@ BVS::BVS& BVS::BVS::disableLogConsole()
 
 BVS::BVS& BVS::BVS::connectAllModules()
 {
-	loader->connectAllModules(config.getValue<bool>("BVS.connectorTypeMatching", bvs_connector_type_matching));
+	loader->connectAllModules(connectorTypeMatching);
 
 	return *this;
 }
@@ -255,7 +255,7 @@ BVS::BVS& BVS::BVS::connectAllModules()
 
 BVS::BVS& BVS::BVS::connectModule(const std::string id)
 {
-	loader->connectModule(id, config.getValue<bool>("BVS.connectorTypeMatching", bvs_connector_type_matching));
+	loader->connectModule(id, connectorTypeMatching);
 
 	return *this;
 }
