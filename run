@@ -96,7 +96,7 @@ other:
 
 targets:
   [config]     -- run 'bvsd' with the given config (default:bvs.conf)
-  -d|--debug   -- run 'bvsd' in gdb session
+  -d|--debug   -- run 'bvsd' in gdb/lldb session
   -f|--fifo    -- run 'bvsd' reading input from 'bvsd-fifo'
 
 EOF
@@ -206,9 +206,15 @@ for i in $@
 do
 	if [ "$i" = "-d" -o "$i" = "--debug" ]
 	then
-		GDB="gdb"
-		GDBOPTS="--args"
 		shift
+		if hash gdb 2>/dev/null; then
+			DEBUGGER="gdb --args"
+		elif hash lldb 2>/dev/null; then
+			DEBUGGER="lldb --"
+		else
+			echo ">>> Could not find a debugger!"
+			exit
+		fi
 	fi
 	if [ "$i" = "-f" -o "$i" = "--fifo" ]
 	then
@@ -228,7 +234,7 @@ done
 
 EOF
 
-eval "(cd $BASE_DIR/$BIN_DIR && $FIFO $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)"
+eval "(cd $BASE_DIR/$BIN_DIR && $FIFO $DEBUGGER ./bvsd --bvs.config=$CONFIG)"
 }
 
 
