@@ -182,6 +182,7 @@ Loader& Loader::connectModule(const std::string& id, const bool connectorTypeMat
 Loader& Loader::disconnectModule(const std::string& id)
 {
 	for (auto& disconnect: modules[id]->connectors) {
+		if (!disconnect.second->active) continue;
 		switch (disconnect.second->type) {
 			case ConnectorType::INPUT:
 				{
@@ -195,7 +196,7 @@ Loader& Loader::disconnectModule(const std::string& id)
 							}
 						}
 					}
-					if (onlyConnection) origin->active = false;
+					if (onlyConnection && origin) origin->active = false;
 					break;
 				}
 			case ConnectorType::OUTPUT:
