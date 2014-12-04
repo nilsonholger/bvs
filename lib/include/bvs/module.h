@@ -16,7 +16,7 @@ namespace BVS
 	/** Module status or request possibilities. */
 	enum class Status {
 		OK = 0, /**< Module running OK, all systems are go. Nothing to do here. */
-		NOINPUT = 1, /**< Module is waiting for input through on of it's connectors. @todo: NOT YET ACTED UPON */
+		NOINPUT = 1, /**< Module is waiting for input through on of it's connectors. */
 		FAIL = 2, /**< Module failing to execute properly. @todo: NOT YET ACTED UPON */
 		WAIT = 4, /**< Module waiting for event to happen, e.g.\ a certain input or other signal. @todo: NOT YET ACTED UPON */
 		DONE = 8, /**< Module is done processing and can be unloaded. */

@@ -288,7 +288,7 @@ Control& Control::checkModuleStatus(std::shared_ptr<ModuleData> data)
 	switch (data->status)
 	{
 		case Status::OK: break;
-		case Status::NOINPUT: break;
+		case Status::NOINPUT: LOG(1, "MODULE " << data->id << " MISSING INPUT!"); break;
 		case Status::FAIL: break;
 		case Status::WAIT: break;
 		case Status::DONE:
