@@ -1,5 +1,6 @@
 #include <dlfcn.h>
 
+#include <functional>
 #include <regex>
 #include <sstream>
 
@@ -142,25 +143,21 @@ Loader& Loader::connectModule(const std::string& id, const bool connectorTypeMat
 		targetOutput = match[3];
 
 		// check input connector
-		if (module->connectors.find(input)==module->connectors.end())
-			LOG(0, "Input not found: " << module->id << "." << connection);
+		std::function<void(const ModuleData*)> connectionError = [&](const ModuleData* data){
+			LOG(0, "Connection error: " << module->id << "." << connection << printModuleConnectors(data));
+		};
+		if (module->connectors.find(input)==module->connectors.end()) connectionError(module);
 		std::shared_ptr<ConnectorData> in = module->connectors[input];
-		if (in->type!=ConnectorType::INPUT) {
-			printModuleConnectors(module);
-			LOG(0, "Input not found: " << module->id << "." << input);
-		}
+		if (in->type!=ConnectorType::INPUT) connectionError(module);
 		if (in->active) LOG(0, "Input already connected: " << module->id << "." << input);
 
 		// check target module and connector
 		if (modules.find(targetModule)==modules.end())
-			LOG(0, "Module not found: " << targetModule << " in " << module->id << "." << connection);
+			LOG(0, "Module '" << targetModule << "' not found: " << module->id << "." << connection);
 		if (modules.find(targetModule)->second->connectors.find(targetOutput)==modules.find(targetModule)->second->connectors.end())
-			LOG(0, "Output not found: " << targetModule << "." << input);
+			connectionError(modules.find(targetModule)->second.get());
 		std::shared_ptr<ConnectorData> out = modules[targetModule]->connectors[targetOutput];;
-		if (out->type!=ConnectorType::OUTPUT) {
-			printModuleConnectors(modules.find(targetModule)->second.get());
-			LOG(0, "Output not found: " << targetOutput << " in " << module->id << "." << module->options);
-		}
+		if (out->type!=ConnectorType::OUTPUT) connectionError(modules.find(targetModule)->second.get());
 
 		// check type matching
 		if (connectorTypeMatching && in->typeIDHash!=out->typeIDHash)
@@ -304,23 +301,17 @@ Loader& Loader::unloadLibrary(const std::string& id)
 
 
 
-Loader& Loader::printModuleConnectors(const ModuleData* module)
+std::string Loader::printModuleConnectors(const ModuleData* module)
 {
-	if (module->connectors.size()==0)
-	{
-		LOG(0, "Module " << module->id << " does not define any connector!");
-	}
-	else
-	{
-		std::string connectors;
-		for (auto& it: module->connectors) {
-			std::stringstream ss;
-			ss << it.second->type;
-			connectors += it.second->id + "(" + ss.str() + ") ";
-		}
-		LOG(0, "Module " << module->id << " defines the following connectors: " << connectors);
+	std::stringstream s;
+	s << "\nConnectors defined by " << module->id << ": ";
+	if (module->connectors.size()==0) {
+		s << "NO CONNECTORS";
+	} else {
+		for (auto& it: module->connectors)
+			s << it.second->id << "(" << it.second->type << ") ";
 	}
 
-	return *this;
+	return s.str();
 }
 

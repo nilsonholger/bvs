@@ -118,9 +118,9 @@ namespace BVS
 			/** Print Connector list.
 			 * Prints a list of all Connectors defined by given module.
 			 * @param[in] module Module data for selected module.
-			 * @return Reference to object.
+			 * @return String with connector list.
 			 */
-			Loader& printModuleConnectors(const ModuleData* module);
+			std::string printModuleConnectors(const ModuleData* module);
 
 			Logger logger; /**< Logger metadata. */
 			const Info& info; /**< Info reference. */
