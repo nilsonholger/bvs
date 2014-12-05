@@ -305,37 +305,6 @@ Loader& Loader::unloadLibrary(const std::string& id)
 
 
 
-Loader& Loader::checkModuleInput(const ModuleData* module, const std::string& inputName)
-{
-	auto input = module->connectors.find(inputName);
-
-	if (input==module->connectors.end() || input->second->type!=ConnectorType::INPUT) {
-		printModuleConnectors(module);
-		LOG(0, "Input not found: " << module->id << "." << inputName);
-	}
-	if (input->second->active) LOG(0, "Input already connected: " << module->id << "." << inputName);
-
-	return *this;
-}
-
-
-
-Loader& Loader::checkModuleOutput(const ModuleData* module, const std::string& targetModule, const std::string& targetOutput)
-{
-	auto target = modules.find(targetModule);
-	if (target == modules.end()) LOG(0, "Module not found: " << targetModule << " in " << module->id << "." << module->options);
-
-	auto output = target->second->connectors.find(targetOutput);
-	if (output==target->second->connectors.end() || output->second->type!=ConnectorType::OUTPUT) {
-		printModuleConnectors(target->second.get());
-		LOG(0, "Output not found: " << targetOutput << " in " << module->id << "." << module->options);
-	}
-
-	return *this;
-}
-
-
-
 Loader& Loader::printModuleConnectors(const ModuleData* module)
 {
 	if (module->connectors.size()==0)

@@ -115,22 +115,6 @@ namespace BVS
 			static ModuleDataMap modules;
 
 		private:
-			/** Check input Connector.
-			 * Checks input connector for existence, type etc.
-			 * @param[in] module Module data for selected module.
-			 * @param[in] inputName Name of desired input.
-			 * @return True if all checks passed.
-			 */
-			Loader& checkModuleInput(const ModuleData* module, const std::string& inputName);
-
-			/** Check output Connector.
-			 * Checks output Connector for existence, type etc.
-			 * @param[in] module Module data for selected module.
-			 * @param[in] targetModule Name of desired module.
-			 * @param[in] targetOutput Name of desried output.
-			 */
-			Loader& checkModuleOutput(const ModuleData* module, const std::string& targetModule, const std::string& targetOutput);
-
 			/** Print Connector list.
 			 * Prints a list of all Connectors defined by given module.
 			 * @param[in] module Module data for selected module.
