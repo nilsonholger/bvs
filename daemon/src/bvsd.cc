@@ -7,8 +7,7 @@ int main(const int argc, const char** argv)
 	signal(SIGSEGV, mainSignal);
 	signal(SIGALRM, mainSignal);
 
-	//bvs = new BVS::BVS(argc, argv, &shutdownFunction); // TODO: disable shutdown function for now, also see mainSignal
-	bvs = new BVS::BVS(argc, argv);
+	bvs = new BVS::BVS(argc, argv, &shutdownFunction);
 
 	LOG(2, "loading modules!");
 	bvs->loadModules();
@@ -111,7 +110,6 @@ void mainSignal(int sig)
 	}
 	else
 	{
-		// TODO: BUG, causes system to hang, probably because it waits for some thread to join, investigate!
 		bvs->quit();
 		delete bvs;
 		exit(EXIT_FAILURE);
