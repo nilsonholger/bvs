@@ -17,19 +17,20 @@
 /** BVS namespace, contains all library stuff. */
 namespace BVS
 {
-	/** The connection between modules.
-	 * This class provides access to creating connections between different modules
-	 * by creating a connector on each side and then pushing data through it like a
-	 * pipe.
+	/** The connection between modules, sends and receives arbitrary data.
+	 * This class provides access to creating connections between different
+	 * modules by creating a connector on each side and then pushing data
+	 * through it like a pipe, without copying it's contents on either side.
 	 *
-	 * Do not forget to check your input connectors for valid content, a builtin way
-	 * to do so is:
+	 * NEVER forget to check your input connectors for valid content, a builtin
+	 * way to do so is:
 	 * @code
-	 * if (!input.receive(object) || !input2.receive(object2) || ...) return BVS::Status::NOINPUT;
+	 * if (!input.receive(object) || !input2.receive(object2) || ...)
+	 *	return BVS::Status::NOINPUT;
 	 * @endcode
-	 * Obviously, this does NOT guarantee that the input you received will actually
-	 * be a valid object, but it guarantees that your programm will not crash due to
-	 * non referenceable memory.
+	 * Obviously, this does NOT guarantee that any received input will actually
+	 * be a valid object, but it guarantees that your programm will not crash
+	 * due to non referenceable memory.
 	 */
 	template<typename T> class Connector
 	{
