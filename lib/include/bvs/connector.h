@@ -11,6 +11,7 @@
 #include <typeinfo>
 
 #include "bvs/connectordata.h"
+#include "bvs/logger.h"
 
 
 
@@ -126,15 +127,13 @@ namespace BVS
 						typeid(T).name(),
 						false}}}
 	{
+		Logger logger{"Connector"};
 		if (ConnectorDataCollector::connectors.find(connectorName)==ConnectorDataCollector::connectors.end()) {
-			if (!std::regex_match(connectorName, std::regex{"[-_[:alnum:]]+"})) {
-				std::cerr << "[0|Connector] invalid connector Name, only alphanumeric characters are allowed: " << connectorName << std::endl;
-				exit(1);
-			}
+			if (!std::regex_match(connectorName, std::regex{"[-_[:alnum:]]+"}))
+				LOG(0, "invalid name, only alphanumeric characters and '_-' are allowed: " << connectorName);
 			ConnectorDataCollector::connectors[connectorName] = data;
 		} else {
-			std::cerr << "[0|Connector] duplicate name detected: " << connectorName << std::endl;
-			exit(1);
+			LOG(0, "connector already exists: " << connectorName);
 		}
 
 		if (data->type == ConnectorType::OUTPUT) {
@@ -170,8 +169,8 @@ namespace BVS
 		// allow send only for output
 		if (data->type != ConnectorType::OUTPUT)
 		{
-			std::cerr << "[0|Connector] writing to INPUT connector!" << std::endl;
-			exit(1);
+			Logger logger{"Connector"};
+			LOG(0, "writing to INPUT connector!");
 		}
 
 		if (data->active && !data->locked) data->lock.lock();
@@ -186,8 +185,8 @@ namespace BVS
 		// allow get only for output (maybe compiler catches const before, check)
 		if (data->type != ConnectorType::INPUT)
 		{
-			std::cerr << "[0|Connector] reading from OUTPUT connector!" << std::endl;
-			exit(1);
+			Logger logger{"Connector"};
+			LOG(0, "reading from OUTPUT connector!");
 		}
 
 		if (!data->active && !activate()) return false;
