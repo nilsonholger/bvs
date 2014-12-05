@@ -70,6 +70,8 @@ Control& Control::masterController(const bool forkMasterController)
 			for (auto& mod: info.moduleDurations)
 				stats << " [M]" << mod.first << ":" << mod.second.count();
 			LOG(2, stats.str());
+		} else {
+				LOG(2, "ROUND: " << round);
 		}
 
 		switch (flag)
@@ -83,7 +85,6 @@ Control& Control::masterController(const bool forkMasterController)
 				break;
 			case SystemFlag::RUN:
 			case SystemFlag::STEP:
-				LOG(2, "ROUND: " << round);
 				info.round = round++;
 
 				for (auto& module: modules)
