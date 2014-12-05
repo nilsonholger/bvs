@@ -6,6 +6,7 @@
 #include <map>
 #include <memory>
 #include <mutex>
+#include <regex>
 #include <string>
 #include <typeinfo>
 
@@ -124,18 +125,18 @@ namespace BVS
 						typeid(T).name(),
 						false}}}
 	{
-		if (ConnectorDataCollector::connectors.find(connectorName)==ConnectorDataCollector::connectors.end())
-		{
+		if (ConnectorDataCollector::connectors.find(connectorName)==ConnectorDataCollector::connectors.end()) {
+			if (!std::regex_match(connectorName, std::regex{"[-_[:alnum:]]+"})) {
+				std::cerr << "[0|Connector] invalid connector Name, only alphanumeric characters are allowed: " << connectorName << std::endl;
+				exit(1);
+			}
 			ConnectorDataCollector::connectors[connectorName] = data;
-		}
-		else
-		{
+		} else {
 			std::cerr << "[0|Connector] duplicate name detected: " << connectorName << std::endl;
 			exit(1);
 		}
 
-		if (data->type == ConnectorType::OUTPUT)
-		{
+		if (data->type == ConnectorType::OUTPUT) {
 			connection = std::make_shared<T>();
 			data->pointer = connection;
 			data->lock = std::unique_lock<std::mutex>{data->mutex, std::defer_lock};
