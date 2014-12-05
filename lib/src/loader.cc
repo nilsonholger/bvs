@@ -169,7 +169,6 @@ Loader& Loader::connectModule(const std::string& id, const bool connectorTypeMat
 					<< out->typeIDName << "(" << out->typeIDHash << ")");
 
 		// connect
-		in->active = true;
 		in->lock = std::unique_lock<std::mutex>{out->mutex, std::defer_lock};
 		in->pointer = out->pointer;
 		out->active = true;
