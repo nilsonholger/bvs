@@ -1,6 +1,7 @@
 #ifndef BVS_LOGGER_H
 #define BVS_LOGGER_H
 
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -54,8 +55,9 @@ namespace BVS
 			 * @param[in] name The name of your logging instance.
 			 * @param[in] verbosity Your selected logging verbosity level (default: 3).
 			 * @param[in] target Selects this loggers output target (default: TO_CLI_AND_FILE)
+			 * @param[in] errorHandler Function called when Logging to level 0 (default: exit).
 			 */
-			Logger(const std::string& name, unsigned short verbosity = 3, LogTarget target = TO_CLI_AND_FILE);
+			Logger(const std::string& name, unsigned short verbosity = 3, LogTarget target = TO_CLI_AND_FILE, std::function<void()> errorHandler = [](){ exit(1); });
 
 			/** Log to logging system.
 			 * @param[in] level The messages' desired verbosity level.
@@ -76,6 +78,7 @@ namespace BVS
 
 			unsigned short verbosity; /**< This logger's verbosity level. */
 			LogTarget target; /**< This logger's output target. */
+			std::function<void()> errorHandler; /**< This logger's error Handler. */
 
 		private:
 #ifdef BVS_LOG_SYSTEM
