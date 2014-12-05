@@ -1,5 +1,6 @@
 #include <dlfcn.h>
 
+#include <regex>
 #include <sstream>
 
 #include "loader.h"
@@ -124,54 +125,59 @@ Loader& Loader::connectModule(const std::string& id, const bool connectorTypeMat
 {
 	ModuleData* module = modules[id].get();
 	std::string options = module->options;
-	std::string selection;
+	std::string connection;
 	std::string input;
 	std::string targetModule;
 	std::string targetOutput;
-	size_t separator;
-	size_t separator2;
+	std::regex regex("(.+?)\\((.+?)\\.(.+?)\\).*");
+	std::smatch match;
 
-	while (!options.empty())
-	{
-		separator = options.find_first_of('(');
-		separator2 = options.find_first_of(')');
-		selection = options.substr(0, separator2+1);
-		if (separator!=std::string::npos)
-		{
-			input = options.substr(0, separator);
-			targetModule = options.substr(separator+1, separator2-separator-1);
+	while (!options.empty()) {
+		// try to match 'input(targetModule.targetOutput).*'
+		std::regex_match(options, match, regex);
+		connection = match[0].str().empty() ? options : match[0];
+		if (match.size()!=4) LOG(0, "Error matching connector settings: " << connection);
+		input = match[1];
+		targetModule = match[2];
+		targetOutput = match[3];
+
+		// check input connector
+		if (module->connectors.find(input)==module->connectors.end())
+			LOG(0, "Input not found: " << module->id << "." << connection);
+		std::shared_ptr<ConnectorData> in = module->connectors[input];
+		if (in->type!=ConnectorType::INPUT) {
+			printModuleConnectors(module);
+			LOG(0, "Input not found: " << module->id << "." << input);
 		}
-		else
-		{
-			LOG(0, "No input selection found: " << selection);
+		if (in->active) LOG(0, "Input already connected: " << module->id << "." << input);
+
+		// check target module and connector
+		if (modules.find(targetModule)==modules.end())
+			LOG(0, "Module not found: " << targetModule << " in " << module->id << "." << connection);
+		if (modules.find(targetModule)->second->connectors.find(targetOutput)==modules.find(targetModule)->second->connectors.end())
+			LOG(0, "Output not found: " << targetModule << "." << input);
+		std::shared_ptr<ConnectorData> out = modules[targetModule]->connectors[targetOutput];;
+		if (out->type!=ConnectorType::OUTPUT) {
+			printModuleConnectors(modules.find(targetModule)->second.get());
+			LOG(0, "Output not found: " << targetOutput << " in " << module->id << "." << module->options);
 		}
 
-		options.erase(0, separator2+1);
-		if (options[0] == '.') options.erase(options.begin());
+		// check type matching
+		if (connectorTypeMatching && in->typeIDHash!=out->typeIDHash)
+			LOG(0, "Incompatible types for: " << connection << " -> "
+					<< in->typeIDName << "(" << in->typeIDHash << ") != "
+					<< out->typeIDName << "(" << out->typeIDHash << ")");
 
-		separator = targetModule.find_first_of('.');
-		if (separator!=std::string::npos)
-		{
-			targetOutput = targetModule.substr(separator+1, std::string::npos);
-			targetModule = targetModule.substr(0, separator);
-		}
-		else
-		{
-			LOG(0, "No module output selected: " << module->id << "." << selection);
-		}
+		// connect
+		in->active = true;
+		in->lock = std::unique_lock<std::mutex>{out->mutex, std::defer_lock};
+		in->pointer = out->pointer;
+		out->active = true;
+		LOG(2, "Connected: " << module->id << "." << input << " <- " << targetModule << "." << targetOutput);
 
-		checkModuleInput(module, input);
-		checkModuleOutput(module, targetModule, targetOutput);
-
-		if (connectorTypeMatching && module->connectors[input]->typeIDHash != modules[targetModule]->connectors[targetOutput]->typeIDHash)
-			LOG(0, "Selected input and output connector template instantiations are of different type: " << module->id << "." << selection << " -> "
-					<< module->connectors[input]->typeIDName << "(" << module->connectors[input]->typeIDHash << ") != "
-					<< modules[targetModule]->connectors[targetOutput]->typeIDName << "(" << modules[targetModule]->connectors[targetOutput]->typeIDHash << ")");
-
-		module->connectors[input]->pointer = modules[targetModule]->connectors[targetOutput]->pointer;
-		module->connectors[input]->lock = std::unique_lock<std::mutex>{modules[targetModule]->connectors[targetOutput]->mutex, std::defer_lock};
-		modules[targetModule]->connectors[targetOutput]->active = true;
-		LOG(3, "Connected: " << module->id << "." << module->connectors[input]->id << " <- " << modules[targetModule]->id << "." << modules[targetModule]->connectors[targetOutput]->id);
+		// remove connection from option string
+		options.erase(0, options.find(")")+1);
+		if (options[0]=='.') options.erase(0, 1);
 	}
 
 	return *this;
@@ -303,12 +309,10 @@ Loader& Loader::checkModuleInput(const ModuleData* module, const std::string& in
 {
 	auto input = module->connectors.find(inputName);
 
-	if (input == module->connectors.end() || input->second->type != ConnectorType::INPUT)
-	{
+	if (input==module->connectors.end() || input->second->type!=ConnectorType::INPUT) {
 		printModuleConnectors(module);
 		LOG(0, "Input not found: " << module->id << "." << inputName);
 	}
-
 	if (input->second->active) LOG(0, "Input already connected: " << module->id << "." << inputName);
 
 	return *this;
@@ -322,8 +326,7 @@ Loader& Loader::checkModuleOutput(const ModuleData* module, const std::string& t
 	if (target == modules.end()) LOG(0, "Module not found: " << targetModule << " in " << module->id << "." << module->options);
 
 	auto output = target->second->connectors.find(targetOutput);
-	if (output == target->second->connectors.end() || output->second->type != ConnectorType::OUTPUT)
-	{
+	if (output==target->second->connectors.end() || output->second->type!=ConnectorType::OUTPUT) {
 		printModuleConnectors(target->second.get());
 		LOG(0, "Output not found: " << targetOutput << " in " << module->id << "." << module->options);
 	}
