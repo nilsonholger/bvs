@@ -32,14 +32,11 @@ Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info, bool logStatistic
 
 Control& Control::masterController(const bool forkMasterController)
 {
-	if (forkMasterController)
-	{
+	if (forkMasterController) {
 		LOG(3, "master -> FORKED!");
 		controlThread = std::thread{&Control::masterController, this, false};
 		return *this;
-	}
-	else
-	{
+	} else {
 		nameThisThread("master");
 
 		// startup sync
@@ -51,8 +48,7 @@ Control& Control::masterController(const bool forkMasterController)
 	std::chrono::time_point<std::chrono::high_resolution_clock> timer =
 		std::chrono::high_resolution_clock::now();
 
-	while (flag!=SystemFlag::QUIT)
-	{
+	while (flag!=SystemFlag::QUIT) {
 		// round sync
 		barrier.enqueue(masterLock, [&](){ return activePools.load()==0; });
 
@@ -61,8 +57,7 @@ Control& Control::masterController(const bool forkMasterController)
 			(std::chrono::high_resolution_clock::now() - timer);
 		timer = std::chrono::high_resolution_clock::now();
 
-		if (logStatistics)
-		{
+		if (logStatistics) {
 			std::stringstream stats;
 			stats << "Stats[" << info.round << "]:" << info.lastRoundDuration.count();
 			for (auto& pool: info.poolDurations)
@@ -74,8 +69,7 @@ Control& Control::masterController(const bool forkMasterController)
 				LOG(2, "ROUND: " << round);
 		}
 
-		switch (flag)
-		{
+		switch (flag) {
 			case SystemFlag::QUIT: break;
 			case SystemFlag::PAUSE:
 				if (!controlThread.joinable()) return *this;
@@ -87,8 +81,7 @@ Control& Control::masterController(const bool forkMasterController)
 			case SystemFlag::STEP:
 				info.round = round++;
 
-				for (auto& module: modules)
-				{
+				for (auto& module: modules) {
 					if (module.second->status!=Status::OK)
 						checkModuleStatus(module.second);
 					module.second->flag = ControlFlag::RUN;
