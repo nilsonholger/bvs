@@ -30,6 +30,5 @@ POSTPONED
 * cmake: add options to set -fno-exceptions and -fno-rtti (rtti needs some code changes)
 * cmake: separate toolbox into its own repository
 * config: feature request -> meta modules [not yet]
-* use std::regex_match() and capture groups to check connector names and parse module lines (only alphanumeric) [C++11 suppport in gcc/clang?]
 * control: automagic module pooling [too much effort needed, requires deeper dependency understanding]
 * control: async mode [not needed/requested so far]
