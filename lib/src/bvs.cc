@@ -14,7 +14,7 @@ BVS::BVS::BVS(const int argc, const char** argv, std::function<void()> shutdownH
 	, info(Info{bvs_version, config, 0, {}, std::map<std::string, std::chrono::duration<unsigned int, std::milli>>{}, std::map<std::string, std::chrono::duration<unsigned int, std::milli>>{}})
 #ifdef BVS_LOG_SYSTEM
 	, logSystem{LogSystem::connectToLogSystem()}
-	, logger{"BVS"}
+	, logger{"BVS", 3, Logger::LogTarget::TO_CLI_AND_FILE, shutdownHandler}
 #endif
 	, loader{new Loader{info}}
 	, control{new Control{loader->modules, *this, info, config.getValue<bool>("BVS.logStatistics", bvs_log_statistics)}}
@@ -23,7 +23,6 @@ BVS::BVS::BVS(const int argc, const char** argv, std::function<void()> shutdownH
 	, parallelism{config.getValue<std::string>("BVS.parallelism", bvs_parallelism)}
 {
 #ifdef BVS_LOG_SYSTEM
-	LogSystem::setErrorHandler(shutdownHandler);
 	logSystem->updateSettings(config);
 	logSystem->updateLoggerLevels(config);
 	LOG(2, "bvs " << info.version);
