@@ -35,12 +35,6 @@ namespace BVS
 			 */
 			static std::shared_ptr<LogSystem> connectToLogSystem();
 
-			/** Set error handler.
-			 * Set error handler to use when logging a message with level 0.
-			 * @param[in] errorHandler The handler to use.
-			 */
-			static void setErrorHandler(std::function<void()> errorHandler);
-
 			/** Log to output. End this by calling endl() to release the log mutex.
 			 * @param[in] logger Logger metadata from caller.
 			 * @param[in] level The desired output verbosity of this message.
@@ -49,9 +43,10 @@ namespace BVS
 			std::ostream& out(const Logger& logger, int level);
 
 			/** Ends output log by appending std::endl and releasing the log mutex.
+			 * @param[in] logger Logger metadata from caller.
 			 * @param[in] level The desired output verbosity of this message.
 			*/
-			void endl(const int level);
+			void endl(const Logger& logger, const int level);
 
 			/** Set the system verbosity level.
 			 * @param[in] verbosity The desired verbosity level.
@@ -119,9 +114,6 @@ namespace BVS
 			/** Construct log system.
 			*/
 			LogSystem();
-
-			/** Function to call when logging with level 0 (ERROR). */
-			std::function<void()> errorHandler;
 
 			/** Logger clients' levels from config(s) in lowercase. */
 			std::map<std::string, int, std::less<std::string>> loggerLevels;

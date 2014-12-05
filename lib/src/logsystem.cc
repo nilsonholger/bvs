@@ -26,17 +26,8 @@ std::shared_ptr<LogSystem> LogSystem::connectToLogSystem()
 
 
 
-void LogSystem::setErrorHandler(std::function<void()> errorHandler)
-{
-	if (instance==nullptr) connectToLogSystem();
-	else instance->errorHandler = errorHandler;
-}
-
-
-
 LogSystem::LogSystem()
-	: errorHandler{}
-	, loggerLevels{}
+	: loggerLevels{}
 	, tmpName{}
 	, namePadding{0}
 	, logColors{}
@@ -106,10 +97,10 @@ std::ostream& LogSystem::out(const Logger& logger, int level)
 
 
 
-void LogSystem::endl(const int level)
+void LogSystem::endl(const Logger& logger, const int level)
 {
 	outMutex.unlock();
-	if (level==0) errorHandler();
+	if (level==0) logger.errorHandler();
 }
 
 
