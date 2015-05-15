@@ -33,6 +33,7 @@ class BVSExampleModule : public BVS::Module
 		 * This function is executed exactly once during each started
 		 * round/step of the framework. It is supposed to contain the actual
 		 * work of your module.
+		 * @return Module's status.
 		 */
 		BVS::Status execute();
 
