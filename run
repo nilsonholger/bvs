@@ -163,7 +163,7 @@ then
 	echo "#add_subdirectory($MOD_PATH)" >> modules/CMakeLists.txt
 	echo ">>> Created Module 'modules/$MOD_PATH'! Please modify modules/CMakeLists.txt to add it to compilation!"
 else
-	eval sed -i -e "s/\(${ORIG_PATH//\//\\\/}\)/\(${MOD_PATH//\//\\\/}\)/" modules/CMakeLists.txt
+	eval sed -i -e "s#\(${ORIG_PATH//\//\\\/}\)#\(${MOD_PATH//\//\\\/}\)#" modules/CMakeLists.txt
 	eval rm -f modules/CMakeLists.txt-e
 	echo ">>> Renamed Module 'modules/$ORIG_PATH' to 'modules/$MOD_PATH' and modified CMakeLists.txt accordingly!"
 	echo ">>> 'modules/$ORIG_PATH' left intact, can be deleted now!"
