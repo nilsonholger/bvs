@@ -67,7 +67,11 @@ Loader& Loader::load(const std::string& id, const std::string& library, const st
 #endif //__ANDROID_API__
 #endif //BVS_STATIC_MODULES
 
+#ifdef BVS_STATIC
+	LibHandle dlib = dlopen(NULL, RTLD_LAZY);
+#else
 	LibHandle dlib = loadLibrary(id, tmpLibrary);
+#endif
 
 	// execute bvsRegisterModule in loaded lib
 	typedef void (*bvsRegisterModule_t)(ModuleInfo moduleInfo, const Info& info);

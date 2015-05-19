@@ -16,6 +16,10 @@ set(BVS_LOG_SYSTEM ON CACHE BOOL "Enable BVS' builtin log system.")
 set(BVS_MODULE_HOTSWAP OFF CACHE BOOL "Enable BVS's modular HotSwap(TM;-) facilities. WARNING: DEVELOPERS ONLY!")
 mark_as_advanced(BVS_MODULE_HOTSWAP)
 
+# BVS_STATIC
+set(BVS_STATIC OFF CACHE BOOL "Create static library (includes all modules)!")
+mark_as_advanced(BVS_STATIC)
+
 # BVS_STATIC_MODULES
 set(BVS_STATIC_MODULES OFF CACHE BOOL "Include modules in 'libbvs'!")
 mark_as_advanced(BVS_STATIC_MODULES)
@@ -33,6 +37,7 @@ mark_as_advanced(BVS_OSX_ANOMALIES)
 ### DEPENDENCIES ###
 ####################
 add_option_dependency(BVS_STATIC_MODULES ON_IF BVS_ANDROID_APP)
+add_option_dependency(BVS_STATIC_MODULES ON_IF BVS_STATIC)
 add_option_dependency(BVS_MODULE_HOTSWAP OFF_IF BVS_STATIC_MODULES)
 add_option_dependency(BVS_GCC_VISIBILITY OFF_IF BVS_ANDROID_APP)
 
@@ -57,6 +62,14 @@ if(BVS_MODULE_HOTSWAP)
 	add_definitions(-DBVS_MODULE_HOTSWAP)
 else()
 	remove_definitions(-DBVS_MODULE_HOTSWAP)
+endif()
+
+if(BVS_STATIC)
+	set(BVS_LIBRARY_TYPE STATIC)
+	add_definitions(-DBVS_STATIC)
+else()
+	set(BVS_LIBRARY_TYPE SHARED)
+	remove_definitions(-DBVS_STATIC)
 endif()
 
 if(BVS_STATIC_MODULES)

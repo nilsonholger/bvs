@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.6)
 project(LIBBVS)
 
 include_directories(include src)
-add_subdir_lib(src bvs SHARED barrier.cc bvs.cc config.cc connector.cc control.cc info.cc loader.cc logger.cc logsystem.cc module.cc utils.cc)
+add_subdir_lib(src bvs ${BVS_LIBRARY_TYPE} barrier.cc bvs.cc config.cc connector.cc control.cc info.cc loader.cc logger.cc logsystem.cc module.cc utils.cc)
 target_link_libraries(bvs dl pthread)
 
 if(BVS_STATIC_MODULES)
