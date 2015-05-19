@@ -16,60 +16,63 @@ int main(const int argc, const char** argv)
 	bvs->connectAllModules();
 
 	LOG(2, "starting!");
-	bvs->start(bvs->config.getValue<bool>("BVSD.interactive", true));
+	if (bvs->config.getValue<bool>("BVSD.interactive", true)) {
+		bvs->start();
+		bvs->run();
+		std::string input;
+		while (true)
+		{
+			std::getline(std::cin, input);
+			if (std::cin.eof()) input = "q";
 
-	bvs->run();
-
-	std::string input;
-	while (true)
-	{
-		std::getline(std::cin, input);
-		if (std::cin.eof()) input = "q";
-
-		if (input == "r" || input == "run" || input == "c" || input == "continue")
-		{
-			LOG(2, "RUN!!!");
-			bvs->run();
+			if (input == "r" || input == "run" || input == "c" || input == "continue")
+			{
+				LOG(2, "RUN!!!");
+				bvs->run();
+			}
+			else if (input.empty() || input == "s" || input == "step")
+			{
+				LOG(2, "STEP!!!");
+				bvs->step();
+			}
+			else if (input == "p" || input == "pause")
+			{
+				LOG(2, "PAUSING!!!");
+				bvs->pause();
+			}
+			else if (input.substr(0,2) == "hs" || input.substr(0, 7) == "hotswap")
+			{
+				size_t delimiter = input.find_first_of(" ");
+				input.erase(0, delimiter+1);
+				if (input.empty() || delimiter==std::string::npos) std::cout << "ERROR: no module ID given!" << std::endl;
+				else bvs->hotSwap(input);
+			}
+			else if (input == "q" || input == "quit")
+			{
+				LOG(2, "quitting...");
+				bvs->quit();
+				LOG(2, "finished!");
+				break;
+			}
+			else if (input == "h" || input == "help")
+			{
+				std::cout << "usage:" << std::endl;
+				std::cout << "   r|run            run system until paused" << std::endl;
+				std::cout << "   c|continue       same as run" << std::endl;
+				std::cout << "   s|step           advance system by one step" << std::endl;
+				std::cout << "   p|pause          pause(stop) system" << std::endl;
+				std::cout << "   hs|hotswap <arg> HotSwap(TM) <moduleID>" << std::endl;
+				std::cout << "   q|quit           shutdown system and quit" << std::endl;
+				std::cout << "   h|help           show help" << std::endl;
+			}
+			else
+			{
+				std::cout << ">>> unknown command: " << input << std::endl << ">>> for help press 'h<enter>'!" << std::endl;
+			}
 		}
-		else if (input.empty() || input == "s" || input == "step")
-		{
-			LOG(2, "STEP!!!");
-			bvs->step();
-		}
-		else if (input == "p" || input == "pause")
-		{
-			LOG(2, "PAUSING!!!");
-			bvs->pause();
-		}
-		else if (input.substr(0,2) == "hs" || input.substr(0, 7) == "hotswap")
-		{
-			size_t delimiter = input.find_first_of(" ");
-			input.erase(0, delimiter+1);
-			if (input.empty() || delimiter==std::string::npos) std::cout << "ERROR: no module ID given!" << std::endl;
-			else bvs->hotSwap(input);
-		}
-		else if (input == "q" || input == "quit")
-		{
-			LOG(2, "quitting...");
-			bvs->quit();
-			LOG(2, "finished!");
-			break;
-		}
-		else if (input == "h" || input == "help")
-		{
-			std::cout << "usage:" << std::endl;
-			std::cout << "   r|run            run system until paused" << std::endl;
-			std::cout << "   c|continue       same as run" << std::endl;
-			std::cout << "   s|step           advance system by one step" << std::endl;
-			std::cout << "   p|pause          pause(stop) system" << std::endl;
-			std::cout << "   hs|hotswap <arg> HotSwap(TM) <moduleID>" << std::endl;
-			std::cout << "   q|quit           shutdown system and quit" << std::endl;
-			std::cout << "   h|help           show help" << std::endl;
-		}
-		else
-		{
-			std::cout << ">>> unknown command: " << input << std::endl << ">>> for help press 'h<enter>'!" << std::endl;
-		}
+	} else {
+		bvs->start(false);
+		bvs->run();
 	}
 
 	delete bvs;
