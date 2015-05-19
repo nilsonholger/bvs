@@ -111,3 +111,20 @@ macro(create_symlink SOURCE TARGET)
 		execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${SOURCE} ${TARGET})
 	endif()
 endmacro(create_symlink)
+
+
+
+# link against static library, incorporate ALL archive objects
+#
+# CALL: target_link_full_static_libraries(TARGET LIBRARY1 [...])
+#	TARGET: target executable/library
+#	LIBRARY1 [...]: list of libraries to link
+macro(target_link_full_static_libraries TARGET)
+	set(LIBRARY_LIST ${ARGV})
+	list(REMOVE_AT LIBRARY_LIST 0)
+	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+		target_link_libraries(${TARGET} -Wl,--whole-archive ${LIBRARY_LIST} -Wl,--no-whole-archive)
+	elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+		target_link_libraries(${TARGET} -Wl,-all_load ${LIBRARY_LIST})
+	endif()
+endmacro()
