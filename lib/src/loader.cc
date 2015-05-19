@@ -56,10 +56,10 @@ Loader& Loader::load(const std::string& id, const std::string& library, const st
 	if (modules.find(id)!=modules.end())
 		LOG(0, "Duplicate id for module: " << id << std::endl << "If you try to load a module more than once, use unique ids and the id(library).options syntax!");
 
-	std::string function = "bvsRegisterModule";
+	std::string function = "bvsRegisterModule_" + library;
 	std::string tmpLibrary = library;
+
 #ifdef BVS_STATIC_MODULES
-	function += "_" + library;
 #ifdef __ANDROID_API__
 	tmpLibrary = "bvs_modules";
 #else //__ANDROID_API__
@@ -234,7 +234,7 @@ Loader& Loader::hotSwapModule(const std::string& id)
 
 	typedef void (*bvsHotSwapModule_t)(const std::string& id, Module* module);
 	bvsHotSwapModule_t bvsHotSwapModule;
-	*reinterpret_cast<void**>(&bvsHotSwapModule)=dlsym(dlib, "bvsHotSwapModule");
+	*reinterpret_cast<void**>(&bvsHotSwapModule)=dlsym(dlib, std::string{"bvsHotSwapModule_" + id}.c_str());
 
 	char* dlerr = dlerror();
 	if (dlerr) LOG(0, "Loading function bvsHotSwapModule() in '" << modules[id]->library << "' resulted in: " << dlerr);
