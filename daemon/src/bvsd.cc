@@ -16,7 +16,7 @@ int main(const int argc, const char** argv)
 	bvs->connectAllModules();
 
 	LOG(2, "starting!");
-	bvs->start();
+	bvs->start(bvs->config.getValue<bool>("BVSD.interactive", true));
 
 	bvs->run();
 

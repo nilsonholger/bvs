@@ -32,9 +32,10 @@ namespace BVSD
  * This is a simple command line daemon. It serves as a client to the BVS
  * framework. It is also intended as a sample client.
  *
- * It is interactive, you can use the following commands by just entering them
- * on the command line and then pressing enter (short versions are also
- * available, enter 'help<enter>' to see them):
+ * It is interactive, i.e., it forks the framework into its own thread. You can
+ * then use the following commands by just entering them on the command line
+ * and then pressing enter (short versions are also available, enter
+ * 'help<enter>' to see them):
  *
  * @li \c run run system until paused.
  * @li \c continue same as run
@@ -43,6 +44,13 @@ namespace BVSD
  * @li \c test call test functions.
  * @li \c quit shutdown system and quit.
  * @li \c help show help.
+ *
+ * If you do not want the client to fork the framework and become interactive,
+ * you can set the following in BVS' Config file:
+ * @code
+ * [BVSD]
+ * interactive = OFF
+ * @endcode
  */
 	class BVSD
 	{
