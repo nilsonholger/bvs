@@ -4,16 +4,10 @@ TODO
 bvs
 ---
 * GUI!!!
-* control: move modules between master, thread and pool [GUI required]
-* connectors: allow simultaneous reading of input if multiple modules connect to the same output
-* binary data dump: record/replay generic data dumps (no need to write a recorder/reader for all kinds of input data)
-* hotswap: with external struct
-* logger: in memory logging -> lock free
-* control: add mapping of thread/pool to cpu (pthread_setaffinity_np)
 
 code
 ----
-* compact ALL objects (objects should be mostly DATA), create *mostly* pure functions, make them friend functions if they need to modify private data
+* compact ALL objects (objects should be mostly DATA), create *mostly* pure functions, make them friend functions if they need to modify private data (or make all public)
 
 testing
 -------
@@ -27,8 +21,12 @@ config
 
 POSTPONED
 =========
+* connectors: allow simultaneous reading of input if multiple modules connect to the same output
+* binary data dump: record/replay generic data dumps (no need to write a recorder/reader for all kinds of input data)
 * cmake: add options to set -fno-exceptions and -fno-rtti (rtti needs some code changes)
 * cmake: separate toolbox into its own repository
 * config: feature request -> meta modules [not yet]
+* control: move modules between master, thread and pool [GUI required]
 * control: automagic module pooling [too much effort needed, requires deeper dependency understanding]
 * control: async mode [not needed/requested so far]
+* control: add mapping of thread/pool to cpu (pthread_setaffinity_np)
