@@ -87,10 +87,10 @@ void mainSignal(int sig)
 	switch (sig)
 	{
 		case SIGINT:
-			LOG(2, "Caught 'Ctrl-C', quitting!");
+			LOG(1, "Caught 'Ctrl-C', quitting!");
 			break;
 		case SIGSEGV:
-			LOG(2, "Caught segmentation fault...!");
+			LOG(1, "Caught segmentation fault...!");
 			void *msgs[100];
 			size_t size;
 			size = backtrace(msgs, 100);
@@ -102,7 +102,7 @@ void mainSignal(int sig)
 			free(messages);
 			break;
 		case SIGALRM:
-			LOG(2, "Shutdown requested, quitting!");
+			LOG(1, "Shutdown requested, quitting!");
 			break;
 	}
 
