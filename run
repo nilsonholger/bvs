@@ -208,7 +208,7 @@ do
 	then
 		shift
 		if hash gdb 2>/dev/null; then
-			DEBUGGER="gdb --args"
+			DEBUGGER="gdb -q --args"
 		elif hash lldb 2>/dev/null; then
 			DEBUGGER="lldb --"
 		else
@@ -224,7 +224,6 @@ do
 	fi
 done
 
-[ -n "$GDB" -a -r /usr/local/bin/gdb ] && GDB="/usr/local/bin/gdb"
 [ $# = 0 ] && CONFIG="bvs.conf" || CONFIG=$1
 
 [ -n "$FIFO" ] && cat << EOF
