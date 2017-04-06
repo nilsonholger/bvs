@@ -23,7 +23,7 @@ BVSExampleModule::BVSExampleModule(BVS::ModuleInfo info, const BVS::Info& bvs)
 
 
 // This is your module's destructor.
-BVSExampleModule::~BVSExampleModule()
+BVSExampleModule::~BVSExampleModule() noexcept
 {
 
 }

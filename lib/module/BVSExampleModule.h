@@ -27,7 +27,7 @@ class BVSExampleModule : public BVS::Module
 		BVSExampleModule(BVS::ModuleInfo info, const BVS::Info& bvs);
 
 		/** Your module destructor. */
-		~BVSExampleModule();
+		~BVSExampleModule() noexcept;
 
 		/** Execute function doing all the work.
 		 * This function is executed exactly once during each started
