@@ -40,6 +40,8 @@ void Logger::endl(const int level)
 {
 #ifdef BVS_LOG_SYSTEM
 	logSystem->endl(*this, level);
+#else
+	(void) level;
 #endif
 }
 
