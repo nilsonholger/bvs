@@ -76,7 +76,7 @@ namespace BVS
 			 * */
 			const std::string name;
 
-			unsigned short verbosity; /**< This logger's verbosity level. */
+			std::shared_ptr<unsigned short> verbosity; /**< This logger's verbosity level. */
 			LogTarget target; /**< This logger's output target. */
 			std::function<void()> errorHandler; /**< This logger's error Handler. */
 

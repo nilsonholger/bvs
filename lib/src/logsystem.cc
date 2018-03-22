@@ -55,8 +55,7 @@ std::ostream& LogSystem::out(const Logger& logger, int level)
 
 	// check verbosity of system and logger
 	if (level > systemVerbosity) return nullStream;
-	if (level > logger.verbosity) return nullStream;
-	if (level > loggerLevels[tmpName]) return nullStream;
+	if (level > *(logger.verbosity)) return nullStream;
 
 	// select (enabled/open) output stream according to selected target
 	std::ostream* out;
@@ -114,7 +113,7 @@ LogSystem& LogSystem::setSystemVerbosity(int verbosity)
 
 
 
-LogSystem& LogSystem::announce(const Logger& logger)
+LogSystem& LogSystem::announce(Logger& logger)
 {
 	std::lock_guard<std::mutex> lock(outMutex);
 
@@ -125,8 +124,11 @@ LogSystem& LogSystem::announce(const Logger& logger)
 	tmpName = logger.name;
 	std::transform(tmpName.begin(), tmpName.end(), tmpName.begin(), ::tolower);
 
+	// store in map or replace logger's verbosity with stored one
 	if (loggerLevels.find(tmpName)==loggerLevels.end())
 		loggerLevels[tmpName] = logger.verbosity;
+	else
+		logger.verbosity = loggerLevels[tmpName];
 
 	return *this;
 }
@@ -215,13 +217,16 @@ LogSystem& LogSystem::updateSettings(const Config& config)
 
 LogSystem& LogSystem::updateLoggerLevels(const Config& config)
 {
-	// check for LOGLEVEL.* variables and update logger levels
-	for (auto& it : config.dumpOptionStore())
-	{
+	// check for LOGLEVEL.* variables and update logger's verbosities
+	for (auto& opt : config.dumpOptionStore()) {
 		std::string section = "logger.";
-		if (it.first.substr(0, section.length())==section)
-		{
-			loggerLevels[it.first.substr(section.length(), std::string::npos)] = config.getValue<unsigned short>(it.first, bvs_log_client_default_verbosity);
+		if (opt.first.substr(0, section.length())==section) {
+			std::string logger = opt.first.substr(section.length(), std::string::npos);
+			// if logger exists in map, update from config, else create new entry
+			if (loggerLevels.find(logger)!=loggerLevels.end())
+				*loggerLevels[logger] = config.getValue<unsigned short>(opt.first, *loggerLevels[logger]);
+			else
+				loggerLevels[logger] = std::make_shared<unsigned short>(config.getValue<unsigned short>(opt.first, bvs_log_client_default_verbosity));
 		}
 	}
 

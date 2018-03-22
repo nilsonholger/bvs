@@ -82,7 +82,7 @@ namespace BVS
 			/** Announces a logger instance to the backend.
 			 * @param[in] logger Logger metadata from caller.
 			 */
-			LogSystem& announce(const Logger& logger);
+			LogSystem& announce(Logger& logger);
 
 			/** Check config for settings.
 			 * Checks the given config object for occurences of:
@@ -115,8 +115,8 @@ namespace BVS
 			*/
 			LogSystem();
 
-			/** Logger clients' levels from config(s) in lowercase. */
-			std::map<std::string, int, std::less<std::string>> loggerLevels;
+			/** Logger clients' verbosity levels with lowercase identifiers. */
+			std::map<std::string, std::shared_ptr<unsigned short>, std::less<std::string>> loggerLevels;
 
 			/** Temp object needed for output and announce function. */
 			std::string tmpName;

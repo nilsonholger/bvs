@@ -10,7 +10,7 @@ using BVS::Logger;
 
 Logger::Logger(const std::string& name, unsigned short verbosity, LogTarget target, std::function<void()> errorHandler)
 	: name{name}
-	, verbosity{verbosity}
+	, verbosity{std::make_shared<unsigned short>(verbosity)}
 	, target{target}
 	, errorHandler{errorHandler}
 #ifdef BVS_LOG_SYSTEM
