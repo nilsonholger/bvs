@@ -119,19 +119,14 @@ LogSystem& LogSystem::announce(const Logger& logger)
 	std::lock_guard<std::mutex> lock(outMutex);
 
 	// update padding size for fancy (aligned) output
-	if (logger.name.length() > namePadding)
-	{
-		namePadding = logger.name.length();
-	}
+	if (logger.name.length() > namePadding) namePadding = logger.name.length();
 
 	// convert name to lowercase
 	tmpName = logger.name;
 	std::transform(tmpName.begin(), tmpName.end(), tmpName.begin(), ::tolower);
 
 	if (loggerLevels.find(tmpName)==loggerLevels.end())
-	{
 		loggerLevels[tmpName] = logger.verbosity;
-	}
 
 	return *this;
 }
@@ -144,13 +139,9 @@ LogSystem& LogSystem::enableLogFile(const std::string& file, bool append)
 
 	// check append flag
 	if(append)
-	{
 		outFile.open(file, std::ios_base::app);
-	}
 	else
-	{
 		outFile.open(file);
-	}
 
 	return *this;
 }
@@ -189,8 +180,7 @@ LogSystem& LogSystem::disableLogConsole()
 LogSystem& LogSystem::updateSettings(Config& config)
 {
 	// disable log system
-	if(config.getValue<bool>("BVS.logSystem", bvs_log_system)==false && bvs_log_system)
-	{
+	if(config.getValue<bool>("BVS.logSystem", bvs_log_system)==false && bvs_log_system) {
 		systemVerbosity = 0;
 		disableLogConsole();
 		disableLogFile();
@@ -200,17 +190,13 @@ LogSystem& LogSystem::updateSettings(Config& config)
 
 	// disable console log output
 	if(config.getValue<bool>("BVS.logConsole", bvs_log_to_console)==false)
-	{
 		disableLogConsole();
-	}
 
 	// enable log file, append if selected
 	std::string configFile = config.getValue<std::string>("BVS.logFile", bvs_log_to_logfile);
 	bool append = false;
-	if(!configFile.empty())
-	{
-		if (configFile[0]=='+')
-		{
+	if(!configFile.empty()) {
+		if (configFile[0]=='+') {
 			configFile.erase(0, 1);
 			append = true;
 		}
