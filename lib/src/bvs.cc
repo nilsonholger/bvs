@@ -14,7 +14,7 @@ BVS::BVS::BVS(const int argc, const char** argv, std::function<void()> shutdownH
 	, info(Info{bvs_version, config, 0, {}, std::map<std::string, std::chrono::duration<unsigned int, std::milli>>{}, std::map<std::string, std::chrono::duration<unsigned int, std::milli>>{}})
 #ifdef BVS_LOG_SYSTEM
 	, logSystem{LogSystem::connectToLogSystem()}
-	, logger{"BVS", 3, Logger::LogTarget::TO_CLI_AND_FILE, shutdownHandler}
+	, logger{"BVS", bvs_log_system_verbosity, Logger::LogTarget::TO_CLI_AND_FILE, shutdownHandler}
 #endif
 	, loader{new Loader{info}}
 	, control{new Control{loader->modules, *this, info, config.getValue<bool>("BVS.logStatistics", bvs_log_statistics)}}
