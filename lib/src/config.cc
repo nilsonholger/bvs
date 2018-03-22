@@ -20,7 +20,7 @@ Config::Config(const std::string& name, const int argc, const char** argv)
 
 
 
-std::map<std::string, std::string> Config::dumpOptionStore()
+std::map<std::string, std::string> Config::dumpOptionStore() const
 {
 	std::lock_guard<std::recursive_mutex> lock(mutex);
 

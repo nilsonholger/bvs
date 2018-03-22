@@ -107,7 +107,7 @@ namespace BVS
 			 * they are represented internally.
 			 * @return Dump of optionStore.
 			 */
-			std::map<std::string, std::string> dumpOptionStore();
+			std::map<std::string, std::string> dumpOptionStore() const;
 
 			/** Template to retrieve value from config by passing it to an argument.
 			 * Sets default value, if desired option is not found in option store.
