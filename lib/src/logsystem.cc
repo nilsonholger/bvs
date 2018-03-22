@@ -177,7 +177,7 @@ LogSystem& LogSystem::disableLogConsole()
 
 
 
-LogSystem& LogSystem::updateSettings(Config& config)
+LogSystem& LogSystem::updateSettings(const Config& config)
 {
 	// disable log system
 	if(config.getValue<bool>("BVS.logSystem", bvs_log_system)==false && bvs_log_system) {
@@ -213,7 +213,7 @@ LogSystem& LogSystem::updateSettings(Config& config)
 
 
 
-LogSystem& LogSystem::updateLoggerLevels(Config& config)
+LogSystem& LogSystem::updateLoggerLevels(const Config& config)
 {
 	// check for LOGLEVEL.* variables and update logger levels
 	for (auto& it : config.dumpOptionStore())

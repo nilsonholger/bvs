@@ -95,7 +95,7 @@ namespace BVS
 			 * @param[in] config Config object.
 			 * @return Reference to object.
 			 */
-			LogSystem& updateSettings(Config& config);
+			LogSystem& updateSettings(const Config& config);
 
 			/** Check config for client levels.
 			 * Checks the given config object for occurences of Logger.*.
@@ -108,7 +108,7 @@ namespace BVS
 			 * @param[in] config Config object.
 			 * @return Reference to object.
 			 */
-			LogSystem& updateLoggerLevels(Config& config);
+			LogSystem& updateLoggerLevels(const Config& config);
 
 		private:
 			/** Construct log system.
