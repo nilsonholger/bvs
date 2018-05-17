@@ -9,11 +9,12 @@ using BVS::SystemFlag;
 
 
 
-Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info, bool logStatistics)
-	: modules(modules),
-	bvs(bvs),
-	info(info),
-	logStatistics(logStatistics),
+Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info, bool logStatistics, unsigned int minRoundTime)
+	: modules{modules},
+	bvs{bvs},
+	info{info},
+	logStatistics{logStatistics},
+	minRoundTime{minRoundTime},
 	logger{"Control"},
 	activePools{0},
 	pools{},
@@ -55,7 +56,14 @@ Control& Control::masterController(const bool forkMasterController)
 		info.lastRoundDuration =
 			std::chrono::duration_cast<std::chrono::milliseconds>
 			(std::chrono::high_resolution_clock::now() - timer);
-		timer = std::chrono::high_resolution_clock::now();
+
+		if (info.lastRoundDuration.count()<minRoundTime) {
+			LOG(3, "waiting for "
+					<< minRoundTime-info.lastRoundDuration.count()
+					<< "ms (minRoundTime: " << minRoundTime << "ms)");
+			std::this_thread::sleep_for(
+					std::chrono::milliseconds(minRoundTime) - info.lastRoundDuration);
+		}
 
 		if (logStatistics) {
 			std::stringstream stats;
@@ -68,6 +76,8 @@ Control& Control::masterController(const bool forkMasterController)
 		} else {
 				LOG(2, "ROUND: " << round);
 		}
+
+		timer = std::chrono::high_resolution_clock::now();
 
 		switch (flag) {
 			case SystemFlag::QUIT: break;

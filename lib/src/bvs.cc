@@ -17,7 +17,7 @@ BVS::BVS::BVS(const int argc, const char** argv, std::function<void()> shutdownH
 	, logger{"BVS", bvs_log_system_verbosity, Logger::LogTarget::TO_CLI_AND_FILE, shutdownHandler}
 #endif
 	, loader{new Loader{info}}
-	, control{new Control{loader->modules, *this, info, config.getValue<bool>("BVS.logStatistics", bvs_log_statistics)}}
+	, control{new Control{loader->modules, *this, info, config.getValue<bool>("BVS.logStatistics", bvs_log_statistics), config.getValue<unsigned int>("BVS.minRoundTime", bvs_minimal_round_time)}}
 	, moduleStack{}
 	, connectorTypeMatching{config.getValue<bool>("BVS.connectorTypeMatching", bvs_connector_type_matching)}
 	, parallelism{config.getValue<std::string>("BVS.parallelism", bvs_parallelism)}

@@ -87,6 +87,13 @@ static const unsigned int bvs_log_client_default_verbosity = 3;
  */
 static const bool bvs_log_statistics = false;
 
+/** Whether there should be a minimal round time (in ms).
+ * Useful to restrict the system to a maximal frame rate. (fps~1/round_time)
+ *
+ * Possible Values: 0 (off), 1, ...
+ */
+static const bool bvs_minimal_round_time = 0;
+
 /** Select parallelism level.
  *
  * Possible Values: NONE, THREADS, FORCE, ANY
