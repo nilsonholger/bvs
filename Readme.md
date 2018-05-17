@@ -140,14 +140,17 @@ This allows you to
 create your own remote *origin* for development whilst still being able to pull
 updates to the base repository from the main BVS development repository.
 
+### CONFIGS
 
+It is strongly advisable to not use the generated config file links in
+''build/bin'' when making local config changes, but to copy relevant configs
+into your ''build/bin'' directory and modify those. It is also possible to put
+all config sections (including the modules' ones) into a single config file.
 
 ### ANDROID CLIENT
 
 The framework now has an android client. Further information about it's usage
 can be found in `android/Readme.md`.
-
-
 
 ### BVS MODULE LIST
 
@@ -165,8 +168,6 @@ that was used for the main bvs repository. The parameter `COLLECTION` is
 optional. It indicates that a repository contains more than one module. The
 setup function will then create an entry in `modules/CMakeLists.txt` for every
 directory it encounters in the collection's toplevel hierarchy.
-
-
 
 ### FIFO CONTROL
 
