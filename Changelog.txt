@@ -1,3 +1,12 @@
+2018-05-24  NilsonHolger <nilsonholger@hyve.org>
+
+	* 2018.05-long-time-no-sea
+	* connector: add 'active()' check
+	* cmake: create and use various macros to simplify cmake files
+	* logs: psychedelic rainbow (now has colors) and bvs exists on LOG(0,...)
+	* cmake: add BVS_STATIC(_MODULES) to create monolithic executable
+	* various: loads of fixes and small improvements
+
 2014-11-20  NilsonHolger <nilsonholger@hyve.org>
 
 	* 2014.11-cling-clang
