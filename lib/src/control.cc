@@ -9,11 +9,12 @@ using BVS::SystemFlag;
 
 
 
-Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info, bool logStatistics)
-	: modules(modules),
-	bvs(bvs),
-	info(info),
-	logStatistics(logStatistics),
+Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info, bool logStatistics, unsigned int minRoundTime)
+	: modules{modules},
+	bvs{bvs},
+	info{info},
+	logStatistics{logStatistics},
+	minRoundTime{minRoundTime},
 	logger{"Control"},
 	activePools{0},
 	pools{},
@@ -32,14 +33,11 @@ Control::Control(ModuleDataMap& modules, BVS& bvs, Info& info, bool logStatistic
 
 Control& Control::masterController(const bool forkMasterController)
 {
-	if (forkMasterController)
-	{
+	if (forkMasterController) {
 		LOG(3, "master -> FORKED!");
 		controlThread = std::thread{&Control::masterController, this, false};
 		return *this;
-	}
-	else
-	{
+	} else {
 		nameThisThread("master");
 
 		// startup sync
@@ -51,29 +49,37 @@ Control& Control::masterController(const bool forkMasterController)
 	std::chrono::time_point<std::chrono::high_resolution_clock> timer =
 		std::chrono::high_resolution_clock::now();
 
-	while (flag!=SystemFlag::QUIT)
-	{
+	while (flag!=SystemFlag::QUIT) {
 		// round sync
 		barrier.enqueue(masterLock, [&](){ return activePools.load()==0; });
 
 		info.lastRoundDuration =
 			std::chrono::duration_cast<std::chrono::milliseconds>
 			(std::chrono::high_resolution_clock::now() - timer);
-		timer = std::chrono::high_resolution_clock::now();
 
-		if (logStatistics)
-		{
+		if (info.lastRoundDuration.count()<minRoundTime) {
+			LOG(3, "waiting for "
+					<< minRoundTime-info.lastRoundDuration.count()
+					<< "ms (minRoundTime: " << minRoundTime << "ms)");
+			std::this_thread::sleep_for(
+					std::chrono::milliseconds(minRoundTime) - info.lastRoundDuration);
+		}
+
+		if (logStatistics) {
 			std::stringstream stats;
 			stats << "Stats[" << info.round << "]:" << info.lastRoundDuration.count();
 			for (auto& pool: info.poolDurations)
 				stats << " [P]" << pool.first << ":" << pool.second.count();
 			for (auto& mod: info.moduleDurations)
 				stats << " [M]" << mod.first << ":" << mod.second.count();
-			LOG(0, stats.str());
+			LOG(2, stats.str());
+		} else {
+				LOG(2, "ROUND: " << round);
 		}
 
-		switch (flag)
-		{
+		timer = std::chrono::high_resolution_clock::now();
+
+		switch (flag) {
 			case SystemFlag::QUIT: break;
 			case SystemFlag::PAUSE:
 				if (!controlThread.joinable()) return *this;
@@ -83,11 +89,9 @@ Control& Control::masterController(const bool forkMasterController)
 				break;
 			case SystemFlag::RUN:
 			case SystemFlag::STEP:
-				LOG(2, "ROUND: " << round);
 				info.round = round++;
 
-				for (auto& module: modules)
-				{
+				for (auto& module: modules) {
 					if (module.second->status!=Status::OK)
 						checkModuleStatus(module.second);
 					module.second->flag = ControlFlag::RUN;
@@ -288,7 +292,7 @@ Control& Control::checkModuleStatus(std::shared_ptr<ModuleData> data)
 	switch (data->status)
 	{
 		case Status::OK: break;
-		case Status::NOINPUT: break;
+		case Status::NOINPUT: LOG(1, "MODULE " << data->id << " MISSING INPUT!"); break;
 		case Status::FAIL: break;
 		case Status::WAIT: break;
 		case Status::DONE:

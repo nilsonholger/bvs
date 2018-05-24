@@ -1,6 +1,7 @@
 #ifndef BVS_LOGGER_H
 #define BVS_LOGGER_H
 
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -14,8 +15,8 @@
 #ifdef __ANDROID_API__
 #define LOG(level, ...) { std::stringstream ss; ss << __VA_ARGS__; std::string out = ss.str(); LOGD(out.c_str());};
 #else
-#define LOG(level, args) { logger.out(level) << args << std::endl; logger.endl(); };
-#endif 
+#define LOG(level, args) { logger.out(level) << args << std::endl; logger.endl(level); };
+#endif
 #else
 //TODO rather inefficient, leave for now
 // nirvana is used so args is evaluated in all cases
@@ -54,8 +55,9 @@ namespace BVS
 			 * @param[in] name The name of your logging instance.
 			 * @param[in] verbosity Your selected logging verbosity level (default: 3).
 			 * @param[in] target Selects this loggers output target (default: TO_CLI_AND_FILE)
+			 * @param[in] errorHandler Function called when Logging to level 0 (default: exit).
 			 */
-			Logger(const std::string& name, unsigned short verbosity = 3, LogTarget target = TO_CLI_AND_FILE);
+			Logger(const std::string& name, unsigned short verbosity = 3, LogTarget target = TO_CLI_AND_FILE, std::function<void()> errorHandler = [](){ exit(1); });
 
 			/** Log to logging system.
 			 * @param[in] level The messages' desired verbosity level.
@@ -64,8 +66,9 @@ namespace BVS
 			std::ostream& out(const int level);
 
 			/* Ends a log line and releases the logSystem mutex, must be called after using out.
+			 * @param[in] level The messages' desired verbosity level.
 			*/
-			void endl();
+			void endl(const int level);
 
 			/** This logger instance's name.
 			 * Const to prevent changes later on, which would
@@ -73,8 +76,9 @@ namespace BVS
 			 * */
 			const std::string name;
 
-			unsigned short verbosity; /**< This logger's verbosity level. */
+			std::shared_ptr<unsigned short> verbosity; /**< This logger's verbosity level. */
 			LogTarget target; /**< This logger's output target. */
+			std::function<void()> errorHandler; /**< This logger's error Handler. */
 
 		private:
 #ifdef BVS_LOG_SYSTEM

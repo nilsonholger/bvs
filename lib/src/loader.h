@@ -1,7 +1,6 @@
 #ifndef BVS_LOADER_H
 #define BVS_LOADER_H
 
-#include <functional>
 #include <string>
 
 #include "bvs/config.h"
@@ -20,9 +19,8 @@ namespace BVS
 		public:
 			/** Constructor for loader.
 			 * @param[in] info Reference to info struct.
-			 * @param[in] errorHandler Callback in case an error has occured.
 			 */
-			Loader(const Info& info, std::function<void()> errorHandler = [](){ exit(0); });
+			Loader(const Info& info);
 
 			/** Registers a module.
 			 * @param[in] id Name of module.
@@ -117,32 +115,15 @@ namespace BVS
 			static ModuleDataMap modules;
 
 		private:
-			/** Check input Connector.
-			 * Checks input connector for existence, type etc.
-			 * @param[in] module Module data for selected module.
-			 * @param[in] inputName Name of desired input.
-			 * @return True if all checks passed.
-			 */
-			Loader& checkModuleInput(const ModuleData* module, const std::string& inputName);
-
-			/** Check output Connector.
-			 * Checks output Connector for existence, type etc.
-			 * @param[in] module Module data for selected module.
-			 * @param[in] targetModule Name of desired module.
-			 * @param[in] targetOutput Name of desried output.
-			 */
-			Loader& checkModuleOutput(const ModuleData* module, const std::string& targetModule, const std::string& targetOutput);
-
 			/** Print Connector list.
 			 * Prints a list of all Connectors defined by given module.
 			 * @param[in] module Module data for selected module.
-			 * @return Reference to object.
+			 * @return String with connector list.
 			 */
-			Loader& printModuleConnectors(const ModuleData* module);
+			std::string printModuleConnectors(const ModuleData* module);
 
 			Logger logger; /**< Logger metadata. */
 			const Info& info; /**< Info reference. */
-			std::function<void()> errorHandler; /**< Function to call on errors. */
 			static ModuleVector* hotSwapGraveYard; /** GraveYard for hotswapped module pointers. */
 
 			Loader(const Loader&) = delete; /**< -Weffc++ */

@@ -16,7 +16,7 @@ namespace BVS
 	/** Module status or request possibilities. */
 	enum class Status {
 		OK = 0, /**< Module running OK, all systems are go. Nothing to do here. */
-		NOINPUT = 1, /**< Module is waiting for input through on of it's connectors. @todo: NOT YET ACTED UPON */
+		NOINPUT = 1, /**< Module is waiting for input through on of it's connectors. */
 		FAIL = 2, /**< Module failing to execute properly. @todo: NOT YET ACTED UPON */
 		WAIT = 4, /**< Module waiting for event to happen, e.g.\ a certain input or other signal. @todo: NOT YET ACTED UPON */
 		DONE = 8, /**< Module is done processing and can be unloaded. */
@@ -69,30 +69,17 @@ BVS_PUBLIC void registerModule(const std::string& id, BVS::Module* module, bool 
  *
  * \a BVS_MODULE_CLASS_NAME Name of module class.
  */
-#ifndef BVS_STATIC_MODULES
 #define BVS_MODULE_UTILITIES(BVS_MODULE_CLASS_NAME) \
 	extern "C" { \
-		BVS_PUBLIC int bvsRegisterModule(BVS::ModuleInfo info, BVS::Info& bvs) \
-		{ \
+		BVS_PUBLIC int bvsRegisterModule_##BVS_MODULE_CLASS_NAME(BVS::ModuleInfo info, BVS::Info& bvs) { \
 			registerModule(info.id, new BVS_MODULE_CLASS_NAME(info, bvs)); \
 			return 0; \
 		} \
-		BVS_PUBLIC int bvsHotSwapModule(std::string id, BVS::Module* module) \
-		{ \
+		BVS_PUBLIC int bvsHotSwapModule_##BVS_MODULE_CLASS_NAME(std::string id, BVS::Module* module) { \
 			registerModule(id, reinterpret_cast<BVS_MODULE_CLASS_NAME*>(module), true); \
 			return 0; \
 		} \
 	}
-#else
-#define BVS_MODULE_UTILITIES(BVS_MODULE_CLASS_NAME) \
-	extern "C" { \
-		BVS_PUBLIC int bvsRegisterModule_##BVS_MODULE_CLASS_NAME(BVS::ModuleInfo info, BVS::Info& bvs) \
-		{ \
-			registerModule(info.id, new BVS_MODULE_CLASS_NAME(info, bvs)); \
-			return 0; \
-		} \
-	}
-#endif //BVS_STATIC_MODULES
 
 
 

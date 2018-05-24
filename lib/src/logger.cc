@@ -8,10 +8,11 @@ using BVS::Logger;
 
 
 
-Logger::Logger(const std::string& name, unsigned short verbosity, LogTarget target)
-	: name{name},
-	verbosity{verbosity},
-	target{target}
+Logger::Logger(const std::string& name, unsigned short verbosity, LogTarget target, std::function<void()> errorHandler)
+	: name{name}
+	, verbosity{std::make_shared<unsigned short>(verbosity)}
+	, target{target}
+	, errorHandler{errorHandler}
 #ifdef BVS_LOG_SYSTEM
 	, logSystem{LogSystem::connectToLogSystem()}
 #endif
@@ -35,10 +36,12 @@ std::ostream& Logger::out(const int level)
 
 
 
-void Logger::endl()
+void Logger::endl(const int level)
 {
 #ifdef BVS_LOG_SYSTEM
-	logSystem->endl();
+	logSystem->endl(*this, level);
+#else
+	(void) level;
 #endif
 }
 

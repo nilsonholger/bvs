@@ -19,24 +19,23 @@ std::shared_ptr<LogSystem> LogSystem::instance = nullptr;
 std::shared_ptr<LogSystem> LogSystem::connectToLogSystem()
 {
 	// check if system exists, if not create first
-	if (instance == nullptr)
-	{
+	if (instance==nullptr)
 		instance = std::shared_ptr<LogSystem>{new LogSystem()};
-	}
 	return instance;
 }
 
 
 
 LogSystem::LogSystem()
-	: loggerLevels{},
-	tmpName{},
-	namePadding{0},
-	systemVerbosity{3},
-	outMutex{},
-	outCLI{std::clog.rdbuf()},
-	outFile{},
-	outBoth{outCLI, outFile}
+	: loggerLevels{}
+	, tmpName{}
+	, namePadding{0}
+	, logColors{}
+	, systemVerbosity{3}
+	, outMutex{}
+	, outCLI{std::clog.rdbuf()}
+	, outFile{}
+	, outBoth{outCLI, outFile}
 {
 	// show bools as "true"/"false" instead of "0"/"1"
 	outCLI.setf(outCLI.boolalpha);
@@ -56,8 +55,7 @@ std::ostream& LogSystem::out(const Logger& logger, int level)
 
 	// check verbosity of system and logger
 	if (level > systemVerbosity) return nullStream;
-	if (level > logger.verbosity) return nullStream;
-	if (level > loggerLevels[tmpName]) return nullStream;
+	if (level > *(logger.verbosity)) return nullStream;
 
 	// select (enabled/open) output stream according to selected target
 	std::ostream* out;
@@ -82,6 +80,13 @@ std::ostream& LogSystem::out(const Logger& logger, int level)
 			break;
 	}
 
+	// colorize
+	if (logColors) {
+		*out << "\033[0m";
+		if (level==0) *out << "\033[31m";
+		else if (level==1) *out << "\033[33m";
+	}
+	//
 	// prepare log output
 	*out << "[" << level << "|" << std::setw(namePadding) << std::left << logger.name << "] ";
 
@@ -91,9 +96,10 @@ std::ostream& LogSystem::out(const Logger& logger, int level)
 
 
 
-void LogSystem::endl()
+void LogSystem::endl(const Logger& logger, const int level)
 {
 	outMutex.unlock();
+	if (level==0) logger.errorHandler();
 }
 
 
@@ -107,24 +113,22 @@ LogSystem& LogSystem::setSystemVerbosity(int verbosity)
 
 
 
-LogSystem& LogSystem::announce(const Logger& logger)
+LogSystem& LogSystem::announce(Logger& logger)
 {
 	std::lock_guard<std::mutex> lock(outMutex);
 
 	// update padding size for fancy (aligned) output
-	if (logger.name.length() > namePadding)
-	{
-		namePadding = logger.name.length();
-	}
+	if (logger.name.length() > namePadding) namePadding = logger.name.length();
 
 	// convert name to lowercase
 	tmpName = logger.name;
 	std::transform(tmpName.begin(), tmpName.end(), tmpName.begin(), ::tolower);
 
+	// store in map or replace logger's verbosity with stored one
 	if (loggerLevels.find(tmpName)==loggerLevels.end())
-	{
 		loggerLevels[tmpName] = logger.verbosity;
-	}
+	else
+		logger.verbosity = loggerLevels[tmpName];
 
 	return *this;
 }
@@ -137,13 +141,9 @@ LogSystem& LogSystem::enableLogFile(const std::string& file, bool append)
 
 	// check append flag
 	if(append)
-	{
 		outFile.open(file, std::ios_base::app);
-	}
 	else
-	{
 		outFile.open(file);
-	}
 
 	return *this;
 }
@@ -179,11 +179,10 @@ LogSystem& LogSystem::disableLogConsole()
 
 
 
-LogSystem& LogSystem::updateSettings(Config& config)
+LogSystem& LogSystem::updateSettings(const Config& config)
 {
 	// disable log system
-	if(config.getValue<bool>("BVS.logSystem", bvs_log_system)==false && bvs_log_system)
-	{
+	if(config.getValue<bool>("BVS.logSystem", bvs_log_system)==false && bvs_log_system) {
 		systemVerbosity = 0;
 		disableLogConsole();
 		disableLogFile();
@@ -193,22 +192,20 @@ LogSystem& LogSystem::updateSettings(Config& config)
 
 	// disable console log output
 	if(config.getValue<bool>("BVS.logConsole", bvs_log_to_console)==false)
-	{
 		disableLogConsole();
-	}
 
 	// enable log file, append if selected
 	std::string configFile = config.getValue<std::string>("BVS.logFile", bvs_log_to_logfile);
 	bool append = false;
-	if(!configFile.empty())
-	{
-		if (configFile[0]=='+')
-		{
+	if(!configFile.empty()) {
+		if (configFile[0]=='+') {
 			configFile.erase(0, 1);
 			append = true;
 		}
 		enableLogFile(configFile, append);
 	}
+
+	logColors = config.getValue<bool>("BVS.logColors", bvs_log_colors);
 
 	// check log system verbosity
 	systemVerbosity = config.getValue<unsigned short>("BVS.logVerbosity", bvs_log_system_verbosity);
@@ -218,15 +215,18 @@ LogSystem& LogSystem::updateSettings(Config& config)
 
 
 
-LogSystem& LogSystem::updateLoggerLevels(Config& config)
+LogSystem& LogSystem::updateLoggerLevels(const Config& config)
 {
-	// check for LOGLEVEL.* variables and update logger levels
-	for (auto& it : config.dumpOptionStore())
-	{
+	// check for LOGLEVEL.* variables and update logger's verbosities
+	for (auto& opt : config.dumpOptionStore()) {
 		std::string section = "logger.";
-		if (it.first.substr(0, section.length())==section)
-		{
-			loggerLevels[it.first.substr(section.length(), std::string::npos)] = config.getValue<unsigned short>(it.first, bvs_log_client_default_verbosity);
+		if (opt.first.substr(0, section.length())==section) {
+			std::string logger = opt.first.substr(section.length(), std::string::npos);
+			// if logger exists in map, update from config, else create new entry
+			if (loggerLevels.find(logger)!=loggerLevels.end())
+				*loggerLevels[logger] = config.getValue<unsigned short>(opt.first, *loggerLevels[logger]);
+			else
+				loggerLevels[logger] = std::make_shared<unsigned short>(config.getValue<unsigned short>(opt.first, bvs_log_client_default_verbosity));
 		}
 	}
 

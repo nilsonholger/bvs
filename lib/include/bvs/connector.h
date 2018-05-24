@@ -6,29 +6,32 @@
 #include <map>
 #include <memory>
 #include <mutex>
+#include <regex>
 #include <string>
 #include <typeinfo>
 
 #include "bvs/connectordata.h"
+#include "bvs/logger.h"
 
 
 
 /** BVS namespace, contains all library stuff. */
 namespace BVS
 {
-	/** The connection between modules.
-	 * This class provides access to creating connections between different modules
-	 * by creating a connector on each side and then pushing data through it like a
-	 * pipe.
+	/** The connection between modules, sends and receives arbitrary data.
+	 * This class provides access to creating connections between different
+	 * modules by creating a connector on each side and then pushing data
+	 * through it like a pipe, without copying it's contents on either side.
 	 *
-	 * Do not forget to check your input connectors for valid content, a builtin way
-	 * to do so is:
+	 * NEVER forget to check your input connectors for valid content, a builtin
+	 * way to do so is:
 	 * @code
-	 * if (!input.receive(object) || !input2.receive(object2) || ...) return BVS::Status::NOINPUT;
+	 * if (!input.receive(object) || !input2.receive(object2) || ...)
+	 *	return BVS::Status::NOINPUT;
 	 * @endcode
-	 * Obviously, this does NOT guarantee that the input you received will actually
-	 * be a valid object, but it guarantees that your programm will not crash due to
-	 * non referenceable memory.
+	 * Obviously, this does NOT guarantee that any received input will actually
+	 * be a valid object, but it guarantees that your programm will not crash
+	 * due to non referenceable memory.
 	 */
 	template<typename T> class Connector
 	{
@@ -50,6 +53,12 @@ namespace BVS
 
 			/** Connector destructor. */
 			~Connector();
+
+			/** Connector status check.
+			 * Checks whether the connector is active/connected/used.
+			 * @return Connector status.
+			 */
+			bool active();
 
 			/** Write to output.
 			 * @param[in] t The object you want to send.
@@ -118,21 +127,18 @@ namespace BVS
 						typeid(T).name(),
 						false}}}
 	{
-		if (ConnectorDataCollector::connectors.find(connectorName)==ConnectorDataCollector::connectors.end())
-		{
+		Logger logger{"Connector"};
+		if (ConnectorDataCollector::connectors.find(connectorName)==ConnectorDataCollector::connectors.end()) {
+			if (!std::regex_match(connectorName, std::regex{"[-_[:alnum:]]+"}))
+				LOG(0, "invalid name, only alphanumeric characters and '_-' are allowed: " << connectorName);
 			ConnectorDataCollector::connectors[connectorName] = data;
-		}
-		else
-		{
-			std::cerr << "[0|Connector] duplicate name detected: " << connectorName << std::endl;
-			exit(1);
+		} else {
+			LOG(0, "connector already exists: " << connectorName);
 		}
 
-		if (data->type == ConnectorType::OUTPUT)
-		{
+		if (data->type == ConnectorType::OUTPUT) {
 			connection = std::make_shared<T>();
 			data->pointer = connection;
-			data->active = true;
 			data->lock = std::unique_lock<std::mutex>{data->mutex, std::defer_lock};
 		}
 	}
@@ -151,13 +157,20 @@ namespace BVS
 
 
 
+	template<typename T> bool Connector<T>::active()
+	{
+		return data->active;
+	}
+
+
+
 	template<typename T> void Connector<T>::send(const T& t)
 	{
 		// allow send only for output
 		if (data->type != ConnectorType::OUTPUT)
 		{
-			std::cerr << "[0|Connector] writing to INPUT connector!" << std::endl;
-			exit(1);
+			Logger logger{"Connector"};
+			LOG(0, "writing to INPUT connector!");
 		}
 
 		if (data->active && !data->locked) data->lock.lock();
@@ -172,8 +185,8 @@ namespace BVS
 		// allow get only for output (maybe compiler catches const before, check)
 		if (data->type != ConnectorType::INPUT)
 		{
-			std::cerr << "[0|Connector] reading from OUTPUT connector!" << std::endl;
-			exit(1);
+			Logger logger{"Connector"};
+			LOG(0, "reading from OUTPUT connector!");
 		}
 
 		if (!data->active && !activate()) return false;

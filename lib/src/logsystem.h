@@ -1,9 +1,10 @@
 #ifndef BVS_LOGSYSTEM_H
 #define BVS_LOGSYSTEM_H
 
-#include<fstream>
-#include<memory>
-#include<mutex>
+#include <fstream>
+#include <functional>
+#include <memory>
+#include <mutex>
 
 #include "bvs/config.h"
 #include "streams.h"
@@ -42,8 +43,10 @@ namespace BVS
 			std::ostream& out(const Logger& logger, int level);
 
 			/** Ends output log by appending std::endl and releasing the log mutex.
+			 * @param[in] logger Logger metadata from caller.
+			 * @param[in] level The desired output verbosity of this message.
 			*/
-			void endl();
+			void endl(const Logger& logger, const int level);
 
 			/** Set the system verbosity level.
 			 * @param[in] verbosity The desired verbosity level.
@@ -79,7 +82,7 @@ namespace BVS
 			/** Announces a logger instance to the backend.
 			 * @param[in] logger Logger metadata from caller.
 			 */
-			LogSystem& announce(const Logger& logger);
+			LogSystem& announce(Logger& logger);
 
 			/** Check config for settings.
 			 * Checks the given config object for occurences of:
@@ -92,7 +95,7 @@ namespace BVS
 			 * @param[in] config Config object.
 			 * @return Reference to object.
 			 */
-			LogSystem& updateSettings(Config& config);
+			LogSystem& updateSettings(const Config& config);
 
 			/** Check config for client levels.
 			 * Checks the given config object for occurences of Logger.*.
@@ -105,21 +108,27 @@ namespace BVS
 			 * @param[in] config Config object.
 			 * @return Reference to object.
 			 */
-			LogSystem& updateLoggerLevels(Config& config);
+			LogSystem& updateLoggerLevels(const Config& config);
 
 		private:
 			/** Construct log system.
 			*/
 			LogSystem();
 
-			/** Logger clients' levels from config(s) in lowercase. */
-			std::map<std::string, int, std::less<std::string>> loggerLevels;
+			/** Logger clients' verbosity levels with lowercase identifiers. */
+			std::map<std::string, std::shared_ptr<unsigned short>, std::less<std::string>> loggerLevels;
 
 			/** Temp object needed for output and announce function. */
 			std::string tmpName;
 
 			/** Name padding size for fancy output, updated in announce function. */
 			unsigned int namePadding;
+
+			/** Whether to output colors in the log output.
+			 * Messages to level 0 (ERROR) are red, messages to level 1 (INFO)
+			 * are yellow.
+			 */
+			bool logColors;
 
 			/** The overall system verbosity level.
 			 * The overall system verbosity level will be initialized to 3, only

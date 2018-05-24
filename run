@@ -96,7 +96,7 @@ other:
 
 targets:
   [config]     -- run 'bvsd' with the given config (default:bvs.conf)
-  -d|--debug   -- run 'bvsd' in gdb session
+  -d|--debug   -- run 'bvsd' in gdb/lldb session
   -f|--fifo    -- run 'bvsd' reading input from 'bvsd-fifo'
 
 EOF
@@ -163,7 +163,7 @@ then
 	echo "#add_subdirectory($MOD_PATH)" >> modules/CMakeLists.txt
 	echo ">>> Created Module 'modules/$MOD_PATH'! Please modify modules/CMakeLists.txt to add it to compilation!"
 else
-	eval sed -i -e "s/\(${ORIG_PATH//\//\\\/}\)/\(${MOD_PATH//\//\\\/}\)/" modules/CMakeLists.txt
+	eval sed -i -e "s#\(${ORIG_PATH//\//\\\/}\)#\(${MOD_PATH//\//\\\/}\)#" modules/CMakeLists.txt
 	eval rm -f modules/CMakeLists.txt-e
 	echo ">>> Renamed Module 'modules/$ORIG_PATH' to 'modules/$MOD_PATH' and modified CMakeLists.txt accordingly!"
 	echo ">>> 'modules/$ORIG_PATH' left intact, can be deleted now!"
@@ -206,9 +206,15 @@ for i in $@
 do
 	if [ "$i" = "-d" -o "$i" = "--debug" ]
 	then
-		GDB="gdb"
-		GDBOPTS="--args"
 		shift
+		if hash gdb 2>/dev/null; then
+			DEBUGGER="gdb -q --args"
+		elif hash lldb 2>/dev/null; then
+			DEBUGGER="lldb --"
+		else
+			echo ">>> Could not find a debugger!"
+			exit
+		fi
 	fi
 	if [ "$i" = "-f" -o "$i" = "--fifo" ]
 	then
@@ -218,7 +224,6 @@ do
 	fi
 done
 
-[ -n "$GDB" -a -r /usr/local/bin/gdb ] && GDB="/usr/local/bin/gdb"
 [ $# = 0 ] && CONFIG="bvs.conf" || CONFIG=$1
 
 [ -n "$FIFO" ] && cat << EOF
@@ -228,7 +233,7 @@ done
 
 EOF
 
-eval "(cd $BASE_DIR/$BIN_DIR && $FIFO $GDB $GDBOPTS ./bvsd --bvs.config=$CONFIG)"
+eval "(cd $BASE_DIR/$BIN_DIR && $FIFO $DEBUGGER ./bvsd --bvs.config=$CONFIG)"
 }
 
 
@@ -283,7 +288,7 @@ echo
 function bvs_update {
 BASE=$PWD
 QUIET='--quiet'
-DIRS=(./ `\find modules -maxdepth 1`)
+DIRS=(./ `\find modules -depth 1`)
 i=0; for DIR in ${DIRS[@]}; do [ ! -d "$BASE/$DIR" ] && unset DIRS[i]; i=$[ i+1 ]; done
 
 STASHES=()

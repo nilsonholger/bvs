@@ -8,13 +8,14 @@
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__))
 #endif
 #include <string>
+#include <vector>
 
 
 
 /** Version information. */
-static const unsigned int bvs_version_year = 2014;
-static const unsigned int bvs_version_release = 11;
-static const std::string bvs_version_nickname = "cling-clang";
+static const unsigned int bvs_version_year = 2018;
+static const unsigned int bvs_version_release = 5;
+static const std::string bvs_version_nickname = "long-time-no-sea";
 static const std::string bvs_version = std::to_string(bvs_version_year)
 	+ "." + std::to_string(bvs_version_release)
 	+ "-" + bvs_version_nickname;
@@ -65,6 +66,13 @@ static const bool bvs_log_to_console = true;
  */
 static const std::string bvs_log_to_logfile = {};
 
+/** Whether to use colors in the system log.
+ * Currently only Linux Console is supported.
+ *
+ * Possible Values: true, false
+ */
+static const bool bvs_log_colors = true;
+
 /** The logging system clients' default verbosity.
  * This verbosity level will be used for all log clients that have not
  * explicitely set one.
@@ -75,28 +83,23 @@ static const unsigned int bvs_log_client_default_verbosity = 3;
 
 /** Whether the system shows statistics after every round.
  *
- * Possbile Values: true, false
+ * Possible Values: true, false
  */
 static const bool bvs_log_statistics = false;
 
-/** Whether the system allows modules to run in threads.
+/** Whether there should be a minimal round time (in ms).
+ * Useful to restrict the system to a maximal frame rate. (fps~1/round_time)
  *
- * Possible Values: true, false
+ * Possible Values: 0 (off), 1, ...
  */
-static const bool bvs_module_threads = true;
+static const bool bvs_minimal_round_time = 0;
 
-/** Whether the system ENFORCES modules to run in threads.
- * NOTE: this does NOT disable module pools.
+/** Select parallelism level.
  *
- * Possible Values: true, false
+ * Possible Values: NONE, THREADS, FORCE, ANY
  */
-static const bool bvs_module_force_threads = false;
-
-/** Whether the system allows module pools.
- *
- * Possible Values: true, false
- */
-static const bool bvs_module_pools = true;
+static const std::vector<std::string> bvs_parallelism_values = { "NONE", "THREADS", "FORCE", "ANY" };
+static const std::string bvs_parallelism = "ANY";
 
 
 

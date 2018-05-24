@@ -1,5 +1,9 @@
 #include <dlfcn.h>
 
+#include <functional>
+#include <regex>
+#include <sstream>
+
 #include "loader.h"
 
 using BVS::Loader;
@@ -17,10 +21,9 @@ ModuleVector* Loader::hotSwapGraveYard = nullptr;
 
 
 
-Loader::Loader(const Info& info, std::function<void()> errorHandler)
+Loader::Loader(const Info& info)
 	: logger{"Loader"},
-	info(info),
-	errorHandler(errorHandler)
+	info(info)
 { }
 
 
@@ -51,15 +54,12 @@ void Loader::registerModule(const std::string& id, Module* module, bool hotSwap)
 Loader& Loader::load(const std::string& id, const std::string& library, const std::string& configuration, const std::string& options, const std::string& poolName)
 {
 	if (modules.find(id)!=modules.end())
-	{
 		LOG(0, "Duplicate id for module: " << id << std::endl << "If you try to load a module more than once, use unique ids and the id(library).options syntax!");
-		errorHandler();
-	}
 
-	std::string function = "bvsRegisterModule";
+	std::string function = "bvsRegisterModule_" + library;
 	std::string tmpLibrary = library;
+
 #ifdef BVS_STATIC_MODULES
-	function += "_" + library;
 #ifdef __ANDROID_API__
 	tmpLibrary = "bvs_modules";
 #else //__ANDROID_API__
@@ -67,7 +67,11 @@ Loader& Loader::load(const std::string& id, const std::string& library, const st
 #endif //__ANDROID_API__
 #endif //BVS_STATIC_MODULES
 
+#ifdef BVS_STATIC
+	LibHandle dlib = dlopen(NULL, RTLD_LAZY);
+#else
 	LibHandle dlib = loadLibrary(id, tmpLibrary);
+#endif
 
 	// execute bvsRegisterModule in loaded lib
 	typedef void (*bvsRegisterModule_t)(ModuleInfo moduleInfo, const Info& info);
@@ -77,10 +81,7 @@ Loader& Loader::load(const std::string& id, const std::string& library, const st
 
 	const char* dlerr = dlerror();
 	if (dlerr && bvsRegisterModule==nullptr)
-	{
 		LOG(0, "Loading function " << function << " from '" << tmpLibrary << "' resulted in: " << dlerr);
-		errorHandler();
-	}
 
 	ModuleInfo moduleInfo{id, configuration};
 	bvsRegisterModule(moduleInfo, info);
@@ -129,56 +130,54 @@ Loader& Loader::connectModule(const std::string& id, const bool connectorTypeMat
 {
 	ModuleData* module = modules[id].get();
 	std::string options = module->options;
-	std::string selection;
+	std::string connection;
 	std::string input;
 	std::string targetModule;
 	std::string targetOutput;
-	size_t separator;
-	size_t separator2;
+	std::regex regex("(.+?)\\((.+?)\\.(.+?)\\).*");
+	std::smatch match;
 
-	while (!options.empty())
-	{
-		separator = options.find_first_of('(');
-		separator2 = options.find_first_of(')');
-		selection = options.substr(0, separator2+1);
-		if (separator!=std::string::npos)
-		{
-			input = options.substr(0, separator);
-			targetModule = options.substr(separator+1, separator2-separator-1);
-		}
-		else
-		{
-			LOG(0, "No input selection found: " << selection);
-			errorHandler();
-		}
+	while (!options.empty()) {
+		// try to match 'input(targetModule.targetOutput).*'
+		std::regex_match(options, match, regex);
+		connection = match[0].str().empty() ? options : match[0];
+		if (match.size()!=4) LOG(0, "Error matching connector settings: " << connection);
+		input = match[1];
+		targetModule = match[2];
+		targetOutput = match[3];
 
-		options.erase(0, separator2+1);
-		if (options[0] == '.') options.erase(options.begin());
+		// check input connector
+		std::function<void(const ModuleData*)> connectionError = [&](const ModuleData* data){
+			LOG(0, "Connection error: " << module->id << "." << connection << printModuleConnectors(data));
+		};
+		if (module->connectors.find(input)==module->connectors.end()) connectionError(module);
+		std::shared_ptr<ConnectorData> in = module->connectors[input];
+		if (in->type!=ConnectorType::INPUT) connectionError(module);
+		if (in->active) LOG(0, "Input already connected: " << module->id << "." << input);
 
-		separator = targetModule.find_first_of('.');
-		if (separator!=std::string::npos)
-		{
-			targetOutput = targetModule.substr(separator+1, std::string::npos);
-			targetModule = targetModule.substr(0, separator);
-		}
-		else
-		{
-			LOG(0, "No module output selected: " << module->id << "." << selection);
-			errorHandler();
-		}
+		// check target module and connector
+		if (modules.find(targetModule)==modules.end())
+			LOG(0, "Module '" << targetModule << "' not found: " << module->id << "." << connection);
+		if (modules.find(targetModule)->second->connectors.find(targetOutput)==modules.find(targetModule)->second->connectors.end())
+			connectionError(modules.find(targetModule)->second.get());
+		std::shared_ptr<ConnectorData> out = modules[targetModule]->connectors[targetOutput];;
+		if (out->type!=ConnectorType::OUTPUT) connectionError(modules.find(targetModule)->second.get());
 
-		checkModuleInput(module, input);
-		checkModuleOutput(module, targetModule, targetOutput);
+		// check type matching
+		if (connectorTypeMatching && in->typeIDHash!=out->typeIDHash)
+			LOG(0, "Incompatible types for: " << connection << " -> "
+					<< in->typeIDName << "(" << in->typeIDHash << ") != "
+					<< out->typeIDName << "(" << out->typeIDHash << ")");
 
-		if (connectorTypeMatching && module->connectors[input]->typeIDHash != modules[targetModule]->connectors[targetOutput]->typeIDHash)
-		{
-			LOG(0, "Selected input and output connector template instantiations are of different type: " << module->id << "." << selection << " -> " << module->connectors[input]->typeIDName << " != " << modules[targetModule]->connectors[targetOutput]->typeIDName);
-			errorHandler();
-		}
+		// connect
+		in->lock = std::unique_lock<std::mutex>{out->mutex, std::defer_lock};
+		in->pointer = out->pointer;
+		out->active = true;
+		LOG(2, "Connected: " << module->id << "." << input << " <- " << targetModule << "." << targetOutput);
 
-		module->connectors[input]->pointer = modules[targetModule]->connectors[targetOutput]->pointer;
-		module->connectors[input]->lock = std::unique_lock<std::mutex>{modules[targetModule]->connectors[targetOutput]->mutex, std::defer_lock};
-		LOG(3, "Connected: " << module->id << "." << module->connectors[input]->id << " <- " << modules[targetModule]->id << "." << modules[targetModule]->connectors[targetOutput]->id);
+		// remove connection from option string
+		options.erase(0, options.find(")")+1);
+		if (options[0]=='.') options.erase(0, 1);
 	}
 
 	return *this;
@@ -188,20 +187,36 @@ Loader& Loader::connectModule(const std::string& id, const bool connectorTypeMat
 
 Loader& Loader::disconnectModule(const std::string& id)
 {
-	for (auto& connector: modules[id]->connectors)
-	{
-		if (connector.second->type==ConnectorType::INPUT) continue;
-
-		for (auto& module: modules)
-		{
-			for (auto& targetConnector: module.second->connectors)
-			{
-				if (connector.second->pointer==targetConnector.second->pointer)
+	for (auto& disconnect: modules[id]->connectors) {
+		if (!disconnect.second->active) continue;
+		switch (disconnect.second->type) {
+			case ConnectorType::INPUT:
 				{
-					targetConnector.second->active = false;
-					targetConnector.second->pointer = nullptr;
+					bool onlyConnection = true;
+					std::shared_ptr<ConnectorData> origin;
+					for (auto& module: modules) {
+						for (auto& test: module.second->connectors) {
+							if (test.second->pointer==disconnect.second->pointer) {
+								if (test.second->type==ConnectorType::OUTPUT) origin = test.second;
+								if (test.second->type==ConnectorType::INPUT && &test!=&disconnect) onlyConnection = false;
+							}
+						}
+					}
+					if (onlyConnection && origin) origin->active = false;
+					break;
 				}
-			}
+			case ConnectorType::OUTPUT:
+				for (auto& module: modules) {
+					for (auto& targetConnector: module.second->connectors) {
+						if (disconnect.second->pointer==targetConnector.second->pointer) {
+							targetConnector.second->active = false;
+							targetConnector.second->pointer = nullptr;
+						}
+					}
+				}
+				break;
+			case ConnectorType::NOOP:
+				break;
 		}
 	}
 
@@ -219,14 +234,10 @@ Loader& Loader::hotSwapModule(const std::string& id)
 
 	typedef void (*bvsHotSwapModule_t)(const std::string& id, Module* module);
 	bvsHotSwapModule_t bvsHotSwapModule;
-	*reinterpret_cast<void**>(&bvsHotSwapModule)=dlsym(dlib, "bvsHotSwapModule");
+	*reinterpret_cast<void**>(&bvsHotSwapModule)=dlsym(dlib, std::string{"bvsHotSwapModule_" + id}.c_str());
 
 	char* dlerr = dlerror();
-	if (dlerr)
-	{
-		LOG(0, "Loading function bvsHotSwapModule() in '" << modules[id]->library << "' resulted in: " << dlerr);
-		errorHandler();
-	}
+	if (dlerr) LOG(0, "Loading function bvsHotSwapModule() in '" << modules[id]->library << "' resulted in: " << dlerr);
 
 	bvsHotSwapModule(id, modules[id]->module.get());
 	modules[id]->dlib = dlib;
@@ -264,11 +275,7 @@ LibHandle Loader::loadLibrary(const std::string& id, const std::string& library)
 #endif //BVS_OSX_ANOMALIES
 	}
 
-	if (dlib==NULL)
-	{
-		LOG(0, "Loading '" << modulePath << "' resulted in: " << dlerror());
-		errorHandler();
-	}
+	if (dlib==NULL) LOG(0, "Loading '" << modulePath << "' resulted in: " << dlerror());
 
 	return dlib;
 }
@@ -290,11 +297,7 @@ Loader& Loader::unloadLibrary(const std::string& id)
 	dlclose(dlib);
 
 	const char* dlerr = dlerror();
-	if (dlerr)
-	{
-		LOG(0, "While closing '" << modulePath << "' following error occured: " << dlerror());
-		errorHandler();
-	}
+	if (dlerr) LOG(0, "While closing '" << modulePath << "' following error occured: " << dlerror());
 	LOG(3, "Library '" << modulePath << "' unloaded!");
 
 	return *this;
@@ -302,62 +305,17 @@ Loader& Loader::unloadLibrary(const std::string& id)
 
 
 
-Loader& Loader::checkModuleInput(const ModuleData* module, const std::string& inputName)
+std::string Loader::printModuleConnectors(const ModuleData* module)
 {
-	auto input = module->connectors.find(inputName);
-
-	if (input == module->connectors.end() || input->second->type != ConnectorType::INPUT)
-	{
-		LOG(0, "Input not found: " << module->id << "." << inputName);
-		printModuleConnectors(module);
-		errorHandler();
+	std::stringstream s;
+	s << "\nConnectors defined by " << module->id << ": ";
+	if (module->connectors.size()==0) {
+		s << "NO CONNECTORS";
+	} else {
+		for (auto& it: module->connectors)
+			s << it.second->id << "(" << it.second->type << ") ";
 	}
 
-	if (input->second->active)
-	{
-		LOG(0, "Input already connected: " << module->id << "." << inputName);
-		errorHandler();
-	}
-
-	return *this;
-}
-
-
-
-Loader& Loader::checkModuleOutput(const ModuleData* module, const std::string& targetModule, const std::string& targetOutput)
-{
-	auto target = modules.find(targetModule);
-	if (target == modules.end())
-	{
-		LOG(0, "Module not found: " << targetModule << " in " << module->id << "." << module->options);
-		errorHandler();
-	}
-
-	auto output = target->second->connectors.find(targetOutput);
-	if (output == target->second->connectors.end() || output->second->type != ConnectorType::OUTPUT)
-	{
-		LOG(0, "Output not found: " << targetOutput << " in " << module->id << "." << module->options);
-		printModuleConnectors(target->second.get());
-		errorHandler();
-	}
-
-	return *this;
-}
-
-
-
-Loader& Loader::printModuleConnectors(const ModuleData* module)
-{
-	if (module->connectors.size()==0)
-	{
-		LOG(0, "Module " << module->id << " does not define any connector!");
-	}
-	else
-	{
-		LOG(0, "Module " << module->id << " defines the following connectors: ");
-		for (auto& it: module->connectors) LOG(0, it.second->type << ": " << it.second->id);
-	}
-
-	return *this;
+	return s.str();
 }
 

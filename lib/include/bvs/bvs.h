@@ -47,9 +47,7 @@ namespace BVS
 	 * @li \c logFile enables logging to file (""/$FILE/+$FILE, '+' appends).
 	 * @li \c logVerbosity sets the overall log verbosity (0/1/2/3...).
 	 * @li \c logStatistics enables statistics output (ON/OFF).
-	 * @li \c moduleThreads allows modules to run in dedicated threads (ON/OFF).
-	 * @li \c forceModuleThreads forces modules to run in dedicated threads (ON/OFF).
-	 * @li \c modulePools allows modules to be bundled in a pool thread (ON/OFF).
+	 * @li \c parallelism allows modules to run in dedicated (forced) threads or pools (NONE/THREAD/FORCE/ANY).
 	 * @li \c modules lists modules to load and their options.
 	 *
 	 * Module Syntax:
@@ -106,7 +104,7 @@ namespace BVS
 			 * @param[in] argv Main's argv, used to pass config options to BVS, see Config.
 			 * @param[in] shutdownHandler A function the framework calls upon shutting down.
 			 */
-			BVS(const int argc, const char** argv, std::function<void()> shutdownHandler = [](){ exit(0);} );
+			BVS(const int argc, const char** argv, std::function<void()> shutdownHandler = [](){ exit(1);} );
 
 			/** Destructor.
 			 */
@@ -261,7 +259,10 @@ namespace BVS
 #endif
 			Loader* loader; /**< BVS' module loader. */
 			Control* control; /**< BVS' module controller. */
-			std::stack<std::string> moduleStack; /** Stack of modules names. */
+			std::stack<std::string> moduleStack; /**< Stack of modules names. */
+
+			bool connectorTypeMatching; /**< Try to match connector types. */
+			std::string parallelism; /**< Type of parallism to use. */
 
 			BVS(const BVS&) = delete; /**< -Weffc++ */
 			BVS& operator=(const BVS&) = delete; /**< -Weffc++ */

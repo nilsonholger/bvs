@@ -29,7 +29,7 @@ namespace BVS
 			 * @param[in] bvs Referecence to bvs.
 			 * @param[in] info Reference to info struct.
 			*/
-			Control(ModuleDataMap& modules, BVS& bvs, Info& info, bool logStatistics = false);
+			Control(ModuleDataMap& modules, BVS& bvs, Info& info, bool logStatistics = false, unsigned int minRoundTime = 0);
 
 			/** The master control function.
 			 * This is the master control function, it forks if desired and can
@@ -116,6 +116,7 @@ namespace BVS
 			BVS& bvs; /**< BVS reference. */
 			Info& info; /**< Info reference. */
 			bool logStatistics; /**< Log statistics. */
+			unsigned int minRoundTime; /**< Minimal round time. */
 			Logger logger; /**< Logger metadata. */
 			std::atomic<int> activePools; /**< The number of active pools. */
 			PoolMap pools; /**< Map of pools. */

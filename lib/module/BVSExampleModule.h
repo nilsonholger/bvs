@@ -6,8 +6,13 @@
 
 
 /** This is the BVSExampleModule module.
- * Please add sufficient documentation to enable others to use it.
- * Include information about: Dependencies, Inputs, Outputs, Configuration Options...
+ * Please add a sufficient description and documentation to enable others to
+ * properly use it.
+ *
+ * Dependencies: please list any dependencies here.
+ * Inputs: enumerate inputs
+ * Outputs: enumerate outputs
+ * Configuration Options: please see BVSExampleModule.conf
  */
 class BVSExampleModule : public BVS::Module
 {
@@ -22,12 +27,13 @@ class BVSExampleModule : public BVS::Module
 		BVSExampleModule(BVS::ModuleInfo info, const BVS::Info& bvs);
 
 		/** Your module destructor. */
-		~BVSExampleModule();
+		~BVSExampleModule() noexcept;
 
 		/** Execute function doing all the work.
 		 * This function is executed exactly once during each started
 		 * round/step of the framework. It is supposed to contain the actual
 		 * work of your module.
+		 * @return Module's status.
 		 */
 		BVS::Status execute();
 

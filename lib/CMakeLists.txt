@@ -3,14 +3,16 @@ cmake_minimum_required(VERSION 2.8.6)
 project(LIBBVS)
 
 include_directories(include src)
-add_subdir_lib(src bvs SHARED barrier.cc bvs.cc config.cc connector.cc control.cc info.cc loader.cc logger.cc logsystem.cc module.cc utils.cc)
+add_subdir_lib(src bvs ${BVS_LIBRARY_TYPE} barrier.cc bvs.cc config.cc connector.cc control.cc info.cc loader.cc logger.cc logsystem.cc module.cc utils.cc)
 target_link_libraries(bvs dl pthread)
 
-if(BVS_STATIC_MODULES)
-	target_link_libraries(bvs -Wl,--whole-archive $ENV{BVS_STATIC_MODULES} -Wl,--no-whole-archive)
+if(BVS_STATIC_MODULES AND NOT BVS_STATIC)
+	target_link_full_static_libraries(bvs $ENV{BVS_STATIC_MODULES})
 endif()
 
-execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/bvs.conf ${CMAKE_BINARY_DIR}/bin/bvs.conf)
+if(NOT EXISTS ${CMAKE_BINARY_DIR}/bin/bvs.conf)
+	execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/bvs.conf ${CMAKE_BINARY_DIR}/bin/bvs.conf)
+endif()
 
 # add documentation target (using doxygen)
 find_package(Doxygen)

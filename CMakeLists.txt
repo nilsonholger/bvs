@@ -4,9 +4,11 @@ project(BVS)
 set(CMAKE_BUILD_TYPE "DEBUG")
 include(cmake/toolbox/toolbox.cmake)
 include(cmake/bvs-options.cmake)
+include(cmake/bvs-macros.cmake)
 
 # dynamic library stuff
 if(${APPLE})
+	cmake_minimum_required(VERSION 3.0.2)
 	set(CMAKE_MACOSX_RPATH ON)
 else()
 	set(CMAKE_SKIP_RPATH ON)
